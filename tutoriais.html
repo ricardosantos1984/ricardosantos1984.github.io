@@ -548,7 +548,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 
 <footer>
   <div class="inner">
-    <span class="label">Ricardo Santos · Tomar · v2026.10</span>
+    <span class="label">Ricardo Santos · Tomar · v2026.10 · Visitas: <b data-visits style="color:var(--cyan);font-weight:500">—</b></span>
     <a href="https://github.com/ricardosantos1984">github.com/ricardosantos1984</a>
   </div>
 </footer>
@@ -656,6 +656,26 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
   });
 
   if (reduce) { draw(); } else { requestAnimationFrame(loop); }
+})();
+
+/* Contador de visitas (GoatCounter). Só conta no site publicado. */
+(function () {
+  if (!/github\.io$/.test(location.hostname)) return;
+  var CODE = 'ricardosantos1984';
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://gc.zgo.at/count.js';
+  s.setAttribute('data-goatcounter', 'https://' + CODE + '.goatcounter.com/count');
+  document.head.appendChild(s);
+  fetch('https://' + CODE + '.goatcounter.com/counter/TOTAL.json')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || !d.count) return;
+      document.querySelectorAll('[data-visits]').forEach(function (el) {
+        el.textContent = String(d.count).replace(/,/g, '.');
+      });
+    })
+    .catch(function () {});
 })();
 
 /* Vídeos: no site publicado tocam dentro da página; noutros sítios abrem no YouTube. */
