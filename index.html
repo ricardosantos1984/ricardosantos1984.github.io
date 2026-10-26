@@ -47,6 +47,7 @@ body {
   position: relative;
 }
 /* grid floor */
+#net { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.9; }
 body::after {
   content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
@@ -224,6 +225,8 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 </head>
 <body style="margin:0">
 
+<canvas id="net" aria-hidden="true"></canvas>
+
 <header class="topbar">
   <div class="inner">
     <div class="brand"><i></i>RS<span>&nbsp;// Ricardo Santos</span></div>
@@ -345,5 +348,111 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
     <a href="https://github.com/ricardosantos1984">github.com/ricardosantos1984</a>
   </div>
 </footer>
+
+<script>
+/* Fundo animado: rede de nós ligados (tipo rede de dados / rede neural). */
+(function () {
+  var c = document.getElementById('net');
+  if (!c || !c.getContext) return;
+  var ctx = c.getContext('2d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, dpr = 1, nodes = [], pulses = [], mouse = { x: -9999, y: -9999 };
+  var LINK = 150;
+
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.max(28, Math.min(90, Math.round(W * H / 16000)));
+    LINK = W < 600 ? 110 : 150;
+    nodes = [];
+    for (var i = 0; i < n; i++) {
+      nodes.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
+        r: Math.random() < 0.12 ? 2.4 : 1.4
+      });
+    }
+    pulses = [];
+  }
+
+  function spawnPulse() {
+    var a = nodes[(Math.random() * nodes.length) | 0], best = null, bd = 1e9;
+    for (var i = 0; i < nodes.length; i++) {
+      var b = nodes[i]; if (b === a) continue;
+      var d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < LINK && d < bd) { bd = d; best = b; }
+    }
+    if (best) pulses.push({ a: a, b: best, t: 0 });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < nodes.length; i++) {
+      var p = nodes[i];
+      for (var j = i + 1; j < nodes.length; j++) {
+        var q = nodes[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < LINK) {
+          ctx.strokeStyle = 'rgba(70,227,238,' + (0.22 * (1 - d / LINK)).toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+        }
+      }
+      var md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+      if (md < 180) {
+        ctx.strokeStyle = 'rgba(70,227,238,' + (0.35 * (1 - md / 180)).toFixed(3) + ')';
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+      }
+    }
+    for (var k = 0; k < nodes.length; k++) {
+      var n = nodes[k];
+      ctx.fillStyle = n.r > 2 ? 'rgba(255,181,71,0.85)' : 'rgba(150,240,246,0.75)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+    }
+    for (var m = pulses.length - 1; m >= 0; m--) {
+      var s = pulses[m];
+      var x = s.a.x + (s.b.x - s.a.x) * s.t, y = s.a.y + (s.b.y - s.a.y) * s.t;
+      ctx.fillStyle = 'rgba(70,227,238,0.95)';
+      ctx.shadowColor = 'rgba(70,227,238,0.9)'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function step() {
+    for (var i = 0; i < nodes.length; i++) {
+      var p = nodes[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20;
+    }
+    for (var m = pulses.length - 1; m >= 0; m--) {
+      pulses[m].t += 0.012;
+      if (pulses[m].t >= 1) pulses.splice(m, 1);
+    }
+    if (pulses.length < 6 && Math.random() < 0.04) spawnPulse();
+  }
+
+  var running = true;
+  function loop() {
+    if (!running) return;
+    step(); draw();
+    requestAnimationFrame(loop);
+  }
+
+  size();
+  window.addEventListener('resize', function () { size(); if (reduce) draw(); });
+  window.addEventListener('pointermove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('pointerleave', function () { mouse.x = mouse.y = -9999; });
+  document.addEventListener('visibilitychange', function () {
+    if (reduce) return;
+    running = !document.hidden;
+    if (running) requestAnimationFrame(loop);
+  });
+
+  if (reduce) { draw(); } else { requestAnimationFrame(loop); }
+})();
+</script>
 </body>
 </html>
