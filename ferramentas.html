@@ -252,7 +252,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
   .log .what { grid-column: 2; }
 }
 
-/* Ferramentas */
+/* Páginas extra */
 .tools-hero { grid-template-columns: 1fr; }
 .legend { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .pill { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.22rem 0.55rem; border: 1px solid; white-space: nowrap; }
@@ -266,8 +266,14 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 .tool h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; min-width: 0; }
 .maker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--dim); }
 .tool p { color: var(--muted); font-size: 0.95rem; line-height: 1.55; flex: 1; }
-.tool a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; margin-top: 0.3rem; overflow-wrap: anywhere; }
+.tool .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; margin-top: 0.3rem; }
+.tool .links a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; overflow-wrap: anywhere; }
+.tool .links a.tut { color: var(--amber); }
 .nav a.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips a { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+  color: var(--ink); padding: 0.4rem 0.7rem; border: 1px solid var(--line-strong); background: rgba(70,227,238,0.04); transition: background .2s ease, color .2s ease; }
+.chips a:hover { background: rgba(70,227,238,0.15); color: var(--cyan); }
 </style>
 </head>
 <body style="margin:0">
@@ -282,6 +288,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       <a href="./#diario">Diário IA</a>
       <a href="./#videos">Vídeos</a>
       <a class="on" href="ferramentas.html" aria-current="page">Ferramentas IA</a>
+      <a href="tutoriais.html">Tutoriais</a>
     </nav>
   </div>
 </header>
@@ -312,25 +319,25 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Claude</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Anthropic</span>
           <p>O assistente com que estou a aprender IA. Criou este site e liga-se ao meu email, à Drive e ao GitHub.</p>
-          <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a>
+          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="tutoriais.html#claude">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>ChatGPT</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">OpenAI</span>
           <p>Assistente de conversa para escrever, resumir e responder a perguntas.</p>
-          <a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com ↗</a>
+          <div class="links"><a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com ↗</a><a class="tut" href="tutoriais.html#chatgpt">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>Gemini</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Google</span>
           <p>O assistente de IA da Google, integrado no Gmail, na Drive e no Android.</p>
-          <a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com ↗</a>
+          <div class="links"><a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com ↗</a><a class="tut" href="tutoriais.html#gemini">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>Copilot</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Microsoft</span>
           <p>O assistente da Microsoft, presente no Windows, no Edge e no Office.</p>
-          <a href="https://copilot.microsoft.com" target="_blank" rel="noopener">copilot.microsoft.com ↗</a>
+          <div class="links"><a href="https://copilot.microsoft.com" target="_blank" rel="noopener">copilot.microsoft.com ↗</a><a class="tut" href="tutoriais.html#copilot">Ver tutoriais ▶</a></div>
         </li>
       </ul>
     </section>
@@ -342,13 +349,13 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Perplexity</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Perplexity AI</span>
           <p>Pesquisa na internet com respostas resumidas e as fontes indicadas.</p>
-          <a href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai ↗</a>
+          <div class="links"><a href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai ↗</a><a class="tut" href="tutoriais.html#perplexity">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>NotebookLM</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Google</span>
           <p>Carrego documentos e a IA resume-os e responde a perguntas sobre eles.</p>
-          <a href="https://notebooklm.google.com" target="_blank" rel="noopener">notebooklm.google.com ↗</a>
+          <div class="links"><a href="https://notebooklm.google.com" target="_blank" rel="noopener">notebooklm.google.com ↗</a><a class="tut" href="tutoriais.html#notebooklm">Ver tutoriais ▶</a></div>
         </li>
       </ul>
     </section>
@@ -360,19 +367,19 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Conectores do Claude</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Gmail · Google Drive · Calendar</span>
           <p>Ligam a IA às minhas apps, para ler emails, procurar ficheiros e gerir a agenda.</p>
-          <a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a>
+          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="tutoriais.html#claude">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>IFTTT</h3><span class="pill learn">A aprender</span></div>
           <span class="maker">IFTTT</span>
           <p>Automações simples do tipo "se acontece isto, faz aquilo" entre apps e dispositivos.</p>
-          <a href="https://ifttt.com" target="_blank" rel="noopener">ifttt.com ↗</a>
+          <div class="links"><a href="https://ifttt.com" target="_blank" rel="noopener">ifttt.com ↗</a><a class="tut" href="tutoriais.html#ifttt">Ver tutoriais ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>n8n</h3><span class="pill learn">A aprender</span></div>
           <span class="maker">n8n</span>
           <p>Fluxos de automação com vários passos, condições e IA pelo meio, montados em blocos.</p>
-          <a href="https://n8n.io" target="_blank" rel="noopener">n8n.io ↗</a>
+          <div class="links"><a href="https://n8n.io" target="_blank" rel="noopener">n8n.io ↗</a><a class="tut" href="tutoriais.html#n8n">Ver tutoriais ▶</a></div>
         </li>
       </ul>
     </section>
@@ -384,7 +391,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>GitHub Pages</h3><span class="pill use">Em uso</span></div>
           <span class="maker">GitHub</span>
           <p>Alojamento gratuito deste site. O Claude publica as alterações diretamente no repositório.</p>
-          <a href="https://github.com/ricardosantos1984" target="_blank" rel="noopener">github.com/ricardosantos1984 ↗</a>
+          <div class="links"><a href="https://github.com/ricardosantos1984" target="_blank" rel="noopener">github.com/ricardosantos1984 ↗</a><a class="tut" href="tutoriais.html#github-pages">Ver tutoriais ▶</a></div>
         </li>
       </ul>
     </section>
