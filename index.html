@@ -141,7 +141,7 @@ h1 {
 .meter { grid-column: 1 / -1; margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
 .meter .row { display: flex; justify-content: space-between; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
 .bar { height: 6px; background: rgba(110,220,235,0.12); position: relative; overflow: hidden; }
-.bar i { position: absolute; inset: 0 auto 0 0; width: 75%; background: linear-gradient(90deg, var(--cyan), #9ff6fb); box-shadow: 0 0 10px var(--cyan); }
+.bar i { position: absolute; inset: 0 auto 0 0; width: 100%; background: linear-gradient(90deg, var(--cyan), #9ff6fb); box-shadow: 0 0 10px var(--cyan); }
 .barcode {
   grid-column: 1 / -1; height: 30px; margin-top: 0.6rem; opacity: 0.75;
   background: repeating-linear-gradient(90deg,
@@ -288,10 +288,10 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         <dt>Nome</dt><dd>Ricardo Santos</dd>
         <dt>Local</dt><dd>Tomar</dd>
         <dt>Função</dt><dd>Técnico de Informática</dd>
-        <dt>Estado</dt><dd class="status">upgrade: IA</dd>
+        <dt>Estado</dt><dd class="status">IA: módulo completo</dd>
         <div class="meter">
-          <div class="row"><span>Módulo IA</span><span>Nível 3 / 4</span></div>
-          <div class="bar" role="img" aria-label="Aprendizagem de IA: nível 3 de 4"><i></i></div>
+          <div class="row"><span>Módulo IA</span><span>Nível 4 / 4 ✓</span></div>
+          <div class="bar" role="img" aria-label="Aprendizagem de IA: nível 4 de 4, completo"><i></i></div>
         </div>
         <div class="barcode" aria-hidden="true"></div>
         <div class="serial" aria-hidden="true">RS · TMR · 2026</div>
@@ -366,9 +366,17 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
           <div class="what"><b>Criei a minha primeira automação</b><p>Com o IFTTT: todos os dias às 7h recebo um email com o tempo em Tomar.</p></div>
         </li>
+        <li>
+          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
+          <div class="what"><b>Instalei o n8n e liguei-o ao Claude</b><p>n8n no meu PC, ligado ao Claude por MCP. Pelo caminho resolvi um token inválido e uma ponte em falta.</p></div>
+        </li>
+        <li>
+          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
+          <div class="what"><b>Primeiro fluxo no n8n</b><p>Vai buscar o tempo de Tomar à Open-Meteo e cria uma mensagem em português.</p></div>
+        </li>
         <li class="next">
           <span class="when">A seguir</span><span class="node"></span>
-          <div class="what"><b>Automatizações com n8n</b><p>Fluxos com vários passos e IA pelo meio.</p></div>
+          <div class="what"><b>Notificações no WhatsApp e agentes de IA</b><p>Receber os fluxos no telemóvel e pôr a IA a decidir dentro do n8n.</p></div>
         </li>
       </ol>
     </section>
