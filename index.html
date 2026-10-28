@@ -251,6 +251,121 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
   .log .node { grid-column: 1; grid-row: 1 / span 2; }
   .log .what { grid-column: 2; }
 }
+
+/* ===== v2: navegação e páginas ===== */
+.nav a.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+.hero.compact .inner { padding-block: 3rem 2.5rem; }
+.page-hero { padding: 2rem 2.25rem; display: flex; flex-direction: column; gap: 1rem; }
+.page-hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips a, .chips button {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+  color: var(--ink); padding: 0.45rem 0.75rem; border: 1px solid var(--line-strong); background: rgba(70,227,238,0.04);
+  cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.chips a:hover, .chips button:hover { background: rgba(70,227,238,0.15); color: var(--cyan); }
+.chips button[aria-pressed="true"] { background: var(--cyan); color: #04121a; border-color: var(--cyan); }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; align-self: flex-start; font-family: var(--mono); font-size: 0.78rem;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: #04121a; background: var(--cyan);
+  padding: 0.7rem 1.1rem; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.btn:hover { background: #9ff6fb; }
+.btn.ghost { color: var(--cyan); background: transparent; border: 1px solid var(--cyan); clip-path: none; }
+.btn.ghost:hover { background: rgba(70,227,238,0.12); }
+
+/* Atalhos */
+.shortcuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: 1rem; }
+.shortcut { padding: 1.25rem 1.2rem; display: flex; flex-direction: column; gap: 0.45rem; text-decoration: none; color: var(--ink);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.shortcut:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+@media (prefers-reduced-motion: no-preference) { .shortcut:hover { transform: translateY(-2px); } }
+.shortcut .k { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; color: var(--cyan); text-transform: uppercase; }
+.shortcut h3 { font-size: 1.15rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.shortcut p { color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
+.shortcut .go { margin-top: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); }
+
+/* Estatísticas */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; }
+.stat { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.stat strong { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--cyan); font-variant-numeric: tabular-nums; }
+.stat span { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* Automações ativas */
+.auto { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.auto th, .auto td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.auto th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.auto td:first-child { font-family: var(--mono); font-size: 0.82rem; color: var(--cyan); white-space: nowrap; }
+.auto td:last-child { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.auto tr:last-child td { border-bottom: 0; }
+.auto-wrap { padding: 0.4rem 0.4rem; overflow-x: auto; }
+@media (max-width: 560px) { .auto td:last-child, .auto th:last-child { display: none; } .auto td:first-child { white-space: normal; } }
+
+/* Diário */
+.tag { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.12rem 0.45rem;
+  border: 1px solid var(--line-strong); color: var(--muted); margin-left: 0.5rem; vertical-align: 0.15em; white-space: nowrap; }
+.day { border: 1px solid var(--line); background: var(--panel); }
+.day + .day { margin-top: 0.9rem; }
+.day > summary { list-style: none; cursor: pointer; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+.day > summary::-webkit-details-marker { display: none; }
+.day > summary::before { content: "+"; font-family: var(--mono); color: var(--cyan); width: 1rem; }
+.day[open] > summary::before { content: "−"; }
+.day > summary h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.day > summary .count { margin-left: auto; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+.day .log { padding: 0.4rem 1.2rem 1.3rem; }
+.log.simple li { grid-template-columns: 1.5rem minmax(0, 1fr); }
+.log.simple li::before { left: calc(0.75rem - 1px); }
+.log li[hidden] { display: none; }
+.next-card { padding: 1.1rem 1.2rem; border: 1px dashed var(--amber); display: flex; flex-direction: column; gap: 0.2rem; }
+.next-card .label { color: var(--amber); }
+
+/* Aprender */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 1rem; }
+.steps li { padding: 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.steps .n { font-family: var(--display); font-size: 1.8rem; color: var(--cyan); line-height: 1; }
+.steps li.proximo { border-style: dashed; border-color: var(--amber); }
+.steps li.proximo .n { color: var(--amber); }
+.steps h3 { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.steps p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.steps .st { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); margin-top: auto; }
+.steps li.proximo .st { color: var(--amber); }
+.gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 0.8rem; margin: 0; }
+.gloss div { padding: 1rem 1.1rem; }
+.gloss dt { font-family: var(--display); font-weight: 600; font-size: 1.05rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.03em; }
+.gloss dd { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.93rem; line-height: 1.55; }
+.tips { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.8rem; counter-reset: tip; }
+.tips li { padding: 1rem 1.1rem 1rem 3.2rem; position: relative; }
+.tips li::before { counter-increment: tip; content: counter(tip, decimal-leading-zero); position: absolute; left: 1rem; top: 1rem;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--cyan); }
+.tips b { display: block; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.03em; }
+.tips span { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.compare > div { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.compare .bad { border-color: rgba(255,120,120,0.35); }
+.compare .good { border-color: var(--line-strong); }
+.compare code { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); white-space: pre-wrap; line-height: 1.55; }
+@media (max-width: 680px) { .compare { grid-template-columns: 1fr; } }
+
+/* Vídeos */
+.vgroup-intro { color: var(--muted); max-width: 46em; margin-top: -0.6rem; }
+.vmeta .who { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); letter-spacing: 0.04em; }
+.subhead { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+
+/* Ferramentas (herdado) */
+.tools-hero { grid-template-columns: 1fr; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pill { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.22rem 0.55rem; border: 1px solid; white-space: nowrap; }
+.pill.use { color: var(--cyan); border-color: var(--cyan); background: rgba(70,227,238,0.08); }
+.pill.learn { color: var(--amber); border-color: var(--amber); background: rgba(255,181,71,0.08); }
+.pill.explore { color: var(--muted); border-color: var(--dim); }
+.tools { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
+.tool { padding: 1.25rem 1.2rem 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; transition: border-color .25s ease, box-shadow .25s ease; }
+.tool:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+.tool-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.tool h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; min-width: 0; }
+.maker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--dim); }
+.tool p { color: var(--muted); font-size: 0.95rem; line-height: 1.55; flex: 1; }
+.tool .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; margin-top: 0.3rem; }
+.tool .links a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; overflow-wrap: anywhere; }
+.tool .links a.tut { color: var(--amber); }
+@media (max-width: 780px) { .page-hero { padding: 1.6rem 1.4rem; } }
 </style>
 </head>
 <body style="margin:0">
@@ -259,14 +374,13 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 
 <header class="topbar">
   <div class="inner">
-    <div class="brand"><i></i>RS<span>&nbsp;// Ricardo Santos</span></div>
-    <nav class="nav" aria-label="Secções">
-      <a href="#sobre">Sobre</a>
-      <a href="#interesses">Interesses</a>
-      <a href="#diario">Diário IA</a>
-      <a href="#videos">Vídeos</a>
-      <a href="ferramentas.html">Ferramentas IA</a>
-      <a href="tutoriais.html">Tutoriais</a>
+    <a class="brand" href="./" style="color:inherit;text-decoration:none"><i></i>RS<span>&nbsp;// Ricardo Santos</span></a>
+    <nav class="nav" aria-label="Páginas">
+      <a class="on" href="./" aria-current="page">Início</a>
+      <a href="diario.html">Diário</a>
+      <a href="aprender.html">Aprender IA</a>
+      <a href="videos.html">Vídeos</a>
+      <a href="ferramentas.html">Ferramentas</a>
     </nav>
   </div>
 </header>
@@ -280,6 +394,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         <p class="role">Técnico de Informática</p>
         <p class="intro">Sou de Tomar, gosto de tecnologia e estou a dar os primeiros passos na inteligência artificial.</p>
         <p class="prompt"><span>&gt;</span> a carregar módulo: inteligência artificial<span class="cursor" aria-hidden="true"></span></p>
+        <div class="chips"><a href="diario.html">Ver o diário</a><a href="aprender.html">Aprender IA</a><a href="videos.html">Vídeos</a></div>
       </div>
 
       <dl class="idcard" aria-label="Cartão de identificação">
@@ -302,8 +417,93 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 
 <main>
   <div class="inner">
+    <section id="explorar" aria-labelledby="explorar-t">
+      <div class="sec-head"><span class="idx">[01]</span><h2 id="explorar-t">Explorar</h2><span class="rule"></span></div>
+      <div class="shortcuts">
+        <a class="shortcut frame" href="diario.html"><span class="k">18 entradas</span><h3>Diário</h3><p>O que aprendi e construí com IA, dia a dia.</p><span class="go">Abrir →</span></a>
+        <a class="shortcut frame" href="aprender.html"><span class="k">Guia</span><h3>Aprender IA</h3><p>O meu percurso, um glossário simples e dicas para escrever bons prompts.</p><span class="go">Abrir →</span></a>
+        <a class="shortcut frame" href="videos.html"><span class="k">40 vídeos</span><h3>Vídeos</h3><p>Fundamentos, prompts, agentes, MCP, n8n e tutoriais por ferramenta.</p><span class="go">Abrir →</span></a>
+        <a class="shortcut frame" href="ferramentas.html"><span class="k">10 ferramentas</span><h3>Ferramentas</h3><p>As ferramentas de IA que uso, que estou a aprender e que quero explorar.</p><span class="go">Abrir →</span></a>
+      </div>
+      <div class="stats">
+        <div class="stat frame"><strong>18</strong><span>conquistas</span></div>
+        <div class="stat frame"><strong>9</strong><span>automações ativas</span></div>
+        <div class="stat frame"><strong>3</strong><span>dias de IA</span></div>
+        <div class="stat frame"><strong>40</strong><span>vídeos</span></div>
+      </div>
+    </section>
+
+    <section id="ultimas" aria-labelledby="ultimas-t">
+      <div class="sec-head"><span class="idx">[02]</span><h2 id="ultimas-t">Últimas conquistas</h2><span class="rule"></span></div>
+      <ol class="log">
+        <li data-tag="Site"><time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span><div class="what"><b>Site reorganizado<span class="tag">Site</span></b><p>Separei o diário numa página própria, criei a página Aprender IA e juntei mais de 40 vídeos organizados por tema e por ferramenta.</p></div></li>
+        <li data-tag="IA"><time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span><div class="what"><b>Menu semanal da família com IA<span class="tag">IA</span></b><p>Às quintas, a IA propõe o menu de sábado a sexta com as nossas regras e receitas da Bimby, faz a lista de compras e envia tudo com um Excel pronto a imprimir em A4.</p></div></li>
+        <li data-tag="Dia a dia"><time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span><div class="what"><b>Previsão para o futsal<span class="tag">Dia a dia</span></b><p>Às quartas ao meio-dia recebo a previsão para o jogo das 21h30, com aviso se for chover na ida ou na volta do pavilhão.</p></div></li>
+        <li data-tag="IA"><time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span><div class="what"><b>Resumo diário dos emails com IA<span class="tag">IA</span></b><p>Todos os dias às 21h, o n8n junta os emails do Gmail e do Hotmail e o Gemini escreve um resumo com o que precisa da minha atenção.</p></div></li>
+      </ol>
+      <a class="btn" href="diario.html">Ver o diário completo →</a>
+    </section>
+
+    <section id="automacoes" aria-labelledby="automacoes-t">
+      <div class="sec-head"><span class="idx">[03]</span><h2 id="automacoes-t">O que corre sozinho</h2><span class="rule"></span></div>
+      <div class="auto-wrap frame"><table class="auto">
+        <thead><tr><th>Quando</th><th>O quê</th><th>Com</th></tr></thead>
+        <tbody>
+          <tr><td>De hora a hora</td><td>Arrumar o Gmail e o Hotmail por pastas</td><td>n8n</td></tr>
+          <tr><td>Sempre que chega email</td><td>Regras do Outlook arrumam o Hotmail</td><td>Outlook</td></tr>
+          <tr><td>Todos os dias · 7h</td><td>Tempo em Tomar por email</td><td>IFTTT</td></tr>
+          <tr><td>Todos os dias · 17h</td><td>Backup dos fluxos para o GitHub</td><td>n8n</td></tr>
+          <tr><td>Todos os dias · 21h</td><td>Resumo dos emails feito por IA</td><td>n8n + Gemini</td></tr>
+          <tr><td>Todos os dias · 23h</td><td>Previsão para a corrida das 7h</td><td>n8n</td></tr>
+          <tr><td>Quartas · 12h</td><td>Previsão para o futsal das 21h30</td><td>n8n</td></tr>
+          <tr><td>Quintas · 17h</td><td>Menu semanal da família e lista de compras</td><td>n8n + Gemini</td></tr>
+          <tr><td>Se algo falhar</td><td>Alerta por email com o erro</td><td>n8n</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="videos" aria-labelledby="videos-t">
+      <div class="sec-head"><span class="idx">[04]</span><h2 id="videos-t">Vídeos em destaque</h2><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="HNBtdyMjxKU" href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener" aria-label="Ver: Inteligência Artificial explicada em 11 minutos">
+            <img src="https://i.ytimg.com/vi/HNBtdyMjxKU/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Inteligência Artificial explicada em 11 minutos</h3>
+            <span class="who">Bruno Picinini</span>
+            <a href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="deprLB_y6Ho" href="https://www.youtube.com/watch?v=deprLB_y6Ho" target="_blank" rel="noopener" aria-label="Ver: MCP: o &quot;USB&quot; das IAs">
+            <img src="https://i.ytimg.com/vi/deprLB_y6Ho/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>MCP: o &quot;USB&quot; das IAs</h3>
+            <span class="who">Código Fonte TV</span>
+            <a href="https://www.youtube.com/watch?v=deprLB_y6Ho" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="HZ2rbUGa1pk" href="https://www.youtube.com/watch?v=HZ2rbUGa1pk" target="_blank" rel="noopener" aria-label="Ver: Automação com IA no n8n para enviar a previsão do tempo">
+            <img src="https://i.ytimg.com/vi/HZ2rbUGa1pk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Automação com IA no n8n para enviar a previsão do tempo</h3>
+            <span class="who">Ronni Oliveira</span>
+            <a href="https://www.youtube.com/watch?v=HZ2rbUGa1pk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+      <a class="btn ghost" href="videos.html">Ver os 40 vídeos →</a>
+    </section>
+
     <section id="sobre" aria-labelledby="sobre-t">
-      <div class="sec-head"><span class="idx">[01]</span><h2 id="sobre-t">Sobre mim</h2><span class="rule"></span></div>
+      <div class="sec-head"><span class="idx">[05]</span><h2 id="sobre-t">Sobre mim</h2><span class="rule"></span></div>
       <div class="about frame">
         <div class="prose">
           <p>Trabalho como técnico de informática, com foco no apoio a utilizadores, na manutenção de equipamentos e na resolução de problemas técnicos.</p>
@@ -317,8 +517,8 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       </div>
     </section>
 
-    <section id="interesses" aria-labelledby="int-t">
-      <div class="sec-head"><span class="idx">[02]</span><h2 id="int-t">Interesses</h2><span class="rule"></span></div>
+    <section id="interesses" aria-labelledby="interesses-t">
+      <div class="sec-head"><span class="idx">[06]</span><h2 id="interesses-t">Interesses</h2><span class="rule"></span></div>
       <ul class="interests">
         <li class="frame">
           <span class="icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="7" y="7" width="10" height="10" rx="1"/><rect x="10" y="10" width="4" height="4"/><path d="M10 3v4M14 3v4M10 17v4M14 17v4M3 10h4M3 14h4M17 10h4M17 14h4"/></svg></span>
@@ -346,141 +546,13 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         </li>
       </ul>
     </section>
-
-    <section id="diario" aria-labelledby="dia-t">
-      <div class="sec-head"><span class="idx">[03]</span><h2 id="dia-t">Diário de IA</h2><span class="rule"></span></div>
-      <ol class="log">
-        <li>
-          <time class="when" datetime="2026-10-26">26.10.2026</time><span class="node"></span>
-          <div class="what"><b>Liguei a IA à minha conta Google</b><p>Usei um conector para ver e arrumar pastas no Google Drive sem abrir o Drive.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-26">26.10.2026</time><span class="node"></span>
-          <div class="what"><b>Criei este site</b><p>Página pessoal desenvolvida com apoio de IA.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-26">26.10.2026</time><span class="node"></span>
-          <div class="what"><b>Publiquei-o no GitHub Pages</b><p>Liguei o GitHub ao Claude, que passou a atualizar o site diretamente.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
-          <div class="what"><b>Criei a minha primeira automação</b><p>Com o IFTTT: todos os dias às 7h recebo um email com o tempo em Tomar.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
-          <div class="what"><b>Instalei o n8n e liguei-o ao Claude</b><p>n8n no meu PC, ligado ao Claude por MCP. Pelo caminho resolvi um token inválido e uma ponte em falta.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
-          <div class="what"><b>Primeiro fluxo no n8n</b><p>Vai buscar o tempo de Tomar à Open-Meteo, cria uma mensagem em português e envia-a por email pelo Gmail.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
-          <div class="what"><b>Backup automático dos fluxos</b><p>Todos os dias às 17h, o n8n guarda uma cópia de todos os fluxos num repositório privado do GitHub e avisa-me por email.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-27">27.10.2026</time><span class="node"></span>
-          <div class="what"><b>Previsão para a corrida das 7h</b><p>Todas as noites às 23h, o n8n analisa a previsão hora a hora para Tomar (temperatura, humidade, vento e chuva), diz-me se está bom para correr e o que vestir.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Gmail arrumado por pastas</b><p>Criei etiquetas por tema e um fluxo no n8n que, de hora a hora, etiqueta e arquiva os emails novos. A caixa de entrada ficou a zero, sem apagar nada.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Liguei o Hotmail ao n8n</b><p>Registei uma app no Microsoft Entra (Azure) e liguei o n8n ao Microsoft Graph. Pelo caminho resolvi um erro "invalid_client" e o limite de pedidos da Microsoft.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Hotmail: de 5824 emails para 400</b><p>Analisei os remetentes, simulei as regras antes de mexer em nada e depois o n8n moveu cerca de 5400 emails para pastas. Reorganizei também as pastas antigas.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Regras no próprio Outlook</b><p>Criei 13 regras diretamente no Outlook, através do Graph, para os emails novos serem arrumados nos servidores da Microsoft, mesmo com o PC desligado.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Alertas quando algo falha</b><p>Se um fluxo automático do n8n der erro, recebo um email com o fluxo, o passo e o erro. Há também um aviso antes de o segredo do Azure expirar.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Gmail ligado de forma permanente</b><p>Passei a app da Google para produção e criei uma página de privacidade no site, para a ligação do n8n ao Gmail deixar de expirar a cada 7 dias.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Resumo diário dos emails com IA</b><p>Todos os dias às 21h, o n8n junta os emails do Gmail e do Hotmail e o Gemini escreve um resumo com o que precisa da minha atenção.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Previsão para o futsal</b><p>Às quartas ao meio-dia recebo a previsão para o jogo das 21h30, com aviso se for chover na ida ou na volta do pavilhão.</p></div>
-        </li>
-        <li>
-          <time class="when" datetime="2026-10-28">28.10.2026</time><span class="node"></span>
-          <div class="what"><b>Menu semanal da família com IA</b><p>Às quintas, a IA propõe o menu de sábado a sexta com as nossas regras e receitas da Bimby, faz a lista de compras e envia tudo com um Excel pronto a imprimir em A4.</p></div>
-        </li>
-        <li class="next">
-          <span class="when">A seguir</span><span class="node"></span>
-          <div class="what"><b>Notificações no WhatsApp e agentes de IA</b><p>Receber os fluxos no telemóvel e pôr a IA a decidir dentro do n8n.</p></div>
-        </li>
-      </ol>
-    </section>
-
-    <section id="videos" aria-labelledby="vid-t">
-      <div class="sec-head"><span class="idx">[04]</span><h2 id="vid-t">Vídeos de IA</h2><span class="rule"></span></div>
-      <div class="videos">
-        <article class="video frame">
-          <a class="screen" data-yt="HNBtdyMjxKU" href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener" aria-label="Ver: Inteligência Artificial explicada em 11 minutos">
-            <img src="https://i.ytimg.com/vi/HNBtdyMjxKU/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
-            <span class="lang">PT</span><span class="play"></span>
-          </a>
-          <div class="vmeta">
-            <h3>Inteligência Artificial explicada em 11 minutos</h3>
-            <p>Uma visão geral rápida do que é a IA e de como funciona.</p>
-            <a href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
-          </div>
-        </article>
-        <article class="video frame">
-          <a class="screen" data-yt="_7j-fTium14" href="https://www.youtube.com/watch?v=_7j-fTium14" target="_blank" rel="noopener" aria-label="Ver: Introdução à Inteligência Artificial">
-            <img src="https://i.ytimg.com/vi/_7j-fTium14/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
-            <span class="lang">PT</span><span class="play"></span>
-          </a>
-          <div class="vmeta">
-            <h3>Introdução à Inteligência Artificial: o que é?</h3>
-            <p>Os conceitos básicos, explicados para quem está a começar.</p>
-            <a href="https://www.youtube.com/watch?v=_7j-fTium14" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
-          </div>
-        </article>
-        <article class="video frame">
-          <a class="screen" data-yt="aircAruvnKk" href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noopener" aria-label="Ver: But what is a neural network?">
-            <img src="https://i.ytimg.com/vi/aircAruvnKk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
-            <span class="lang">EN · legendas</span><span class="play"></span>
-          </a>
-          <div class="vmeta">
-            <h3>But what is a neural network? (3Blue1Brown)</h3>
-            <p>Como funciona uma rede neural, com animações muito claras.</p>
-            <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
-          </div>
-        </article>
-        <article class="video frame">
-          <a class="screen" data-yt="HR37zOPFJco" href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener" aria-label="Ver: n8n Beginner Course, Introduction to Automation">
-            <img src="https://i.ytimg.com/vi/HR37zOPFJco/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
-            <span class="lang">EN · legendas</span><span class="play"></span>
-          </a>
-          <div class="vmeta">
-            <h3>n8n Beginner Course: Introduction to Automation</h3>
-            <p>Primeira aula do curso de n8n para principiantes.</p>
-            <a href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
-          </div>
-        </article>
-      </div>
-    </section>
   </div>
 </main>
 
 <footer>
   <div class="inner">
     <span class="label">Ricardo Santos · Tomar · v2026.10 · Visitas: <b data-visits style="color:var(--cyan);font-weight:500">—</b></span>
-    <a href="https://github.com/ricardosantos1984">github.com/ricardosantos1984</a>
+    <span class="label"><a href="privacidade.html">Privacidade</a> · <a href="https://github.com/ricardosantos1984">GitHub</a></span>
   </div>
 </footer>
 

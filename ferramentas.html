@@ -252,7 +252,103 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
   .log .what { grid-column: 2; }
 }
 
-/* Páginas extra */
+/* ===== v2: navegação e páginas ===== */
+.nav a.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+.hero.compact .inner { padding-block: 3rem 2.5rem; }
+.page-hero { padding: 2rem 2.25rem; display: flex; flex-direction: column; gap: 1rem; }
+.page-hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips a, .chips button {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+  color: var(--ink); padding: 0.45rem 0.75rem; border: 1px solid var(--line-strong); background: rgba(70,227,238,0.04);
+  cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.chips a:hover, .chips button:hover { background: rgba(70,227,238,0.15); color: var(--cyan); }
+.chips button[aria-pressed="true"] { background: var(--cyan); color: #04121a; border-color: var(--cyan); }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; align-self: flex-start; font-family: var(--mono); font-size: 0.78rem;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: #04121a; background: var(--cyan);
+  padding: 0.7rem 1.1rem; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.btn:hover { background: #9ff6fb; }
+.btn.ghost { color: var(--cyan); background: transparent; border: 1px solid var(--cyan); clip-path: none; }
+.btn.ghost:hover { background: rgba(70,227,238,0.12); }
+
+/* Atalhos */
+.shortcuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: 1rem; }
+.shortcut { padding: 1.25rem 1.2rem; display: flex; flex-direction: column; gap: 0.45rem; text-decoration: none; color: var(--ink);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.shortcut:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+@media (prefers-reduced-motion: no-preference) { .shortcut:hover { transform: translateY(-2px); } }
+.shortcut .k { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; color: var(--cyan); text-transform: uppercase; }
+.shortcut h3 { font-size: 1.15rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.shortcut p { color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
+.shortcut .go { margin-top: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); }
+
+/* Estatísticas */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; }
+.stat { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.stat strong { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--cyan); font-variant-numeric: tabular-nums; }
+.stat span { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* Automações ativas */
+.auto { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.auto th, .auto td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.auto th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.auto td:first-child { font-family: var(--mono); font-size: 0.82rem; color: var(--cyan); white-space: nowrap; }
+.auto td:last-child { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.auto tr:last-child td { border-bottom: 0; }
+.auto-wrap { padding: 0.4rem 0.4rem; overflow-x: auto; }
+@media (max-width: 560px) { .auto td:last-child, .auto th:last-child { display: none; } .auto td:first-child { white-space: normal; } }
+
+/* Diário */
+.tag { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.12rem 0.45rem;
+  border: 1px solid var(--line-strong); color: var(--muted); margin-left: 0.5rem; vertical-align: 0.15em; white-space: nowrap; }
+.day { border: 1px solid var(--line); background: var(--panel); }
+.day + .day { margin-top: 0.9rem; }
+.day > summary { list-style: none; cursor: pointer; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+.day > summary::-webkit-details-marker { display: none; }
+.day > summary::before { content: "+"; font-family: var(--mono); color: var(--cyan); width: 1rem; }
+.day[open] > summary::before { content: "−"; }
+.day > summary h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.day > summary .count { margin-left: auto; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+.day .log { padding: 0.4rem 1.2rem 1.3rem; }
+.log.simple li { grid-template-columns: 1.5rem minmax(0, 1fr); }
+.log.simple li::before { left: calc(0.75rem - 1px); }
+.log li[hidden] { display: none; }
+.next-card { padding: 1.1rem 1.2rem; border: 1px dashed var(--amber); display: flex; flex-direction: column; gap: 0.2rem; }
+.next-card .label { color: var(--amber); }
+
+/* Aprender */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 1rem; }
+.steps li { padding: 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.steps .n { font-family: var(--display); font-size: 1.8rem; color: var(--cyan); line-height: 1; }
+.steps li.proximo { border-style: dashed; border-color: var(--amber); }
+.steps li.proximo .n { color: var(--amber); }
+.steps h3 { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.steps p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.steps .st { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); margin-top: auto; }
+.steps li.proximo .st { color: var(--amber); }
+.gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 0.8rem; margin: 0; }
+.gloss div { padding: 1rem 1.1rem; }
+.gloss dt { font-family: var(--display); font-weight: 600; font-size: 1.05rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.03em; }
+.gloss dd { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.93rem; line-height: 1.55; }
+.tips { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.8rem; counter-reset: tip; }
+.tips li { padding: 1rem 1.1rem 1rem 3.2rem; position: relative; }
+.tips li::before { counter-increment: tip; content: counter(tip, decimal-leading-zero); position: absolute; left: 1rem; top: 1rem;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--cyan); }
+.tips b { display: block; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.03em; }
+.tips span { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.compare > div { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.compare .bad { border-color: rgba(255,120,120,0.35); }
+.compare .good { border-color: var(--line-strong); }
+.compare code { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); white-space: pre-wrap; line-height: 1.55; }
+@media (max-width: 680px) { .compare { grid-template-columns: 1fr; } }
+
+/* Vídeos */
+.vgroup-intro { color: var(--muted); max-width: 46em; margin-top: -0.6rem; }
+.vmeta .who { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); letter-spacing: 0.04em; }
+.subhead { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+
+/* Ferramentas (herdado) */
 .tools-hero { grid-template-columns: 1fr; }
 .legend { display: flex; flex-wrap: wrap; gap: 0.5rem; }
 .pill { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.22rem 0.55rem; border: 1px solid; white-space: nowrap; }
@@ -269,11 +365,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 .tool .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; margin-top: 0.3rem; }
 .tool .links a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; overflow-wrap: anywhere; }
 .tool .links a.tut { color: var(--amber); }
-.nav a.on { color: var(--cyan); border-bottom-color: var(--cyan); }
-.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-.chips a { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
-  color: var(--ink); padding: 0.4rem 0.7rem; border: 1px solid var(--line-strong); background: rgba(70,227,238,0.04); transition: background .2s ease, color .2s ease; }
-.chips a:hover { background: rgba(70,227,238,0.15); color: var(--cyan); }
+@media (max-width: 780px) { .page-hero { padding: 1.6rem 1.4rem; } }
 </style>
 </head>
 <body style="margin:0">
@@ -283,17 +375,17 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <header class="topbar">
   <div class="inner">
     <a class="brand" href="./" style="color:inherit;text-decoration:none"><i></i>RS<span>&nbsp;// Ricardo Santos</span></a>
-    <nav class="nav" aria-label="Secções">
+    <nav class="nav" aria-label="Páginas">
       <a href="./">Início</a>
-      <a href="./#diario">Diário IA</a>
-      <a href="./#videos">Vídeos</a>
-      <a class="on" href="ferramentas.html" aria-current="page">Ferramentas IA</a>
-      <a href="tutoriais.html">Tutoriais</a>
+      <a href="diario.html">Diário</a>
+      <a href="aprender.html">Aprender IA</a>
+      <a href="videos.html">Vídeos</a>
+      <a class="on" href="ferramentas.html" aria-current="page">Ferramentas</a>
     </nav>
   </div>
 </header>
 
-<div class="hero">
+<div class="hero compact">
   <div class="inner">
     <div class="console frame tools-hero">
       <div class="hero-text">
@@ -319,25 +411,25 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Claude</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Anthropic</span>
           <p>O assistente com que estou a aprender IA. Criou este site e liga-se ao meu email, à Drive e ao GitHub.</p>
-          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="tutoriais.html#claude">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="videos.html#claude">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>ChatGPT</h3><span class="pill use">Em uso</span></div>
           <span class="maker">OpenAI</span>
           <p>Assistente de conversa para escrever, resumir e responder a perguntas.</p>
-          <div class="links"><a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com ↗</a><a class="tut" href="tutoriais.html#chatgpt">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://chatgpt.com" target="_blank" rel="noopener">chatgpt.com ↗</a><a class="tut" href="videos.html#chatgpt">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
-          <div class="tool-top"><h3>Gemini</h3><span class="pill explore">A explorar</span></div>
+          <div class="tool-top"><h3>Gemini</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Google</span>
-          <p>O assistente de IA da Google, integrado no Gmail, na Drive e no Android.</p>
-          <div class="links"><a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com ↗</a><a class="tut" href="tutoriais.html#gemini">Ver tutoriais ▶</a></div>
+          <p>A IA da Google. Uso a API gratuita dentro do n8n para resumir os emails do dia e propor o menu semanal da família.</p>
+          <div class="links"><a href="https://gemini.google.com" target="_blank" rel="noopener">gemini.google.com ↗</a><a class="tut" href="videos.html#gemini">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>Copilot</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Microsoft</span>
           <p>O assistente da Microsoft, presente no Windows, no Edge e no Office.</p>
-          <div class="links"><a href="https://copilot.microsoft.com" target="_blank" rel="noopener">copilot.microsoft.com ↗</a><a class="tut" href="tutoriais.html#copilot">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://copilot.microsoft.com" target="_blank" rel="noopener">copilot.microsoft.com ↗</a><a class="tut" href="videos.html#copilot">Ver vídeos ▶</a></div>
         </li>
       </ul>
     </section>
@@ -349,13 +441,13 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Perplexity</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Perplexity AI</span>
           <p>Pesquisa na internet com respostas resumidas e as fontes indicadas.</p>
-          <div class="links"><a href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai ↗</a><a class="tut" href="tutoriais.html#perplexity">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://www.perplexity.ai" target="_blank" rel="noopener">perplexity.ai ↗</a><a class="tut" href="videos.html#perplexity">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>NotebookLM</h3><span class="pill explore">A explorar</span></div>
           <span class="maker">Google</span>
           <p>Carrego documentos e a IA resume-os e responde a perguntas sobre eles.</p>
-          <div class="links"><a href="https://notebooklm.google.com" target="_blank" rel="noopener">notebooklm.google.com ↗</a><a class="tut" href="tutoriais.html#notebooklm">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://notebooklm.google.com" target="_blank" rel="noopener">notebooklm.google.com ↗</a><a class="tut" href="videos.html#notebooklm">Ver vídeos ▶</a></div>
         </li>
       </ul>
     </section>
@@ -367,19 +459,19 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>Conectores do Claude</h3><span class="pill use">Em uso</span></div>
           <span class="maker">Gmail · Google Drive · Calendar</span>
           <p>Ligam a IA às minhas apps, para ler emails, procurar ficheiros e gerir a agenda.</p>
-          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="tutoriais.html#claude">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://claude.ai" target="_blank" rel="noopener">claude.ai ↗</a><a class="tut" href="videos.html#mcp">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>IFTTT</h3><span class="pill use">Em uso</span></div>
           <span class="maker">IFTTT</span>
           <p>Automações do tipo "se acontece isto, faz aquilo". Uso-o para receber o tempo em Tomar todas as manhãs.</p>
-          <div class="links"><a href="https://ifttt.com" target="_blank" rel="noopener">ifttt.com ↗</a><a class="tut" href="tutoriais.html#ifttt">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://ifttt.com" target="_blank" rel="noopener">ifttt.com ↗</a><a class="tut" href="videos.html#ifttt">Ver vídeos ▶</a></div>
         </li>
         <li class="tool frame">
           <div class="tool-top"><h3>n8n</h3><span class="pill use">Em uso</span></div>
           <span class="maker">n8n · instalado no meu PC</span>
           <p>Fluxos de automação com vários passos, montados em blocos. Está ligado ao Claude, que cria e testa fluxos por mim.</p>
-          <div class="links"><a href="https://n8n.io" target="_blank" rel="noopener">n8n.io ↗</a><a class="tut" href="tutoriais.html#n8n">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://n8n.io" target="_blank" rel="noopener">n8n.io ↗</a><a class="tut" href="videos.html#n8n">Ver vídeos ▶</a></div>
         </li>
       </ul>
     </section>
@@ -391,7 +483,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <div class="tool-top"><h3>GitHub</h3><span class="pill use">Em uso</span></div>
           <span class="maker">GitHub</span>
           <p>Alojamento gratuito deste site, que o Claude atualiza diretamente. Guarda também os backups diários dos meus fluxos n8n.</p>
-          <div class="links"><a href="https://github.com/ricardosantos1984" target="_blank" rel="noopener">github.com/ricardosantos1984 ↗</a><a class="tut" href="tutoriais.html#github-pages">Ver tutoriais ▶</a></div>
+          <div class="links"><a href="https://github.com/ricardosantos1984" target="_blank" rel="noopener">github.com/ricardosantos1984 ↗</a><a class="tut" href="videos.html#github-pages">Ver vídeos ▶</a></div>
         </li>
       </ul>
     </section>
@@ -402,7 +494,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <footer>
   <div class="inner">
     <span class="label">Ricardo Santos · Tomar · v2026.10 · Visitas: <b data-visits style="color:var(--cyan);font-weight:500">—</b></span>
-    <a href="https://github.com/ricardosantos1984">github.com/ricardosantos1984</a>
+    <span class="label"><a href="privacidade.html">Privacidade</a> · <a href="https://github.com/ricardosantos1984">GitHub</a></span>
   </div>
 </footer>
 

@@ -1,0 +1,1092 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vídeos · Ricardo Santos</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single dark HUD (heads-up display). Grid floor in the background, a framed console hero with an ID panel,
+   then modules (Sobre, Interesses, Diário) laid out like system panels. Deliberately dark-only. */
+:root {
+  color-scheme: dark;
+  --bg: #060b12;
+  --bg-2: #0a1320;
+  --panel: rgba(13, 26, 40, 0.72);
+  --panel-solid: #0d1a28;
+  --ink: #e4f3f7;
+  --muted: #8ba7b4;
+  --dim: #4f6877;
+  --line: rgba(110, 220, 235, 0.16);
+  --line-strong: rgba(110, 220, 235, 0.38);
+  --cyan: #46e3ee;
+  --cyan-glow: rgba(70, 227, 238, 0.35);
+  --amber: #ffb547;
+  --display: "Chakra Petch", "Segoe UI", system-ui, sans-serif;
+  --body: "Manrope", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--bg); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body {
+  background:
+    radial-gradient(60rem 30rem at 85% -5%, rgba(70, 227, 238, 0.12), transparent 60%),
+    radial-gradient(40rem 26rem at -10% 30%, rgba(255, 181, 71, 0.05), transparent 60%),
+    linear-gradient(var(--bg), var(--bg-2));
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  min-height: 100vh;
+  position: relative;
+}
+/* grid floor */
+#net { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; opacity: 0.9; }
+body::after {
+  content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 75%);
+  opacity: 0.55;
+}
+body::before {
+  content: ""; position: fixed; inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg);
+}
+.inner {
+  position: relative; z-index: 1;
+  max-width: 62rem; margin: 0 auto;
+  padding-left: max(20px, env(safe-area-inset-left, 0px));
+  padding-right: max(20px, env(safe-area-inset-right, 0px));
+}
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+p { margin: 0; }
+a { color: var(--cyan); text-underline-offset: 3px; }
+a:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+.mono { font-family: var(--mono); }
+.label {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--muted);
+}
+
+/* framed panel with corner brackets */
+.frame { position: relative; border: 1px solid var(--line); background: var(--panel); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.frame::before, .frame::after {
+  content: ""; position: absolute; width: 14px; height: 14px; border: 2px solid var(--cyan); pointer-events: none;
+}
+.frame::before { top: -2px; left: -2px; border-right: 0; border-bottom: 0; }
+.frame::after { bottom: -2px; right: -2px; border-left: 0; border-top: 0; }
+
+/* ---------- Top bar ---------- */
+.topbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: rgba(6, 11, 18, 0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.topbar .inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.brand { font-family: var(--display); font-weight: 700; letter-spacing: 0.08em; font-size: 0.95rem; display: flex; align-items: center; gap: 0.55rem; white-space: nowrap; }
+.brand i { width: 8px; height: 8px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); display: inline-block; transform: rotate(45deg); }
+.nav { display: flex; overflow-x: auto; scrollbar-width: none; }
+.nav a {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; white-space: nowrap; padding: 1rem 0.75rem;
+  border-bottom: 2px solid transparent;
+}
+.nav a:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+
+/* ---------- Hero ---------- */
+.hero .inner { padding-block: 4.5rem 4rem; }
+.console { padding: 2.5rem 2.25rem; display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); gap: 2.5rem; align-items: center; }
+.hero-text { display: flex; flex-direction: column; gap: 1.2rem; min-width: 0; }
+.sys { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em; color: var(--muted); display: flex; flex-wrap: wrap; gap: 0.4rem 1.2rem; }
+.sys b { color: var(--cyan); font-weight: 500; }
+h1 {
+  font-size: clamp(2.8rem, 8vw, 5rem); font-weight: 700; line-height: 0.95; letter-spacing: -0.01em;
+  text-transform: uppercase;
+  background: linear-gradient(100deg, #ffffff 0%, #c9f7fa 45%, var(--cyan) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  text-shadow: 0 0 40px rgba(70, 227, 238, 0.15);
+}
+.role { font-family: var(--display); font-size: clamp(1.15rem, 2.4vw, 1.45rem); font-weight: 600; color: var(--cyan); letter-spacing: 0.04em; text-transform: uppercase; }
+.intro { color: var(--ink); opacity: 0.86; max-width: 30em; font-size: 1.1rem; }
+.prompt { font-family: var(--mono); font-size: 0.9rem; color: var(--muted); }
+.prompt span { color: var(--cyan); }
+.cursor { display: inline-block; width: 0.55em; height: 1.05em; background: var(--cyan); vertical-align: -0.15em; margin-left: 0.15em; }
+@media (prefers-reduced-motion: no-preference) { .cursor { animation: blink 1.1s steps(1) infinite; } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ID panel */
+.idcard {
+  justify-self: end; width: 100%; max-width: 20rem;
+  border: 1px solid var(--line-strong); background: linear-gradient(160deg, rgba(70,227,238,0.10), rgba(13,26,40,0.9) 55%);
+  padding: 1.1rem 1.15rem 1rem; font-family: var(--mono); font-size: 0.8rem;
+  display: grid; grid-template-columns: auto 1fr; gap: 0.4rem 1rem;
+  position: relative; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(70,227,238,0.05), 0 20px 50px -20px rgba(70,227,238,0.35);
+}
+.idcard .head {
+  grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 1rem;
+  padding-bottom: 0.55rem; margin-bottom: 0.25rem; border-bottom: 1px dashed var(--line-strong);
+  font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--cyan);
+}
+.idcard dt { color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.66rem; padding-top: 0.2rem; }
+.idcard dd { margin: 0; color: var(--ink); }
+.status { color: var(--amber); }
+.status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); margin-right: 0.45rem; vertical-align: 0.1em; }
+.meter { grid-column: 1 / -1; margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.meter .row { display: flex; justify-content: space-between; font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.bar { height: 6px; background: rgba(110,220,235,0.12); position: relative; overflow: hidden; }
+.bar i { position: absolute; inset: 0 auto 0 0; width: 100%; background: linear-gradient(90deg, var(--cyan), #9ff6fb); box-shadow: 0 0 10px var(--cyan); }
+.barcode {
+  grid-column: 1 / -1; height: 30px; margin-top: 0.6rem; opacity: 0.75;
+  background: repeating-linear-gradient(90deg,
+    var(--cyan) 0 2px, transparent 2px 4px, var(--cyan) 4px 5px, transparent 5px 8px,
+    var(--cyan) 8px 11px, transparent 11px 12px, var(--cyan) 12px 13px, transparent 13px 17px,
+    var(--cyan) 17px 18px, transparent 18px 21px);
+}
+.serial { grid-column: 1 / -1; text-align: center; font-size: 0.64rem; letter-spacing: 0.34em; color: var(--dim); }
+.scan { position: absolute; left: 0; right: 0; height: 40%; top: -40%; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(70,227,238,0.10), transparent); }
+@media (prefers-reduced-motion: no-preference) { .scan { animation: scan 4.5s linear infinite; } }
+@keyframes scan { to { top: 100%; } }
+
+/* ---------- Modules ---------- */
+main .inner { padding-block: 1rem 4rem; display: flex; flex-direction: column; gap: 4.5rem; }
+section { scroll-margin-top: 4.5rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.sec-head { display: flex; align-items: baseline; gap: 1rem; flex-wrap: wrap; }
+.sec-head .idx { font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); letter-spacing: 0.1em; }
+.sec-head h2 { font-size: clamp(1.5rem, 3.2vw, 1.9rem); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+.sec-head .rule { flex: 1 1 4rem; height: 1px; background: linear-gradient(90deg, var(--line-strong), transparent); align-self: center; min-width: 2rem; }
+
+.about { padding: 2rem 2rem 1.75rem; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 2rem; }
+.prose { display: flex; flex-direction: column; gap: 1rem; max-width: 36em; }
+.prose p:first-child { font-size: 1.15rem; }
+.facts { display: flex; flex-direction: column; border-left: 1px solid var(--line); }
+.facts div { padding: 0.6rem 0 0.6rem 1.25rem; display: flex; flex-direction: column; gap: 0.1rem; }
+.facts div + div { border-top: 1px solid var(--line); }
+.facts strong { font-family: var(--display); font-weight: 600; font-size: 1.15rem; letter-spacing: 0.02em; }
+
+.interests { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr)); gap: 1rem; }
+.interests li {
+  padding: 1.25rem 1.2rem; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.25rem 1rem; align-items: start;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+.interests li:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+@media (prefers-reduced-motion: no-preference) { .interests li:hover { transform: translateY(-2px); } }
+.icon { grid-row: span 2; width: 2.6rem; height: 2.6rem; display: grid; place-items: center; color: var(--cyan);
+  border: 1px solid var(--line-strong); background: rgba(70,227,238,0.06); clip-path: polygon(25% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%); }
+.icon svg { width: 1.3rem; height: 1.3rem; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.interests h3 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; }
+.interests p { color: var(--muted); font-size: 0.94rem; line-height: 1.5; }
+
+.log { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.log li { display: grid; grid-template-columns: 7rem 1.5rem minmax(0, 1fr); gap: 0 1rem; position: relative; padding-bottom: 1.6rem; }
+.log li::before { content: ""; position: absolute; left: calc(7rem + 1rem + 0.75rem - 1px); top: 1rem; bottom: 0; width: 2px;
+  background: linear-gradient(var(--cyan), rgba(70,227,238,0.15)); }
+.log li:last-child { padding-bottom: 0; }
+.log li:last-child::before { display: none; }
+.log .when { font-family: var(--mono); font-size: 0.75rem; color: var(--muted); letter-spacing: 0.04em; padding-top: 0.22rem; font-variant-numeric: tabular-nums; }
+.node { width: 12px; height: 12px; margin: 0.45rem auto 0; background: var(--cyan); transform: rotate(45deg); box-shadow: 0 0 12px var(--cyan); position: relative; z-index: 1; }
+.log .what { display: flex; flex-direction: column; gap: 0.15rem; }
+.log b { font-weight: 600; }
+.log .what p { color: var(--muted); font-size: 0.97rem; }
+.log li.next .node { background: transparent; border: 1.5px dashed var(--amber); box-shadow: none; }
+.log li.next .when { color: var(--amber); }
+.log li.next b { color: var(--muted); }
+
+/* Videos */
+.videos { display: grid; grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); gap: 1.25rem; }
+.video { display: flex; flex-direction: column; min-width: 0; }
+.screen {
+  position: relative; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden;
+  background:
+    linear-gradient(var(--line) 1px, transparent 1px) 0 0 / 24px 24px,
+    linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0 / 24px 24px,
+    radial-gradient(circle at 50% 50%, rgba(70,227,238,0.18), var(--panel-solid) 70%);
+  border-bottom: 1px solid var(--line);
+  display: block; color: var(--ink); text-decoration: none; cursor: pointer;
+}
+.screen img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity .25s ease; }
+.screen:hover img { opacity: 1; }
+.screen iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.play {
+  position: absolute; left: 50%; top: 50%; width: 4rem; height: 4rem; margin: -2rem 0 0 -2rem;
+  display: grid; place-items: center; border: 1px solid var(--cyan); background: rgba(6,11,18,0.7);
+  clip-path: polygon(25% 0, 100% 0, 100% 75%, 75% 100%, 0 100%, 0 25%);
+  box-shadow: 0 0 20px var(--cyan-glow); transition: background .2s ease;
+}
+.play::before { content: ""; border-left: 16px solid var(--cyan); border-top: 10px solid transparent; border-bottom: 10px solid transparent; margin-left: 4px; }
+.screen:hover .play { background: rgba(70,227,238,0.18); }
+.screen:focus-visible { outline: 2px solid var(--cyan); outline-offset: -2px; }
+.lang { position: absolute; top: 0.6rem; left: 0.6rem; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.2rem 0.5rem; background: rgba(6,11,18,0.8); border: 1px solid var(--line-strong); color: var(--cyan); }
+.vmeta { padding: 1rem 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.vmeta h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.02em; line-height: 1.3; }
+.vmeta p { color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
+.vmeta a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.06em; margin-top: 0.2rem; }
+
+footer { position: relative; z-index: 1; border-top: 1px solid var(--line); background: rgba(6,11,18,0.7); }
+footer .inner { padding-block: 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.75rem; }
+footer a { font-family: var(--mono); font-size: 0.8rem; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 780px) {
+  .console { grid-template-columns: 1fr; padding: 1.75rem 1.4rem; gap: 2rem; }
+  .idcard { justify-self: start; }
+  .about { grid-template-columns: 1fr; padding: 1.5rem 1.4rem; }
+  .facts { border-left: 0; border-top: 1px solid var(--line); }
+  .facts div { padding-left: 0; }
+  .hero .inner { padding-block: 2.5rem 2.5rem; }
+  main .inner { gap: 3.25rem; }
+  .topbar .brand span { display: none; }
+}
+@media (max-width: 480px) {
+  .log li { grid-template-columns: 1.5rem minmax(0, 1fr); }
+  .log li::before { left: calc(0.75rem - 1px); }
+  .log .when { grid-column: 2; grid-row: 1; padding-top: 0; }
+  .log .node { grid-column: 1; grid-row: 1 / span 2; }
+  .log .what { grid-column: 2; }
+}
+
+/* ===== v2: navegação e páginas ===== */
+.nav a.on { color: var(--cyan); border-bottom-color: var(--cyan); }
+.hero.compact .inner { padding-block: 3rem 2.5rem; }
+.page-hero { padding: 2rem 2.25rem; display: flex; flex-direction: column; gap: 1rem; }
+.page-hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.chips a, .chips button {
+  font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none;
+  color: var(--ink); padding: 0.45rem 0.75rem; border: 1px solid var(--line-strong); background: rgba(70,227,238,0.04);
+  cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+.chips a:hover, .chips button:hover { background: rgba(70,227,238,0.15); color: var(--cyan); }
+.chips button[aria-pressed="true"] { background: var(--cyan); color: #04121a; border-color: var(--cyan); }
+.btn { display: inline-flex; align-items: center; gap: 0.5rem; align-self: flex-start; font-family: var(--mono); font-size: 0.78rem;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; color: #04121a; background: var(--cyan);
+  padding: 0.7rem 1.1rem; clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.btn:hover { background: #9ff6fb; }
+.btn.ghost { color: var(--cyan); background: transparent; border: 1px solid var(--cyan); clip-path: none; }
+.btn.ghost:hover { background: rgba(70,227,238,0.12); }
+
+/* Atalhos */
+.shortcuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(13.5rem, 1fr)); gap: 1rem; }
+.shortcut { padding: 1.25rem 1.2rem; display: flex; flex-direction: column; gap: 0.45rem; text-decoration: none; color: var(--ink);
+  transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease; }
+.shortcut:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+@media (prefers-reduced-motion: no-preference) { .shortcut:hover { transform: translateY(-2px); } }
+.shortcut .k { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em; color: var(--cyan); text-transform: uppercase; }
+.shortcut h3 { font-size: 1.15rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.shortcut p { color: var(--muted); font-size: 0.93rem; line-height: 1.5; }
+.shortcut .go { margin-top: auto; font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); }
+
+/* Estatísticas */
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; }
+.stat { padding: 1rem 1.1rem; display: flex; flex-direction: column; gap: 0.15rem; }
+.stat strong { font-family: var(--display); font-size: 2rem; line-height: 1; color: var(--cyan); font-variant-numeric: tabular-nums; }
+.stat span { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+/* Automações ativas */
+.auto { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+.auto th, .auto td { text-align: left; padding: 0.7rem 0.9rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+.auto th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+.auto td:first-child { font-family: var(--mono); font-size: 0.82rem; color: var(--cyan); white-space: nowrap; }
+.auto td:last-child { color: var(--muted); font-size: 0.85rem; white-space: nowrap; }
+.auto tr:last-child td { border-bottom: 0; }
+.auto-wrap { padding: 0.4rem 0.4rem; overflow-x: auto; }
+@media (max-width: 560px) { .auto td:last-child, .auto th:last-child { display: none; } .auto td:first-child { white-space: normal; } }
+
+/* Diário */
+.tag { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.12rem 0.45rem;
+  border: 1px solid var(--line-strong); color: var(--muted); margin-left: 0.5rem; vertical-align: 0.15em; white-space: nowrap; }
+.day { border: 1px solid var(--line); background: var(--panel); }
+.day + .day { margin-top: 0.9rem; }
+.day > summary { list-style: none; cursor: pointer; padding: 1rem 1.2rem; display: flex; align-items: center; gap: 1rem; }
+.day > summary::-webkit-details-marker { display: none; }
+.day > summary::before { content: "+"; font-family: var(--mono); color: var(--cyan); width: 1rem; }
+.day[open] > summary::before { content: "−"; }
+.day > summary h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.day > summary .count { margin-left: auto; font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; }
+.day .log { padding: 0.4rem 1.2rem 1.3rem; }
+.log.simple li { grid-template-columns: 1.5rem minmax(0, 1fr); }
+.log.simple li::before { left: calc(0.75rem - 1px); }
+.log li[hidden] { display: none; }
+.next-card { padding: 1.1rem 1.2rem; border: 1px dashed var(--amber); display: flex; flex-direction: column; gap: 0.2rem; }
+.next-card .label { color: var(--amber); }
+
+/* Aprender */
+.steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: 1rem; }
+.steps li { padding: 1.1rem 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.steps .n { font-family: var(--display); font-size: 1.8rem; color: var(--cyan); line-height: 1; }
+.steps li.proximo { border-style: dashed; border-color: var(--amber); }
+.steps li.proximo .n { color: var(--amber); }
+.steps h3 { font-size: 1rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+.steps p { color: var(--muted); font-size: 0.9rem; line-height: 1.5; }
+.steps .st { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cyan); margin-top: auto; }
+.steps li.proximo .st { color: var(--amber); }
+.gloss { display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 0.8rem; margin: 0; }
+.gloss div { padding: 1rem 1.1rem; }
+.gloss dt { font-family: var(--display); font-weight: 600; font-size: 1.05rem; color: var(--cyan); text-transform: uppercase; letter-spacing: 0.03em; }
+.gloss dd { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.93rem; line-height: 1.55; }
+.tips { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 0.8rem; counter-reset: tip; }
+.tips li { padding: 1rem 1.1rem 1rem 3.2rem; position: relative; }
+.tips li::before { counter-increment: tip; content: counter(tip, decimal-leading-zero); position: absolute; left: 1rem; top: 1rem;
+  font-family: var(--mono); font-size: 0.8rem; color: var(--cyan); }
+.tips b { display: block; font-family: var(--display); text-transform: uppercase; letter-spacing: 0.03em; }
+.tips span { color: var(--muted); font-size: 0.92rem; line-height: 1.5; }
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.compare > div { padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.compare .bad { border-color: rgba(255,120,120,0.35); }
+.compare .good { border-color: var(--line-strong); }
+.compare code { font-family: var(--mono); font-size: 0.85rem; color: var(--ink); white-space: pre-wrap; line-height: 1.55; }
+@media (max-width: 680px) { .compare { grid-template-columns: 1fr; } }
+
+/* Vídeos */
+.vgroup-intro { color: var(--muted); max-width: 46em; margin-top: -0.6rem; }
+.vmeta .who { font-family: var(--mono); font-size: 0.72rem; color: var(--dim); letter-spacing: 0.04em; }
+.subhead { font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber); }
+
+/* Ferramentas (herdado) */
+.tools-hero { grid-template-columns: 1fr; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.pill { font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 0.22rem 0.55rem; border: 1px solid; white-space: nowrap; }
+.pill.use { color: var(--cyan); border-color: var(--cyan); background: rgba(70,227,238,0.08); }
+.pill.learn { color: var(--amber); border-color: var(--amber); background: rgba(255,181,71,0.08); }
+.pill.explore { color: var(--muted); border-color: var(--dim); }
+.tools { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr)); gap: 1rem; }
+.tool { padding: 1.25rem 1.2rem 1.1rem; display: flex; flex-direction: column; gap: 0.4rem; min-width: 0; transition: border-color .25s ease, box-shadow .25s ease; }
+.tool:hover { border-color: var(--line-strong); box-shadow: 0 0 24px -6px var(--cyan-glow); }
+.tool-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.tool h3 { font-size: 1.2rem; font-weight: 600; letter-spacing: 0.03em; text-transform: uppercase; min-width: 0; }
+.maker { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.06em; color: var(--dim); }
+.tool p { color: var(--muted); font-size: 0.95rem; line-height: 1.55; flex: 1; }
+.tool .links { display: flex; flex-wrap: wrap; gap: 0.4rem 1.1rem; margin-top: 0.3rem; }
+.tool .links a { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.04em; overflow-wrap: anywhere; }
+.tool .links a.tut { color: var(--amber); }
+@media (max-width: 780px) { .page-hero { padding: 1.6rem 1.4rem; } }
+</style>
+</head>
+<body style="margin:0">
+
+<canvas id="net" aria-hidden="true"></canvas>
+
+<header class="topbar">
+  <div class="inner">
+    <a class="brand" href="./" style="color:inherit;text-decoration:none"><i></i>RS<span>&nbsp;// Ricardo Santos</span></a>
+    <nav class="nav" aria-label="Páginas">
+      <a href="./">Início</a>
+      <a href="diario.html">Diário</a>
+      <a href="aprender.html">Aprender IA</a>
+      <a class="on" href="videos.html" aria-current="page">Vídeos</a>
+      <a href="ferramentas.html">Ferramentas</a>
+    </nav>
+  </div>
+</header>
+
+<div class="hero compact">
+  <div class="inner">
+    <div class="page-hero frame">
+      <div class="sys"><span>MOD <b>vídeos</b></span><span>VÍDEOS <b>40</b></span><span>TEMAS <b>6</b></span><span>FERRAMENTAS <b>9</b></span></div>
+      <h1>Vídeos de IA</h1>
+      <p class="intro">Vídeos para aprender IA, quase todos em português. Escolhe um tema ou uma ferramenta para saltar diretamente para os vídeos.</p>
+      <span class="subhead">Por tema</span>
+      <nav class="chips" aria-label="Temas">
+        <a href="#fundamentos">Fundamentos da IA</a>
+        <a href="#prompts">Escrever bons prompts</a>
+        <a href="#agentes">Agentes de IA</a>
+        <a href="#mcp">MCP: ligar a IA às apps</a>
+        <a href="#automacao">Automação com n8n</a>
+        <a href="#dia-a-dia">IA no dia a dia</a>
+      </nav>
+      <span class="subhead">Por ferramenta</span>
+      <nav class="chips" aria-label="Ferramentas">
+        <a href="#claude">Claude</a>
+        <a href="#chatgpt">ChatGPT</a>
+        <a href="#gemini">Gemini</a>
+        <a href="#copilot">Copilot</a>
+        <a href="#perplexity">Perplexity</a>
+        <a href="#notebooklm">NotebookLM</a>
+        <a href="#ifttt">IFTTT</a>
+        <a href="#n8n">n8n</a>
+        <a href="#github-pages">GitHub Pages</a>
+      </nav>
+    </div>
+  </div>
+</div>
+<main>
+  <div class="inner">
+    <section id="fundamentos" aria-labelledby="fundamentos-t">
+      <div class="sec-head"><span class="idx">[01]</span><h2 id="fundamentos-t">Fundamentos da IA</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">O que é a IA, como funcionam os modelos de linguagem (LLM) e as redes neurais.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="HNBtdyMjxKU" href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener" aria-label="Ver: Inteligência Artificial explicada em 11 minutos">
+            <img src="https://i.ytimg.com/vi/HNBtdyMjxKU/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Inteligência Artificial explicada em 11 minutos</h3>
+            <span class="who">Bruno Picinini</span>
+            <a href="https://www.youtube.com/watch?v=HNBtdyMjxKU" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="_7j-fTium14" href="https://www.youtube.com/watch?v=_7j-fTium14" target="_blank" rel="noopener" aria-label="Ver: Introdução à Inteligência Artificial: o que é?">
+            <img src="https://i.ytimg.com/vi/_7j-fTium14/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Introdução à Inteligência Artificial: o que é?</h3>
+            <span class="who">Tu quer saber mais?</span>
+            <a href="https://www.youtube.com/watch?v=_7j-fTium14" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="dqTZCknuctk" href="https://www.youtube.com/watch?v=dqTZCknuctk" target="_blank" rel="noopener" aria-label="Ver: LLM: a tecnologia por trás da IA textual">
+            <img src="https://i.ytimg.com/vi/dqTZCknuctk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>LLM: a tecnologia por trás da IA textual</h3>
+            <span class="who">Curso em Vídeo</span>
+            <a href="https://www.youtube.com/watch?v=dqTZCknuctk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="fUQis3gB82s" href="https://www.youtube.com/watch?v=fUQis3gB82s" target="_blank" rel="noopener" aria-label="Ver: O que é um LLM? Como funciona o ChatGPT">
+            <img src="https://i.ytimg.com/vi/fUQis3gB82s/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>O que é um LLM? Como funciona o ChatGPT</h3>
+            <span class="who">Café com Inovação</span>
+            <a href="https://www.youtube.com/watch?v=fUQis3gB82s" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="aircAruvnKk" href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noopener" aria-label="Ver: But what is a neural network?">
+            <img src="https://i.ytimg.com/vi/aircAruvnKk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Inglês · legendas</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>But what is a neural network?</h3>
+            <span class="who">3Blue1Brown</span>
+            <a href="https://www.youtube.com/watch?v=aircAruvnKk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="prompts" aria-labelledby="prompts-t">
+      <div class="sec-head"><span class="idx">[02]</span><h2 id="prompts-t">Escrever bons prompts</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">Como pedir as coisas à IA para obter respostas melhores.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="ATp4Q4UD-c8" href="https://www.youtube.com/watch?v=ATp4Q4UD-c8" target="_blank" rel="noopener" aria-label="Ver: Design de prompt: introdução à engenharia de prompt">
+            <img src="https://i.ytimg.com/vi/ATp4Q4UD-c8/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Design de prompt: introdução à engenharia de prompt</h3>
+            <span class="who">Curso em Vídeo</span>
+            <a href="https://www.youtube.com/watch?v=ATp4Q4UD-c8" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="0V6DvowPje0" href="https://www.youtube.com/watch?v=0V6DvowPje0" target="_blank" rel="noopener" aria-label="Ver: Como criar prompts eficazes">
+            <img src="https://i.ytimg.com/vi/0V6DvowPje0/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como criar prompts eficazes</h3>
+            <span class="who">Curso em Vídeo</span>
+            <a href="https://www.youtube.com/watch?v=0V6DvowPje0" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="1VDcke66TRE" href="https://www.youtube.com/watch?v=1VDcke66TRE" target="_blank" rel="noopener" aria-label="Ver: Engenharia de prompt: o guia definitivo">
+            <img src="https://i.ytimg.com/vi/1VDcke66TRE/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Engenharia de prompt: o guia definitivo</h3>
+            <span class="who">Bruno Picinini</span>
+            <a href="https://www.youtube.com/watch?v=1VDcke66TRE" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="agentes" aria-labelledby="agentes-t">
+      <div class="sec-head"><span class="idx">[03]</span><h2 id="agentes-t">Agentes de IA</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">IA que não só responde, mas também decide e executa tarefas sozinha.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="wxD8MaD0xXk" href="https://www.youtube.com/watch?v=wxD8MaD0xXk" target="_blank" rel="noopener" aria-label="Ver: Agentes de IA: o que são e como trabalhar com eles">
+            <img src="https://i.ytimg.com/vi/wxD8MaD0xXk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Agentes de IA: o que são e como trabalhar com eles</h3>
+            <span class="who">Código Fonte TV</span>
+            <a href="https://www.youtube.com/watch?v=wxD8MaD0xXk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="PXChLtAsueU" href="https://www.youtube.com/watch?v=PXChLtAsueU" target="_blank" rel="noopener" aria-label="Ver: Entenda agentes de IA em 5 minutos">
+            <img src="https://i.ytimg.com/vi/PXChLtAsueU/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Entenda agentes de IA em 5 minutos</h3>
+            <span class="who">Aly IA Lab</span>
+            <a href="https://www.youtube.com/watch?v=PXChLtAsueU" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="IN-kJqTVgGg" href="https://www.youtube.com/watch?v=IN-kJqTVgGg" target="_blank" rel="noopener" aria-label="Ver: O que são agentes de IA?">
+            <img src="https://i.ytimg.com/vi/IN-kJqTVgGg/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>O que são agentes de IA?</h3>
+            <span class="who">Felipe Santos</span>
+            <a href="https://www.youtube.com/watch?v=IN-kJqTVgGg" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="mcp" aria-labelledby="mcp-t">
+      <div class="sec-head"><span class="idx">[04]</span><h2 id="mcp-t">MCP: ligar a IA às apps</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">O protocolo que liga o Claude ao n8n, ao email e a outras ferramentas.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="deprLB_y6Ho" href="https://www.youtube.com/watch?v=deprLB_y6Ho" target="_blank" rel="noopener" aria-label="Ver: MCP: o &quot;USB&quot; das IAs">
+            <img src="https://i.ytimg.com/vi/deprLB_y6Ho/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>MCP: o &quot;USB&quot; das IAs</h3>
+            <span class="who">Código Fonte TV</span>
+            <a href="https://www.youtube.com/watch?v=deprLB_y6Ho" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="vz90bsZSNI8" href="https://www.youtube.com/watch?v=vz90bsZSNI8" target="_blank" rel="noopener" aria-label="Ver: Protocolo de Contexto de Modelo (MCP) explicado">
+            <img src="https://i.ytimg.com/vi/vz90bsZSNI8/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Protocolo de Contexto de Modelo (MCP) explicado</h3>
+            <span class="who">Aulas de Computação</span>
+            <a href="https://www.youtube.com/watch?v=vz90bsZSNI8" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="pBL3qOY2_Jw" href="https://www.youtube.com/watch?v=pBL3qOY2_Jw" target="_blank" rel="noopener" aria-label="Ver: MCP: guia para iniciantes com exemplos práticos">
+            <img src="https://i.ytimg.com/vi/pBL3qOY2_Jw/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>MCP: guia para iniciantes com exemplos práticos</h3>
+            <span class="who">Renato Asse</span>
+            <a href="https://www.youtube.com/watch?v=pBL3qOY2_Jw" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="automacao" aria-labelledby="automacao-t">
+      <div class="sec-head"><span class="idx">[05]</span><h2 id="automacao-t">Automação com n8n</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">Criar fluxos que trabalham sozinhos, com ou sem IA.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="lUuu8lIWsjg" href="https://www.youtube.com/watch?v=lUuu8lIWsjg" target="_blank" rel="noopener" aria-label="Ver: n8n para iniciantes: o primeiro fluxo de automação">
+            <img src="https://i.ytimg.com/vi/lUuu8lIWsjg/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>n8n para iniciantes: o primeiro fluxo de automação</h3>
+            <span class="who">Diogo Berlanda</span>
+            <a href="https://www.youtube.com/watch?v=lUuu8lIWsjg" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="HZ2rbUGa1pk" href="https://www.youtube.com/watch?v=HZ2rbUGa1pk" target="_blank" rel="noopener" aria-label="Ver: Automação com IA no n8n para enviar a previsão do tempo">
+            <img src="https://i.ytimg.com/vi/HZ2rbUGa1pk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Automação com IA no n8n para enviar a previsão do tempo</h3>
+            <span class="who">Ronni Oliveira</span>
+            <a href="https://www.youtube.com/watch?v=HZ2rbUGa1pk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="i32pkYrSz9Q" href="https://www.youtube.com/watch?v=i32pkYrSz9Q" target="_blank" rel="noopener" aria-label="Ver: Crie o seu primeiro agente no n8n">
+            <img src="https://i.ytimg.com/vi/i32pkYrSz9Q/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Crie o seu primeiro agente no n8n</h3>
+            <span class="who">Gerson Viergutz</span>
+            <a href="https://www.youtube.com/watch?v=i32pkYrSz9Q" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="vuQtzVrpveg" href="https://www.youtube.com/watch?v=vuQtzVrpveg" target="_blank" rel="noopener" aria-label="Ver: Curso de n8n para iniciantes: agentes de IA do zero">
+            <img src="https://i.ytimg.com/vi/vuQtzVrpveg/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Curso de n8n para iniciantes: agentes de IA do zero</h3>
+            <span class="who">HostGator Brasil</span>
+            <a href="https://www.youtube.com/watch?v=vuQtzVrpveg" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="-Ka4YKW7RwM" href="https://www.youtube.com/watch?v=-Ka4YKW7RwM" target="_blank" rel="noopener" aria-label="Ver: Curso de n8n gratuito para iniciantes 2026">
+            <img src="https://i.ytimg.com/vi/-Ka4YKW7RwM/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Curso de n8n gratuito para iniciantes 2026</h3>
+            <span class="who">NoCode StartUp</span>
+            <a href="https://www.youtube.com/watch?v=-Ka4YKW7RwM" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="HR37zOPFJco" href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener" aria-label="Ver: n8n Beginner Course: Introduction to Automation">
+            <img src="https://i.ytimg.com/vi/HR37zOPFJco/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Inglês · legendas</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>n8n Beginner Course: Introduction to Automation</h3>
+            <span class="who">S3CloudHub</span>
+            <a href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="dia-a-dia" aria-labelledby="dia-a-dia-t">
+      <div class="sec-head"><span class="idx">[06]</span><h2 id="dia-a-dia-t">IA no dia a dia</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">Ideias práticas para usar a IA no trabalho, no estudo e em casa.</p>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="jgWLntXzDOU" href="https://www.youtube.com/watch?v=jgWLntXzDOU" target="_blank" rel="noopener" aria-label="Ver: Como usar a inteligência artificial no dia a dia">
+            <img src="https://i.ytimg.com/vi/jgWLntXzDOU/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar a inteligência artificial no dia a dia</h3>
+            <span class="who">Me Ensina</span>
+            <a href="https://www.youtube.com/watch?v=jgWLntXzDOU" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="imuuAY_opUk" href="https://www.youtube.com/watch?v=imuuAY_opUk" target="_blank" rel="noopener" aria-label="Ver: Como usar a IA a seu favor: estudo, trabalho e produtividade">
+            <img src="https://i.ytimg.com/vi/imuuAY_opUk/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar a IA a seu favor: estudo, trabalho e produtividade</h3>
+            <span class="who">Data Driven School</span>
+            <a href="https://www.youtube.com/watch?v=imuuAY_opUk" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="claude" aria-labelledby="claude-t">
+      <div class="sec-head"><span class="idx">[07]</span><h2 id="claude-t">Claude</h2><span class="maker">Tutoriais · Anthropic</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="UFxK6WOMqQ8" href="https://www.youtube.com/watch?v=UFxK6WOMqQ8" target="_blank" rel="noopener" aria-label="Ver: Como usar o Claude IA: tutorial completo para iniciantes">
+            <img src="https://i.ytimg.com/vi/UFxK6WOMqQ8/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar o Claude IA: tutorial completo para iniciantes</h3>
+            <a href="https://www.youtube.com/watch?v=UFxK6WOMqQ8" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="Sukaw7XOD_I" href="https://www.youtube.com/watch?v=Sukaw7XOD_I" target="_blank" rel="noopener" aria-label="Ver: Como usar o Claude AI do zero: guia completo">
+            <img src="https://i.ytimg.com/vi/Sukaw7XOD_I/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar o Claude AI do zero: guia completo</h3>
+            <a href="https://www.youtube.com/watch?v=Sukaw7XOD_I" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="chatgpt" aria-labelledby="chatgpt-t">
+      <div class="sec-head"><span class="idx">[08]</span><h2 id="chatgpt-t">ChatGPT</h2><span class="maker">Tutoriais · OpenAI</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="Was8qt2J9SY" href="https://www.youtube.com/watch?v=Was8qt2J9SY" target="_blank" rel="noopener" aria-label="Ver: ChatGPT: o que é e como usar (tutorial para iniciantes)">
+            <img src="https://i.ytimg.com/vi/Was8qt2J9SY/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>ChatGPT: o que é e como usar (tutorial para iniciantes)</h3>
+            <a href="https://www.youtube.com/watch?v=Was8qt2J9SY" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="cswHBeqNGt0" href="https://www.youtube.com/watch?v=cswHBeqNGt0" target="_blank" rel="noopener" aria-label="Ver: Introdução prática ao ChatGPT para iniciantes">
+            <img src="https://i.ytimg.com/vi/cswHBeqNGt0/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Introdução prática ao ChatGPT para iniciantes</h3>
+            <a href="https://www.youtube.com/watch?v=cswHBeqNGt0" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="gemini" aria-labelledby="gemini-t">
+      <div class="sec-head"><span class="idx">[09]</span><h2 id="gemini-t">Gemini</h2><span class="maker">Tutoriais · Google</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="exUu6zZSFsQ" href="https://www.youtube.com/watch?v=exUu6zZSFsQ" target="_blank" rel="noopener" aria-label="Ver: Como usar o Gemini, a IA do Google: tutorial para iniciantes">
+            <img src="https://i.ytimg.com/vi/exUu6zZSFsQ/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar o Gemini, a IA do Google: tutorial para iniciantes</h3>
+            <a href="https://www.youtube.com/watch?v=exUu6zZSFsQ" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="E_l67kXXJgc" href="https://www.youtube.com/watch?v=E_l67kXXJgc" target="_blank" rel="noopener" aria-label="Ver: Aprenda 80% do Google Gemini em 5 minutos">
+            <img src="https://i.ytimg.com/vi/E_l67kXXJgc/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Aprenda 80% do Google Gemini em 5 minutos</h3>
+            <a href="https://www.youtube.com/watch?v=E_l67kXXJgc" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="copilot" aria-labelledby="copilot-t">
+      <div class="sec-head"><span class="idx">[10]</span><h2 id="copilot-t">Copilot</h2><span class="maker">Tutoriais · Microsoft</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="rELeIWJTDP8" href="https://www.youtube.com/watch?v=rELeIWJTDP8" target="_blank" rel="noopener" aria-label="Ver: Microsoft Copilot: tutorial completo em 8 minutos">
+            <img src="https://i.ytimg.com/vi/rELeIWJTDP8/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Microsoft Copilot: tutorial completo em 8 minutos</h3>
+            <a href="https://www.youtube.com/watch?v=rELeIWJTDP8" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="jIqYNajT2uY" href="https://www.youtube.com/watch?v=jIqYNajT2uY" target="_blank" rel="noopener" aria-label="Ver: Aprenda a utilizar o Copilot, a IA da Microsoft">
+            <img src="https://i.ytimg.com/vi/jIqYNajT2uY/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Aprenda a utilizar o Copilot, a IA da Microsoft</h3>
+            <a href="https://www.youtube.com/watch?v=jIqYNajT2uY" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="perplexity" aria-labelledby="perplexity-t">
+      <div class="sec-head"><span class="idx">[11]</span><h2 id="perplexity-t">Perplexity</h2><span class="maker">Tutoriais · Perplexity AI</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="r2M7AtF2Mwg" href="https://www.youtube.com/watch?v=r2M7AtF2Mwg" target="_blank" rel="noopener" aria-label="Ver: Como usar o Perplexity AI: como a ferramenta funciona">
+            <img src="https://i.ytimg.com/vi/r2M7AtF2Mwg/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como usar o Perplexity AI: como a ferramenta funciona</h3>
+            <a href="https://www.youtube.com/watch?v=r2M7AtF2Mwg" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="Mpo_Y4C2TJ4" href="https://www.youtube.com/watch?v=Mpo_Y4C2TJ4" target="_blank" rel="noopener" aria-label="Ver: Perplexity AI: a IA que faz buscas na internet">
+            <img src="https://i.ytimg.com/vi/Mpo_Y4C2TJ4/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Perplexity AI: a IA que faz buscas na internet</h3>
+            <a href="https://www.youtube.com/watch?v=Mpo_Y4C2TJ4" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="notebooklm" aria-labelledby="notebooklm-t">
+      <div class="sec-head"><span class="idx">[12]</span><h2 id="notebooklm-t">NotebookLM</h2><span class="maker">Tutoriais · Google</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="aFD5zLMlbbo" href="https://www.youtube.com/watch?v=aFD5zLMlbbo" target="_blank" rel="noopener" aria-label="Ver: NotebookLM: tutorial completo para iniciantes">
+            <img src="https://i.ytimg.com/vi/aFD5zLMlbbo/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>NotebookLM: tutorial completo para iniciantes</h3>
+            <a href="https://www.youtube.com/watch?v=aFD5zLMlbbo" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="_D85qiC2FX0" href="https://www.youtube.com/watch?v=_D85qiC2FX0" target="_blank" rel="noopener" aria-label="Ver: Guia do NotebookLM: juntar fontes e criar um podcast">
+            <img src="https://i.ytimg.com/vi/_D85qiC2FX0/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Guia do NotebookLM: juntar fontes e criar um podcast</h3>
+            <a href="https://www.youtube.com/watch?v=_D85qiC2FX0" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="ifttt" aria-labelledby="ifttt-t">
+      <div class="sec-head"><span class="idx">[13]</span><h2 id="ifttt-t">IFTTT</h2><span class="maker">Tutoriais · IFTTT</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="j-mxZG2EWBo" href="https://www.youtube.com/watch?v=j-mxZG2EWBo" target="_blank" rel="noopener" aria-label="Ver: Automatize tarefas com o IFTTT">
+            <img src="https://i.ytimg.com/vi/j-mxZG2EWBo/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Automatize tarefas com o IFTTT</h3>
+            <a href="https://www.youtube.com/watch?v=j-mxZG2EWBo" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="2iIyLef5m94" href="https://www.youtube.com/watch?v=2iIyLef5m94" target="_blank" rel="noopener" aria-label="Ver: How to create your first Applet">
+            <img src="https://i.ytimg.com/vi/2iIyLef5m94/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Inglês · legendas</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>How to create your first Applet</h3>
+            <a href="https://www.youtube.com/watch?v=2iIyLef5m94" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="n8n" aria-labelledby="n8n-t">
+      <div class="sec-head"><span class="idx">[14]</span><h2 id="n8n-t">n8n</h2><span class="maker">Tutoriais · n8n</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="lUuu8lIWsjg" href="https://www.youtube.com/watch?v=lUuu8lIWsjg" target="_blank" rel="noopener" aria-label="Ver: n8n para iniciantes: crie o seu primeiro fluxo de automação">
+            <img src="https://i.ytimg.com/vi/lUuu8lIWsjg/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>n8n para iniciantes: crie o seu primeiro fluxo de automação</h3>
+            <a href="https://www.youtube.com/watch?v=lUuu8lIWsjg" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="HR37zOPFJco" href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener" aria-label="Ver: n8n Beginner Course: Introduction to Automation">
+            <img src="https://i.ytimg.com/vi/HR37zOPFJco/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Inglês · legendas</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>n8n Beginner Course: Introduction to Automation</h3>
+            <a href="https://www.youtube.com/watch?v=HR37zOPFJco" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="github-pages" aria-labelledby="github-pages-t">
+      <div class="sec-head"><span class="idx">[15]</span><h2 id="github-pages-t">GitHub Pages</h2><span class="maker">Tutoriais · GitHub</span><span class="rule"></span></div>
+      <div class="videos">
+        <article class="video frame">
+          <a class="screen" data-yt="_jI3782DGDc" href="https://www.youtube.com/watch?v=_jI3782DGDc" target="_blank" rel="noopener" aria-label="Ver: Alojar um site gratuitamente com GitHub Pages (Curso em Vídeo)">
+            <img src="https://i.ytimg.com/vi/_jI3782DGDc/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Alojar um site gratuitamente com GitHub Pages (Curso em Vídeo)</h3>
+            <a href="https://www.youtube.com/watch?v=_jI3782DGDc" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+        <article class="video frame">
+          <a class="screen" data-yt="7rYpp1SppNw" href="https://www.youtube.com/watch?v=7rYpp1SppNw" target="_blank" rel="noopener" aria-label="Ver: Como publicar um site grátis com GitHub Pages, passo a passo">
+            <img src="https://i.ytimg.com/vi/7rYpp1SppNw/hqdefault.jpg" alt="" loading="lazy" onerror="this.remove()">
+            <span class="lang">Português</span><span class="play"></span>
+          </a>
+          <div class="vmeta">
+            <h3>Como publicar um site grátis com GitHub Pages, passo a passo</h3>
+            <a href="https://www.youtube.com/watch?v=7rYpp1SppNw" target="_blank" rel="noopener">Abrir no YouTube ↗</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="inner">
+    <span class="label">Ricardo Santos · Tomar · v2026.10 · Visitas: <b data-visits style="color:var(--cyan);font-weight:500">—</b></span>
+    <span class="label"><a href="privacidade.html">Privacidade</a> · <a href="https://github.com/ricardosantos1984">GitHub</a></span>
+  </div>
+</footer>
+
+<script>
+/* Fundo animado: rede de nós ligados (tipo rede de dados / rede neural). */
+(function () {
+  var c = document.getElementById('net');
+  if (!c || !c.getContext) return;
+  var ctx = c.getContext('2d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var W = 0, H = 0, dpr = 1, nodes = [], pulses = [], mouse = { x: -9999, y: -9999 };
+  var LINK = 150;
+
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth; H = window.innerHeight;
+    c.width = Math.round(W * dpr); c.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var n = Math.max(28, Math.min(90, Math.round(W * H / 16000)));
+    LINK = W < 600 ? 110 : 150;
+    nodes = [];
+    for (var i = 0; i < n; i++) {
+      nodes.push({
+        x: Math.random() * W, y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
+        r: Math.random() < 0.12 ? 2.4 : 1.4
+      });
+    }
+    pulses = [];
+  }
+
+  function spawnPulse() {
+    var a = nodes[(Math.random() * nodes.length) | 0], best = null, bd = 1e9;
+    for (var i = 0; i < nodes.length; i++) {
+      var b = nodes[i]; if (b === a) continue;
+      var d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < LINK && d < bd) { bd = d; best = b; }
+    }
+    if (best) pulses.push({ a: a, b: best, t: 0 });
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (var i = 0; i < nodes.length; i++) {
+      var p = nodes[i];
+      for (var j = i + 1; j < nodes.length; j++) {
+        var q = nodes[j], dx = p.x - q.x, dy = p.y - q.y, d = Math.sqrt(dx * dx + dy * dy);
+        if (d < LINK) {
+          ctx.strokeStyle = 'rgba(70,227,238,' + (0.22 * (1 - d / LINK)).toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
+        }
+      }
+      var md = Math.hypot(p.x - mouse.x, p.y - mouse.y);
+      if (md < 180) {
+        ctx.strokeStyle = 'rgba(70,227,238,' + (0.35 * (1 - md / 180)).toFixed(3) + ')';
+        ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke();
+      }
+    }
+    for (var k = 0; k < nodes.length; k++) {
+      var n = nodes[k];
+      ctx.fillStyle = n.r > 2 ? 'rgba(255,181,71,0.85)' : 'rgba(150,240,246,0.75)';
+      ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+    }
+    for (var m = pulses.length - 1; m >= 0; m--) {
+      var s = pulses[m];
+      var x = s.a.x + (s.b.x - s.a.x) * s.t, y = s.a.y + (s.b.y - s.a.y) * s.t;
+      ctx.fillStyle = 'rgba(70,227,238,0.95)';
+      ctx.shadowColor = 'rgba(70,227,238,0.9)'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+
+  function step() {
+    for (var i = 0; i < nodes.length; i++) {
+      var p = nodes[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
+      if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20;
+    }
+    for (var m = pulses.length - 1; m >= 0; m--) {
+      pulses[m].t += 0.012;
+      if (pulses[m].t >= 1) pulses.splice(m, 1);
+    }
+    if (pulses.length < 6 && Math.random() < 0.04) spawnPulse();
+  }
+
+  var running = true;
+  function loop() {
+    if (!running) return;
+    step(); draw();
+    requestAnimationFrame(loop);
+  }
+
+  size();
+  window.addEventListener('resize', function () { size(); if (reduce) draw(); });
+  window.addEventListener('pointermove', function (e) { mouse.x = e.clientX; mouse.y = e.clientY; });
+  window.addEventListener('pointerleave', function () { mouse.x = mouse.y = -9999; });
+  document.addEventListener('visibilitychange', function () {
+    if (reduce) return;
+    running = !document.hidden;
+    if (running) requestAnimationFrame(loop);
+  });
+
+  if (reduce) { draw(); } else { requestAnimationFrame(loop); }
+})();
+
+/* Contador de visitas (GoatCounter). Só conta no site publicado. */
+(function () {
+  if (!/github\.io$/.test(location.hostname)) return;
+  var CODE = 'ricardosantos1984';
+  var s = document.createElement('script');
+  s.async = true;
+  s.src = 'https://gc.zgo.at/count.js';
+  s.setAttribute('data-goatcounter', 'https://' + CODE + '.goatcounter.com/count');
+  document.head.appendChild(s);
+  fetch('https://' + CODE + '.goatcounter.com/counter/TOTAL.json')
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (d) {
+      if (!d || !d.count) return;
+      document.querySelectorAll('[data-visits]').forEach(function (el) {
+        el.textContent = String(d.count).replace(/,/g, '.');
+      });
+    })
+    .catch(function () {});
+})();
+
+/* Vídeos: no site publicado tocam dentro da página; noutros sítios abrem no YouTube. */
+(function () {
+  if (!/github\.io$/.test(location.hostname)) return;
+  document.querySelectorAll('.screen[data-yt]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + a.getAttribute('data-yt') + '?autoplay=1&rel=0';
+      f.title = a.getAttribute('aria-label') || 'Vídeo';
+      f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      f.allowFullscreen = true;
+      var box = document.createElement('div');
+      box.className = 'screen';
+      box.appendChild(f);
+      a.replaceWith(box);
+    });
+  });
+})();
+</script>
+</body>
+</html>
