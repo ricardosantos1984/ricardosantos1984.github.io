@@ -393,7 +393,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <div class="hero compact">
   <div class="inner">
     <div class="page-hero frame">
-      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>32</b></span><span>DIAS <b>5</b></span></div>
+      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>39</b></span><span>DIAS <b>7</b></span></div>
       <h1>Diário de IA</h1>
       <p class="intro">O que fui aprendendo e construindo com inteligência artificial. O dia mais recente está aberto; carrega num dia para ver as entradas.</p>
       <div class="chips" role="group" aria-label="Filtrar por tema">
@@ -413,9 +413,26 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       <div class="sec-head"><span class="idx">[01]</span><h2 id="entradas-t">Entradas por dia</h2><span class="rule"></span></div>
       <div class="next-card"><span class="label">A seguir</span><b>Assistente no WhatsApp</b><p style="color:var(--muted)">Ligar o agente de IA ao WhatsApp para lhe escrever do telemóvel.</p></div>
       <div>
-      <details class="day" open data-day="2026-10-30">
-        <summary><h3>30 de outubro</h3><span class="count">9 entradas</span></summary>
+      <details class="day" open data-day="2026-11-03">
+        <summary><h3>3 de novembro</h3><span class="count">2 entradas</span></summary>
         <ol class="log simple">
+        <li data-tag="Site"><span class="node"></span><div class="what"><b>A versão da Ema na app<span class="tag">Site</span></b><p>A Ema tem a sua própria versão da app da casa: vê só as secções que eu escolho, com uma página inicial dela (aulas de hoje, refeições, tarefas e próximos testes). Nas compras pode acrescentar coisas, mas não risca nem apaga. As regras ficam na base de dados do Supabase, não só nos menus.</p></div></li>
+        <li data-tag="Automação"><span class="node"></span><div class="what"><b>Avisos à medida de cada um<span class="tag">Automação</span></b><p>Cada telemóvel recebe só o que lhe interessa: a Ema recebe os avisos da escola, das atividades do dia e dos aniversários; nós recebemos tudo.</p></div></li>
+        </ol>
+      </details>
+      <details class="day" data-day="2026-11-02">
+        <summary><h3>2 de novembro</h3><span class="count">4 entradas</span></summary>
+        <ol class="log simple">
+        <li data-tag="Automação"><span class="node"></span><div class="what"><b>Notificações no telemóvel<span class="tag">Automação</span></b><p>A app da casa envia notificações para o iPhone e o Android. Às 8h, o GitHub Actions entra na app, junta os avisos do dia e envia-os, sem depender do meu PC estar ligado. As chaves ficam guardadas nos segredos do GitHub.</p></div></li>
+        <li data-tag="IA"><span class="node"></span><div class="what"><b>Horário da Ema a partir de uma foto<span class="tag">IA</span></b><p>A IA leu a foto do horário e passou-o para a app, numa grelha com cores por disciplina, separadores por dia e um botão para imprimir.</p></div></li>
+        <li data-tag="IA"><span class="node"></span><div class="what"><b>Ementas a partir de fotos<span class="tag">IA</span></b><p>Tirei fotos às folhas do menu e a IA passou as duas semanas para a app, com as datas certas. Também acrescentou testes, consultas e aniversários a partir de uma frase no chat.</p></div></li>
+        <li data-tag="Site"><span class="node"></span><div class="what"><b>Ementa impressa numa só folha<span class="tag">Site</span></b><p>Acertei a impressão do menu semanal: a semana cabe sempre numa folha A4 deitada, com a letra a ajustar-se sozinha.</p></div></li>
+        </ol>
+      </details>
+      <details class="day" data-day="2026-10-30">
+        <summary><h3>30 de outubro</h3><span class="count">10 entradas</span></summary>
+        <ol class="log simple">
+        <li data-tag="Site"><span class="node"></span><div class="what"><b>Ícone no ecrã do iPhone<span class="tag">Site</span></b><p>Ao guardar o site no ecrã principal do iPhone aparece um ícone próprio: o meu nome com um raio laranja por trás.</p></div></li>
         <li data-tag="IA"><span class="node"></span><div class="what"><b>Primeiro agente de IA<span class="tag">IA</span></b><p>Um assistente no n8n, com o Gemini, que decide sozinho que ferramentas usar: vê a agenda e marca eventos, procura emails no Gmail e no Hotmail, diz o tempo em Tomar e gere a lista de compras da app da casa. Para já falo com ele no chat do n8n; a seguir vai para o WhatsApp.</p></div></li>
         <li data-tag="Automação"><span class="node"></span><div class="what"><b>Avisos da casa às 8h12<span class="tag">Automação</span></b><p>O n8n entra na app da família com uma conta só para avisos e, todos os dias, envia por email (para mim e para a Carolina) e por WhatsApp a ementa de hoje e os avisos: carro, consultas, testes da Ema, férias, aniversários e orçamento. A senha fica guardada numa credencial do n8n.</p></div></li>
         <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Compras a partir da ementa<span class="tag">Dia a dia</span></b><p>Escolho os pratos da semana e a app junta os ingredientes na lista de compras, arrumados por secção do supermercado. Os ingredientes de cada prato podem ser editados e ficam guardados.</p></div></li>
