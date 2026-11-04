@@ -426,15 +426,15 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
     <section id="explorar" aria-labelledby="explorar-t">
       <div class="sec-head"><span class="idx">[01]</span><h2 id="explorar-t">Explorar</h2><span class="rule"></span></div>
       <div class="shortcuts">
-        <a class="shortcut frame" href="diario.html"><span class="k">39 entradas</span><h3>Diário</h3><p>O que aprendi e construí com IA, dia a dia.</p><span class="go">Abrir →</span></a>
+        <a class="shortcut frame" href="diario.html"><span class="k">40 entradas</span><h3>Diário</h3><p>O que aprendi e construí com IA, dia a dia.</p><span class="go">Abrir →</span></a>
         <a class="shortcut frame" href="aprender.html"><span class="k">Guia</span><h3>Aprender IA</h3><p>O meu percurso, um glossário simples e dicas para escrever bons prompts.</p><span class="go">Abrir →</span></a>
         <a class="shortcut frame" href="videos.html"><span class="k">40 vídeos</span><h3>Vídeos</h3><p>Fundamentos, prompts, agentes, MCP, n8n e tutoriais por ferramenta.</p><span class="go">Abrir →</span></a>
         <a class="shortcut frame" href="ferramentas.html"><span class="k">10 ferramentas</span><h3>Ferramentas</h3><p>As ferramentas de IA que uso, que estou a aprender e que quero explorar.</p><span class="go">Abrir →</span></a>
       </div>
       <div class="stats">
-        <div class="stat frame"><strong>39</strong><span>conquistas</span></div>
+        <div class="stat frame"><strong>40</strong><span>conquistas</span></div>
         <div class="stat frame"><strong>12</strong><span>automações ativas</span></div>
-        <div class="stat frame"><strong>7</strong><span>dias de IA</span></div>
+        <div class="stat frame"><strong>8</strong><span>dias de IA</span></div>
         <div class="stat frame"><strong>40</strong><span>vídeos</span></div>
       </div>
     </section>
@@ -442,11 +442,11 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
     <section id="ultimas" aria-labelledby="ultimas-t">
       <div class="sec-head"><span class="idx">[02]</span><h2 id="ultimas-t">Últimas conquistas</h2><span class="rule"></span></div>
       <ol class="log">
+        <li data-tag="Automação"><time class="when" datetime="2026-11-04">04.11.2026</time><span class="node"></span><div class="what"><b>Assistente no WhatsApp<span class="tag">Automação</span></b><p>O agente de IA passou a responder no meu WhatsApp, na conversa comigo próprio: pergunto a agenda, o tempo ou junto coisas à lista de compras, e a resposta chega em segundos. Usei o WAHA no Docker como ponte entre o WhatsApp e o n8n, com um filtro para nunca responder aos meus contactos.</p></div></li>
         <li data-tag="Site"><time class="when" datetime="2026-11-03">03.11.2026</time><span class="node"></span><div class="what"><b>A versão da Ema na app<span class="tag">Site</span></b><p>A Ema tem a sua própria versão da app da casa: vê só as secções que eu escolho, com uma página inicial dela (aulas de hoje, refeições, tarefas e próximos testes). Nas compras pode acrescentar coisas, mas não risca nem apaga. As regras ficam na base de dados do Supabase, não só nos menus.</p></div></li>
         <li data-tag="Automação"><time class="when" datetime="2026-11-03">03.11.2026</time><span class="node"></span><div class="what"><b>Avisos à medida de cada um<span class="tag">Automação</span></b><p>Cada telemóvel recebe só o que lhe interessa: a Ema recebe os avisos da escola, das atividades do dia e dos aniversários; nós recebemos tudo.</p></div></li>
         <li data-tag="Automação"><time class="when" datetime="2026-11-02">02.11.2026</time><span class="node"></span><div class="what"><b>Notificações no telemóvel<span class="tag">Automação</span></b><p>A app da casa envia notificações para o iPhone e o Android. Às 8h, o GitHub Actions entra na app, junta os avisos do dia e envia-os, sem depender do meu PC estar ligado. As chaves ficam guardadas nos segredos do GitHub.</p></div></li>
         <li data-tag="IA"><time class="when" datetime="2026-11-02">02.11.2026</time><span class="node"></span><div class="what"><b>Horário da Ema a partir de uma foto<span class="tag">IA</span></b><p>A IA leu a foto do horário e passou-o para a app, numa grelha com cores por disciplina, separadores por dia e um botão para imprimir.</p></div></li>
-        <li data-tag="IA"><time class="when" datetime="2026-11-02">02.11.2026</time><span class="node"></span><div class="what"><b>Ementas a partir de fotos<span class="tag">IA</span></b><p>Tirei fotos às folhas do menu e a IA passou as duas semanas para a app, com as datas certas. Também acrescentou testes, consultas e aniversários a partir de uma frase no chat.</p></div></li>
       </ol>
       <a class="btn" href="diario.html">Ver o diário completo →</a>
     </section>
@@ -467,7 +467,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
           <tr><td>Todos os dias · 23h</td><td>Previsão para a corrida das 7h</td><td>n8n + WhatsApp</td></tr>
           <tr><td>Quartas · 12h</td><td>Previsão para o futsal e evento na agenda</td><td>n8n + Calendar + WhatsApp</td></tr>
           <tr><td>Quintas · 17h</td><td>Menu semanal com a agenda e lista de compras</td><td>n8n + Gemini + WhatsApp</td></tr>
-          <tr><td>Quando lhe escrevo</td><td>Assistente de IA: agenda, emails, tempo e compras</td><td>n8n + Gemini</td></tr>
+          <tr><td>Quando lhe escrevo</td><td>Assistente de IA no WhatsApp: agenda, emails, tempo e compras</td><td>n8n + Gemini + WAHA</td></tr>
           <tr><td>Se algo falhar</td><td>Alerta por email e WhatsApp com o erro</td><td>n8n + WhatsApp</td></tr>
         </tbody>
       </table></div>
