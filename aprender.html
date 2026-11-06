@@ -393,7 +393,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <div class="hero compact">
   <div class="inner">
     <div class="page-hero frame">
-      <div class="sys"><span>MOD <b>aprender</b></span><span>TERMOS <b>12</b></span><span>DICAS <b>8</b></span></div>
+      <div class="sys"><span>MOD <b>aprender</b></span><span>TERMOS <b>20</b></span><span>DICAS <b>8</b></span></div>
       <h1>Aprender IA</h1>
       <p class="intro">Um guia simples, escrito à medida que vou aprendendo: o caminho que segui, as palavras que é preciso conhecer e como pedir as coisas à IA.</p>
       <div class="chips"><a href="#percurso">Percurso</a><a href="#glossario">Glossário</a><a href="#prompts">Dicas de prompts</a><a href="#ver">Vídeos por tema</a></div>
@@ -416,8 +416,24 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       </ol>
     </section>
 
+    <section id="como-funciona" aria-labelledby="como-funciona-t">
+      <div class="sec-head"><span class="idx">[02]</span><h2 id="como-funciona-t">Como funciona a IA, explicado simples</h2><span class="rule"></span></div>
+      <p class="vgroup-intro">O que acontece entre escrever uma pergunta e receber a resposta, sem matemática.</p>
+      <ol class="tips">
+        <li class="frame"><b>Aprende a ler</b><span>O modelo é treinado com milhares de milhões de textos (livros, sites, código). Não decora frases: aprende padrões de como as palavras se seguem umas às outras.</span></li>
+        <li class="frame"><b>Parte o texto em tokens</b><span>A tua pergunta é cortada em pedacinhos (tokens) e cada um vira uma lista de números que representa o seu significado.</span></li>
+        <li class="frame"><b>Adivinha a palavra seguinte</b><span>A resposta é escrita token a token: em cada passo o modelo calcula qual é o pedaço mais provável a seguir, tendo em conta tudo o que já está na conversa.</span></li>
+        <li class="frame"><b>É afinado para ajudar</b><span>Depois do treino base, pessoas avaliam respostas e o modelo é ajustado para ser útil, seguir instruções e recusar pedidos perigosos.</span></li>
+        <li class="frame"><b>Não sabe tudo</b><span>O que aprendeu pára numa data e pode inventar quando não sabe (alucinação). Por isso as ferramentas boas pesquisam na internet ou nos teus documentos (RAG) antes de responder.</span></li>
+        <li class="frame"><b>Vê, ouve e age</b><span>Os modelos atuais também leem imagens e som (multimodais) e, como agentes, usam ferramentas: é assim que a IA lê a foto do contador e grava o número na app da casa.</span></li>
+      </ol>
+      <div class="compare">
+        <div class="frame good"><span class="label" style="color:var(--cyan)">Na prática, na minha casa</span><code>Foto do contador → a IA (Gemini) &quot;vê&quot; os números → devolve 215,506 m³ → o n8n grava a leitura na app → se o consumo subir, aparece um aviso.</code></div>
+      </div>
+    </section>
+
     <section id="glossario" aria-labelledby="glossario-t">
-      <div class="sec-head"><span class="idx">[02]</span><h2 id="glossario-t">Glossário</h2><span class="rule"></span></div>
+      <div class="sec-head"><span class="idx">[03]</span><h2 id="glossario-t">Glossário</h2><span class="rule"></span></div>
       <dl class="gloss">
         <div class="frame"><dt>IA generativa</dt><dd>IA que cria conteúdo novo (texto, imagens, áudio) a partir de um pedido, como o ChatGPT, o Claude ou o Gemini.</dd></div>
         <div class="frame"><dt>LLM</dt><dd>Large Language Model, ou modelo de linguagem: um programa treinado com enormes quantidades de texto para prever e escrever texto.</dd></div>
@@ -431,11 +447,19 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         <div class="frame"><dt>Automação</dt><dd>Uma tarefa que corre sozinha quando acontece algo (uma hora marcada, um email novo) sem eu ter de fazer nada.</dd></div>
         <div class="frame"><dt>Fluxo (workflow)</dt><dd>No n8n, a sequência de passos de uma automação: um gatilho, depois ações ligadas umas às outras.</dd></div>
         <div class="frame"><dt>OAuth</dt><dd>O &quot;Iniciar sessão com Google/Microsoft&quot; que dá autorização a uma app sem lhe dar a palavra-passe.</dd></div>
+        <div class="frame"><dt>Multimodal</dt><dd>IA que entende mais do que texto: imagens, som e vídeo. É o que permite ler a foto de um contador ou de uma fatura.</dd></div>
+        <div class="frame"><dt>RAG</dt><dd>Dar à IA os documentos certos antes de responder, para usar a tua informação em vez de inventar. O NotebookLM funciona assim.</dd></div>
+        <div class="frame"><dt>Embeddings</dt><dd>A forma de transformar texto em números que guardam o significado: frases parecidas ficam com números parecidos. É a base da pesquisa inteligente.</dd></div>
+        <div class="frame"><dt>Modelo de difusão</dt><dd>O tipo de IA que cria imagens: parte de ruído aleatório e vai-o limpando, passo a passo, até aparecer a imagem pedida.</dd></div>
+        <div class="frame"><dt>Deepfake</dt><dd>Vídeo, voz ou foto falsos feitos com IA. Na dúvida, confirmar por outro meio antes de enviar dinheiro ou dados.</dd></div>
+        <div class="frame"><dt>Webhook</dt><dd>Um endereço que fica à escuta: quando outra app lhe envia algo (por exemplo, uma mensagem do WhatsApp), o fluxo do n8n arranca.</dd></div>
+        <div class="frame"><dt>Contentor (Docker)</dt><dd>Um programa empacotado com tudo o que precisa para correr, isolado do resto do PC. O WAHA corre assim.</dd></div>
+        <div class="frame"><dt>Base de dados</dt><dd>Onde as apps guardam a informação de forma organizada. A app da casa usa o Supabase.</dd></div>
       </dl>
     </section>
 
     <section id="prompts" aria-labelledby="prompts-t">
-      <div class="sec-head"><span class="idx">[03]</span><h2 id="prompts-t">Dicas para bons prompts</h2><span class="rule"></span></div>
+      <div class="sec-head"><span class="idx">[04]</span><h2 id="prompts-t">Dicas para bons prompts</h2><span class="rule"></span></div>
       <ol class="tips">
         <li class="frame"><b>Diz o objetivo</b><span>Explica para que queres a resposta: &quot;para enviar ao meu chefe&quot; muda o tom e o formato.</span></li>
         <li class="frame"><b>Dá contexto</b><span>Quem és, o que já tentaste e o que já sabes. A IA não adivinha o que não lhe dizes.</span></li>
@@ -453,7 +477,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
     </section>
 
     <section id="ver" aria-labelledby="ver-t">
-      <div class="sec-head"><span class="idx">[04]</span><h2 id="ver-t">Aprender com vídeos</h2><span class="rule"></span></div>
+      <div class="sec-head"><span class="idx">[05]</span><h2 id="ver-t">Aprender com vídeos</h2><span class="rule"></span></div>
       <p class="vgroup-intro">Escolhe um tema para ver os vídeos que recomendo.</p>
       <div class="chips">
         <a href="videos.html#fundamentos">Fundamentos da IA</a>
@@ -462,6 +486,10 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         <a href="videos.html#mcp">MCP: ligar a IA às apps</a>
         <a href="videos.html#automacao">Automação com n8n</a>
         <a href="videos.html#dia-a-dia">IA no dia a dia</a>
+        <a href="videos.html#imagens">Como a IA cria imagens</a>
+        <a href="videos.html#rag">RAG: a IA com os teus documentos</a>
+        <a href="videos.html#seguranca">Usar a IA com segurança</a>
+        <a href="videos.html#whatsapp-ia">IA no WhatsApp</a>
       </div>
     </section>
   </div>
