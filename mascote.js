@@ -41,6 +41,7 @@
     { k: ['ola', 'oi', 'bom dia', 'boa tarde', 'boa noite', 'viva'], r: 'Olá! Pergunta-me o que quiseres sobre IA: o que é um token, um agente, um prompt, o n8n…', w: 0.8 },
     { k: ['obrigado', 'obrigada', 'fixe', 'boa', 'top'], r: 'De nada! Bip bop. Se tiveres mais perguntas, estou por aqui a passear.', w: 0.8 },
     { k: ['quem es', 'es tu', 'teu nome', 'como te chamas', 'bit', 'mascote', 'es um robo', 'es uma ia'], r: 'Sou o Bit, a mascote deste site. Não sou uma IA a sério: as minhas respostas foram escritas à mão e escolho a que melhor combina com a tua pergunta.', w: 0.9 },
+    { k: ['contacto', 'contactar', 'falar com o ricardo', 'falar com ele', 'falar contigo', 'deixar mensagem', 'mandar mensagem', 'enviar mensagem', 'email do ricardo', 'telefone', 'numero', 'ajuda do ricardo', 'orcamento', 'reparacao', 'reparar'], r: 'Podes deixar uma mensagem ao Ricardo aqui mesmo: chega ao WhatsApp dele e ele responde no chat do site quando puder.', l: ['Abrir o chat', '#chat'] },
     { k: ['ricardo', 'quem fez', 'dono do site', 'autor', 'quem criou'], r: 'O site é do Ricardo Santos, técnico de informática de Tomar, que está a aprender a usar IA no dia a dia e regista aqui o que vai construindo.', l: ['Ver o início', './'] },
     { k: ['como foi feito', 'site foi feito', 'construido', 'como fizeste o site', 'fez o site'], r: 'Este site foi construído a conversar com uma IA (o Claude): o Ricardo descreve o que quer e a IA escreve o código e publica no GitHub.', l: ['Ver o diário', 'diario.html'] },
     { k: ['o que e ia', 'o que e a ia', 'inteligencia artificial', 'o que e inteligencia', 'ia generativa', 'generativa'], r: 'IA é um programa que aprendeu com muitos exemplos a fazer tarefas que pareciam só de pessoas: escrever, traduzir, ver imagens. A IA generativa cria conteúdo novo a partir de um pedido.', l: ['Como funciona a IA', 'aprender.html#como-funciona'], w: 0.7 },
@@ -156,6 +157,9 @@
     '#bit .bit-s button{padding:.2rem .5rem;border:1px solid rgba(110,220,235,.3);border-radius:999px;background:none;color:#a9d6df;font:500 .72rem Manrope,system-ui,sans-serif;cursor:pointer}' +
     '#bit .bit-s button:hover{border-color:#46e3ee;color:#46e3ee}' +
     '#bit .bit-b{display:flex;justify-content:space-between;gap:.8rem}' +
+    '#bit .bit-chat{display:none;width:100%;margin-top:.5rem;padding:.4rem .6rem;border:1px solid #ffb547;border-radius:8px;background:rgba(255,181,71,.08);color:#ffb547;font:600 .8rem Manrope,system-ui,sans-serif;cursor:pointer}' +
+    '#bit .bit-chat:hover{background:rgba(255,181,71,.18)}' +
+    '#bit.conversa .bit-chat{display:block}' +
     '#bit-volta{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:40;width:34px;height:34px;border-radius:50%;border:1px solid rgba(110,220,235,.38);background:#0d1a28;color:#46e3ee;font-size:16px;line-height:1;cursor:pointer;opacity:.75}' +
     '#bit-volta:hover{opacity:1}' +
     '@media print{#bit,#bit-volta{display:none}}' +
@@ -170,6 +174,7 @@
       '<div class="bit-f"><span class="bit-t" role="status" aria-live="polite"></span><a class="bit-l" href="#"></a>' +
         '<form class="bit-q" autocomplete="off"><input type="text" maxlength="140" placeholder="Pergunta-me sobre IA…" aria-label="Pergunta para o Bit" enterkeyhint="send"><button type="submit" aria-label="Enviar pergunta">➤</button></form>' +
         '<div class="bit-s"></div>' +
+        '<button type="button" class="bit-chat">💬 Falar com o Ricardo</button>' +
         '<div class="bit-b"><button type="button" class="bit-x" data-x="esconder">esconder o Bit</button><button type="button" class="bit-x" data-x="fechar">fechar ✕</button></div></div>' +
       '<button class="bit-c" type="button" aria-label="Bit, a mascote do site: clica para uma dica de IA">' +
       '<svg viewBox="0 0 46 54" aria-hidden="true"><g class="tudo">' +
@@ -196,6 +201,8 @@
     });
     fala.querySelector('[data-x=esconder]').addEventListener('click', function () { guarda.set('bit-escondido', '1'); remover(); botaoVoltar(); });
     fala.querySelector('[data-x=fechar]').addEventListener('click', function () { calar(); });
+    fala.querySelector('.bit-chat').addEventListener('click', abrirChat);
+    lig.addEventListener('click', function (e) { if (lig.getAttribute('href') === '#chat') { e.preventDefault(); abrirChat(); } });
     fala.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); perguntar(inp.value); });
     sug.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) perguntar(b.textContent); });
     inp.addEventListener('focus', function () { clearTimeout(tFala); });
@@ -239,6 +246,9 @@
     }
     mostrar(t, l); espera(15000);
   }
+  function abrirChat() { calar(); if (window.chatSite) window.chatSite.abrir(); }
+  // usado pelo chat para avisar que o Ricardo respondeu
+  window.bitDiz = function (t) { if (!el) { if (window.chatSite) window.chatSite.abrir(); return; } conversa(t, ['Abrir o chat', '#chat'], false); };
   function perguntar(q) {
     q = String(q || '').trim(); if (!q) { inp.focus(); return; }
     var r = responder(q);
