@@ -1,4 +1,4 @@
-/* Bit, a mascote do site: um robozinho que passeia pelo fundo do ecrã e dá dicas de IA.
+/* Bit, a mascote do site: um robozinho que passeia por todo o ecrã (a pé ou a voar) e dá dicas de IA.
    Clicar nele = dica nova. Pode esconder-se (fica guardado neste browser). */
 (function () {
   if (window.__bit) return; window.__bit = true;
@@ -35,7 +35,7 @@
 
   var css = document.createElement('style');
   css.textContent =
-    '#bit{position:fixed;left:0;bottom:calc(6px + env(safe-area-inset-bottom,0px));z-index:40;width:46px;height:54px;pointer-events:none;will-change:transform}' +
+    '#bit{position:fixed;left:0;top:0;z-index:40;width:46px;height:54px;pointer-events:none;will-change:transform}' +
     '#bit .bit-c{position:absolute;inset:0;border:0;padding:0;background:none;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;filter:drop-shadow(0 0 8px rgba(70,227,238,.35))}' +
     '#bit .bit-c:focus-visible{outline:2px solid #46e3ee;outline-offset:3px;border-radius:10px}' +
     '#bit svg{display:block;width:46px;height:54px;overflow:visible}' +
@@ -49,6 +49,13 @@
     '#bit.andar .b1{animation:bit-braco .5s linear infinite reverse}' +
     '#bit.andar .b2{animation:bit-braco .5s linear infinite}' +
     '#bit.andar .tudo{animation:bit-balanco .5s ease-in-out infinite}' +
+    '#bit .chama{opacity:0;transform-box:fill-box;transform-origin:50% 0}' +
+    '#bit.voar .chama{opacity:1;animation:bit-chama .18s ease-in-out infinite alternate}' +
+    '#bit.voar .perna{animation:none}' +
+    '#bit.voar .tudo{animation:bit-flutua 1s ease-in-out infinite}' +
+    '@keyframes bit-chama{from{transform:scaleY(.6)}to{transform:scaleY(1.3)}}' +
+    '@keyframes bit-flutua{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-2px) rotate(4deg)}}' +
+    '#bit.baixo .bit-f{bottom:auto;top:62px}' +
     '#bit.salto .tudo{animation:bit-salto .45s ease-out}' +
     '@keyframes bit-passo{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}' +
     '@keyframes bit-braco{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}' +
@@ -66,7 +73,7 @@
     '@media (prefers-reduced-motion:reduce){#bit *{animation:none!important}}';
   document.head.appendChild(css);
 
-  var el, fala, txt, x = 20, dir = 1, estado = 'andar', ate = 0, ultimo = 0, tFala = 0, iDica = -1, raf = 0;
+  var el, fala, txt, x = 20, y = 0, ax = 0, ay = 0, dir = 1, estado = 'andar', ate = 0, ultimo = 0, tFala = 0, iDica = -1, raf = 0;
 
   function criar() {
     el = document.createElement('div'); el.id = 'bit';
@@ -78,6 +85,7 @@
         '<circle class="luz" cx="23" cy="3" r="2.6" fill="#ffb547"/>' +
         '<rect class="braco b1" x="5" y="29" width="5" height="12" rx="2.5" fill="#12283a" stroke="#46e3ee" stroke-width="1.3"/>' +
         '<rect class="braco b2" x="36" y="29" width="5" height="12" rx="2.5" fill="#12283a" stroke="#46e3ee" stroke-width="1.3"/>' +
+        '<path class="chama" d="M15 51.5q2.5 8 5 0zM26 51.5q2.5 8 5 0z" fill="#ffb547"/>' +
         '<rect class="perna p1" x="14.5" y="41" width="6" height="11" rx="3" fill="#12283a" stroke="#46e3ee" stroke-width="1.3"/>' +
         '<rect class="perna p2" x="25.5" y="41" width="6" height="11" rx="3" fill="#12283a" stroke="#46e3ee" stroke-width="1.3"/>' +
         '<rect x="11" y="27" width="24" height="17" rx="5" fill="#0d1a28" stroke="#46e3ee" stroke-width="1.5"/>' +
@@ -95,14 +103,15 @@
       dizer(DICAS[iDica], 6500);
     });
     fala.querySelector('button').addEventListener('click', function () { guarda.set('bit-escondido', '1'); remover(); botaoVoltar(); });
-    x = parado ? Math.max(8, window.innerWidth - 60) : 20;
+    x = parado ? Math.max(8, window.innerWidth - 60) : 20; y = chao(); alvo();
     por();
     setTimeout(function () { if (el) dizer(guarda.get('bit-visto') ? (OLA[pagina] || OLA.index) : OLA.index, 6000); guarda.set('bit-visto', '1'); }, 1400);
     if (!parado) { el.classList.add('andar'); ultimo = 0; raf = requestAnimationFrame(passo); }
   }
 
   function por() {
-    el.style.transform = 'translateX(' + Math.round(x) + 'px)';
+    el.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+    el.classList.toggle('baixo', y < 190);
     el.classList.toggle('esq', dir < 0);
     // manter o balão dentro do ecrã
     var w = fala.offsetWidth || 200, min = 8 - x, max = window.innerWidth - 8 - w - x;
@@ -123,18 +132,31 @@
     if (!el) return;
     var dt = ultimo ? Math.min(60, t - ultimo) : 16; ultimo = t;
     if (estado === 'andar' && !document.hidden) {
-      x += dir * dt * 0.038;
-      var lim = window.innerWidth - 54;
-      if (x > lim) { x = lim; dir = -1; } else if (x < 8) { x = 8; dir = 1; }
+      var dx = ax - x, dy = ay - y, d = Math.sqrt(dx * dx + dy * dy), v = dt * (voa ? 0.06 : 0.038);
+      if (d <= v + 1) { x = ax; y = ay; alvo(); }
+      else { x += (dx / d) * v; y += (dy / d) * v; if (Math.abs(dx) > 2) dir = dx > 0 ? 1 : -1; }
       if (!ate) ate = t + 7000 + Math.random() * 8000;
       if (t > ate) { // pausa para olhar à volta; de vez em quando dá uma dica sozinho
         ate = 0;
         if (Math.random() < 0.3) { iDica = (iDica + 1) % DICAS.length; dizer(DICAS[iDica], 5500); }
-        else { estado = 'parado'; el.classList.remove('andar'); setTimeout(function () { if (el && !el.classList.contains('fala')) { if (Math.random() < 0.4) dir = -dir; estado = 'andar'; el.classList.add('andar'); } }, 1200 + Math.random() * 1800); }
+        else { estado = 'parado'; el.classList.remove('andar'); setTimeout(function () { if (el && !el.classList.contains('fala')) { alvo(); estado = 'andar'; el.classList.add('andar'); } }, 1200 + Math.random() * 1800); }
       }
       por();
     }
     raf = requestAnimationFrame(passo);
+  }
+
+  // limites do passeio: abaixo da barra do topo, acima do fundo do ecrã
+  var voa = false;
+  function chao() { return Math.max(80, window.innerHeight - 62); }
+  // escolhe o próximo destino: às vezes caminha pelo "chão", outras vezes voa para outro ponto do ecrã
+  function alvo() {
+    var W = Math.max(60, window.innerWidth - 54), c = chao();
+    ax = 8 + Math.random() * (W - 8);
+    if (y >= c - 2 && Math.random() < 0.35) ay = c;        // passeio pelo chão
+    else ay = Math.random() < 0.25 ? c : 76 + Math.random() * Math.max(1, c - 76);
+    voa = !parado && Math.abs(ay - y) > 6;
+    if (el) el.classList.toggle('voar', voa);
   }
 
   function remover() { cancelAnimationFrame(raf); clearTimeout(tFala); if (el) el.remove(); el = null; }
@@ -144,7 +166,7 @@
     b.onclick = function () { guarda.set('bit-escondido', ''); b.remove(); criar(); };
     document.body.appendChild(b);
   }
-  window.addEventListener('resize', function () { if (el) { x = Math.min(x, Math.max(8, window.innerWidth - 54)); por(); } });
+  window.addEventListener('resize', function () { if (el) { x = Math.min(x, Math.max(8, window.innerWidth - 54)); y = parado ? chao() : Math.min(y, chao()); ax = Math.min(ax, Math.max(8, window.innerWidth - 54)); ay = Math.min(ay, chao()); por(); } });
 
   function arrancar() { if (guarda.get('bit-escondido') === '1') botaoVoltar(); else criar(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
