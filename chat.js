@@ -5,7 +5,7 @@
 (function () {
   if (window.chatSite) return;
   // Desligado até a base de dados do chat estar criada (chat_site.sql no Supabase)
-  var ATIVO = false;
+  var ATIVO = true;
   if (!ATIVO) {
     var st = document.createElement('style'); st.textContent = 'a[href="#chat"],.chat-sep,#bit .bit-chat{display:none!important}'; document.head.appendChild(st);
     window.chatSite = { abrir: function () {}, fechar: function () {}, temConversa: function () { return false; } };
