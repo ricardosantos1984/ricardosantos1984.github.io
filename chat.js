@@ -4,6 +4,13 @@
    base de dados só deixa ler a conversa a quem tem esse identificador. */
 (function () {
   if (window.chatSite) return;
+  // Desligado até a base de dados do chat estar criada (chat_site.sql no Supabase)
+  var ATIVO = false;
+  if (!ATIVO) {
+    var st = document.createElement('style'); st.textContent = 'a[href="#chat"],.chat-sep,#bit .bit-chat{display:none!important}'; document.head.appendChild(st);
+    window.chatSite = { abrir: function () {}, fechar: function () {}, temConversa: function () { return false; } };
+    return;
+  }
   var API = 'https://uthotfdcfwrdyivhwkpw.supabase.co/rest/v1/rpc/';
   var KEY = 'sb_publishable_1NO-glUWpi7oEzQUS2xX0A_7TS9qNpu';
   var g = { get: function (k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: function (k, v) { try { localStorage.setItem(k, v); } catch (e) {} } };
