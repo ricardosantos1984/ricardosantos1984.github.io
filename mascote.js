@@ -1,4 +1,6 @@
 /* Bit, a mascote do site: um robozinho que passeia por todo o ecrã (a pé ou a voar) e dá dicas de IA.
+   Às vezes faz truques: vira foguetão ou carro, programa no portátil, dança,
+   joga à bola, faz o pino… e se ninguém mexer na página durante um bocado, adormece.
    Clicar nele = dica nova e uma caixa para lhe fazer perguntas sobre IA.
    As respostas estão todas neste ficheiro (lista SABE): não há IA nem servidor por trás,
    nada do que se escreve sai do browser. Pode esconder-se (fica guardado neste browser). */
@@ -89,11 +91,12 @@
     { k: ['videos', 'ver videos', 'tutorial', 'tutoriais', 'youtube'], r: 'O site tem dezenas de vídeos, quase todos em português, arrumados por tema e por ferramenta.', l: ['Abrir os vídeos', 'videos.html'], w: 0.8 },
     { k: ['diario', 'novidades', 'o que ha de novo', 'ultimas'], r: 'No diário está tudo o que o Ricardo foi construindo com IA, dia a dia.', l: ['Abrir o diário', 'diario.html'], w: 0.8 },
     { k: ['app da casa', 'nossa casa', 'app casa', 'casa'], r: 'A Nossa Casa é a app da família do Ricardo: ementas, compras com comparação de preços, despesas, contadores lidos por foto… Foi toda construída com IA.', l: ['Ver no diário', 'diario.html'], w: 0.8 },
+    { k: ['que sabes fazer', 'o que fazes', 'habilidades', 'truques'], r: 'Sei responder a perguntas sobre IA, levar-te ao chat com o Ricardo… e fazer truques! Escreve "vira foguetão", "vira carro", "dança", "joga à bola", "faz o pino" ou "faz um truque".', w: 0.9 },
     { k: ['piada', 'anedota', 'conta uma'], r: 'Porque é que o robô foi ao médico? Porque tinha um vírus! Bip bip bip.', w: 0.9 },
     { k: ['idade', 'anos tens', 'quando nasceste'], r: 'Nasci a 10 de novembro de 2026. Ainda sou novinho, mas já sei andar e voar!', w: 0.9 },
     { k: ['consciencia', 'sentimentos', 'sente', 'pensa', 'inteligente', 'viva', 'vivo'], r: 'As IAs de hoje são muito boas a prever texto, e os especialistas ainda discutem o que isso significa. Eu cá sou só um robozinho com respostas escritas à mão.', w: 0.9 }
   ];
-  var SUGESTOES = ['O que é um token?', 'Como escrever um bom prompt?', 'O que é um agente de IA?', 'A IA pode enganar-se?', 'Por onde começo?', 'O que é o n8n?'];
+  var SUGESTOES = ['Faz um truque!', 'O que é um token?', 'Como escrever um bom prompt?', 'O que é um agente de IA?', 'A IA pode enganar-se?', 'Por onde começo?', 'O que é o n8n?'];
   function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
   function responder(q) {
     var n = ' ' + norm(q) + ' ', pal = n.trim().split(' '), melhor = null, pts = 0;
@@ -134,6 +137,50 @@
     '@keyframes bit-chama{from{transform:scaleY(.6)}to{transform:scaleY(1.3)}}' +
     '@keyframes bit-flutua{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-2px) rotate(4deg)}}' +
     '#bit.baixo .bit-f{bottom:auto;top:62px}' +
+    '#bit .f-foguete,#bit .f-carro,#bit .f-pc,#bit .f-bola,#bit .f-notas,#bit .f-zz{display:none}' +
+    '#bit.t-bola .f-bola,#bit.t-danca .f-notas,#bit.t-dormir .f-zz{display:inline}' +
+    '#bit.t-bola .p1{animation:bit-passo .22s linear infinite}#bit.t-bola .p2{animation:bit-passo .22s linear infinite reverse}' +
+    '#bit.t-bola .b1{animation:bit-braco .22s linear infinite reverse}#bit.t-bola .b2{animation:bit-braco .22s linear infinite}' +
+    '#bit .bola{transform-box:fill-box;transform-origin:50% 50%;animation:bit-roda .3s linear infinite}' +
+    '#bit.t-danca .tudo{transform-box:fill-box;transform-origin:50% 100%;animation:bit-danca .5s ease-in-out infinite alternate}' +
+    '#bit.t-danca .b1{animation:bit-acena .25s ease-in-out infinite alternate}#bit.t-danca .b2{animation:bit-acena2 .25s ease-in-out infinite alternate}' +
+    '#bit .nota,#bit .zz{opacity:0;font:700 9px Manrope,system-ui,sans-serif}' +
+    '#bit .nota{fill:#ffb547}#bit .zz{fill:#46e3ee}' +
+    '#bit.t-danca .nota{animation:bit-cod 1.2s ease-out infinite}#bit.t-danca .nota.n2{animation-delay:.6s}' +
+    '#bit.t-dormir .zz{animation:bit-zz 2.4s ease-out infinite}#bit.t-dormir .zz.z2{animation-delay:.8s}#bit.t-dormir .zz.z3{animation-delay:1.6s}' +
+    '#bit.t-dormir .olho{animation:none;transform:scaleY(.12)}#bit.t-dormir .luz{animation:none;opacity:.25}' +
+    '#bit.t-dormir .tudo{transform-box:fill-box;transform-origin:50% 100%;animation:bit-respira 2.4s ease-in-out infinite}' +
+    '#bit.t-pino .tudo{transform-box:fill-box;transform-origin:50% 50%;animation:bit-pino 1.6s ease-in-out}' +
+    '#bit.t-acenar .b2{animation:bit-acena2 .3s ease-in-out infinite alternate}' +
+    '@keyframes bit-danca{from{transform:rotate(-12deg) translateY(0)}to{transform:rotate(12deg) translateY(-3px)}}' +
+    '@keyframes bit-acena{from{transform:rotate(150deg)}to{transform:rotate(120deg)}}' +
+    '@keyframes bit-acena2{from{transform:rotate(-150deg)}to{transform:rotate(-120deg)}}' +
+    '@keyframes bit-zz{0%{opacity:0;transform:translate(0,0)}25%{opacity:1}100%{opacity:0;transform:translate(8px,-18px)}}' +
+    '@keyframes bit-respira{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.95)}}' +
+    '@keyframes bit-pino{0%{transform:translateY(0) rotate(0)}30%{transform:translateY(-26px) rotate(180deg)}60%{transform:translateY(-6px) rotate(360deg)}100%{transform:translateY(0) rotate(360deg)}}' +
+    '#bit .f-foguete,#bit .f-carro,#bit .f-pc{display:none}' +
+    '#bit.t-foguete .tudo,#bit.t-carro .tudo{display:none}' +
+    '#bit.t-foguete .f-foguete,#bit.t-carro .f-carro,#bit.t-pc .f-pc{display:inline}' +
+    '#bit .fogo{transform-box:fill-box;transform-origin:50% 0;animation:bit-chama .12s ease-in-out infinite alternate}' +
+    '#bit .roda{transform-box:fill-box;transform-origin:50% 50%;animation:bit-roda .35s linear infinite}' +
+    '#bit .vento{animation:bit-vento .3s linear infinite}' +
+    '#bit.t-foguete .f-foguete{animation:bit-treme .08s linear infinite alternate}' +
+    '#bit.t-carro .f-carro{animation:bit-balanco .25s ease-in-out infinite}' +
+    '#bit.t-pc .b1{animation:bit-tecla1 .16s linear infinite alternate}' +
+    '#bit.t-pc .b2{animation:bit-tecla2 .16s linear infinite alternate}' +
+    '#bit .cod{opacity:0;font:700 6px "JetBrains Mono",monospace;fill:#46e3ee}' +
+    '#bit.t-pc .cod{animation:bit-cod 1.5s ease-out infinite}' +
+    '#bit.t-pc .cod.c2{animation-delay:.5s;fill:#ffb547}' +
+    '#bit.t-pc .cod.c3{animation-delay:1s}' +
+    '#bit .fumo circle{opacity:0;transform-box:fill-box;transform-origin:50% 50%}' +
+    '#bit.puff .fumo circle{animation:bit-puff .5s ease-out}' +
+    '@keyframes bit-roda{to{transform:rotate(360deg)}}' +
+    '@keyframes bit-vento{0%{opacity:.7;transform:translateX(0)}100%{opacity:0;transform:translateX(-6px)}}' +
+    '@keyframes bit-treme{from{transform:translateX(-.6px)}to{transform:translateX(.6px)}}' +
+    '@keyframes bit-tecla1{from{transform:rotate(-38deg)}to{transform:rotate(-52deg)}}' +
+    '@keyframes bit-tecla2{from{transform:rotate(38deg)}to{transform:rotate(52deg)}}' +
+    '@keyframes bit-cod{0%{opacity:0;transform:translateY(0)}20%{opacity:1}100%{opacity:0;transform:translateY(-16px)}}' +
+    '@keyframes bit-puff{0%{opacity:.9;transform:scale(.3)}100%{opacity:0;transform:scale(1.8)}}' +
     '#bit.salto .tudo{animation:bit-salto .45s ease-out}' +
     '@keyframes bit-passo{0%,100%{transform:rotate(-22deg)}50%{transform:rotate(22deg)}}' +
     '@keyframes bit-braco{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}' +
@@ -166,7 +213,7 @@
     '@media (prefers-reduced-motion:reduce){#bit *{animation:none!important}}';
   document.head.appendChild(css);
 
-  var el, fala, txt, lig, inp, sug, x = 20, y = 0, ax = 0, ay = 0, dir = 1, estado = 'andar', ate = 0, ultimo = 0, tFala = 0, iDica = -1, raf = 0;
+  var el, fala, txt, lig, inp, sug, x = 20, y = 0, ax = 0, ay = 0, dir = 1, estado = 'andar', tq = null, ate = 0, ultimo = 0, tFala = 0, iDica = -1, raf = 0;
 
   function criar() {
     el = document.createElement('div'); el.id = 'bit';
@@ -191,7 +238,34 @@
         '<rect x="10.5" y="13" width="25" height="12" rx="4.5" fill="#06101a"/>' +
         '<ellipse class="olho" cx="19" cy="19" rx="2.4" ry="3" fill="#46e3ee"/>' +
         '<ellipse class="olho" cx="29.5" cy="19" rx="2.4" ry="3" fill="#46e3ee"/>' +
-      '</g></svg></button>';
+      '</g>' +
+      // portátil (à frente do corpo) e código a sair
+      '<g class="f-pc"><rect x="11" y="31" width="24" height="11" rx="1.5" fill="#12283a" stroke="#46e3ee" stroke-width="1.3"/>' +
+        '<circle cx="23" cy="36.5" r="1.6" fill="#ffb547"/><rect x="7" y="42" width="32" height="3" rx="1.2" fill="#46e3ee"/>' +
+        '<text class="cod" x="31" y="10">{ }</text><text class="cod c2" x="2" y="12">&lt;/&gt;</text><text class="cod c3" x="33" y="20">01</text></g>' +
+      // foguetão
+      '<g class="f-foguete"><path class="fogo" d="M18 40q5 18 10 0z" fill="#ffb547"/><path class="fogo" d="M20.5 40q2.5 10 5 0z" fill="#fff3d6"/>' +
+        '<path d="M15 29 7 43l8-4zM31 29l8 14-8-4z" fill="#ffb547"/>' +
+        '<path d="M23 1c8 8 9 21 8 39H15c-1-18 0-31 8-39z" fill="#0d1a28" stroke="#46e3ee" stroke-width="1.6" stroke-linejoin="round"/>' +
+        '<circle cx="23" cy="19" r="5.5" fill="#06101a" stroke="#46e3ee" stroke-width="1.3"/>' +
+        '<ellipse class="olho" cx="21" cy="19" rx="1.2" ry="1.6" fill="#46e3ee"/><ellipse class="olho" cx="25.2" cy="19" rx="1.2" ry="1.6" fill="#46e3ee"/>' +
+        '<path d="M17 33h12" stroke="#46e3ee" stroke-width="1.2"/></g>' +
+      // carro
+      '<g class="f-carro"><path class="vento" d="M-9 30h7M-12 35h9M-8 40h6" stroke="#46e3ee" stroke-width="1.3" stroke-linecap="round"/>' +
+        '<line x1="22" y1="23" x2="22" y2="16" stroke="#46e3ee" stroke-width="1.4"/><circle class="luz" cx="22" cy="15.5" r="2.2" fill="#ffb547"/>' +
+        '<path d="M2 42v-6l7-11c1-1.5 2.5-2 4-2h17c2.5 0 4 1 5.5 3l3.5 5 4 1.5c1.2.5 2 1.5 2 3V42z" fill="#0d1a28" stroke="#46e3ee" stroke-width="1.6" stroke-linejoin="round"/>' +
+        '<path d="M11 31l3.5-5h15l4 5z" fill="#06101a" stroke="#46e3ee" stroke-width="1"/>' +
+        '<ellipse class="olho" cx="19" cy="28.5" rx="1.6" ry="2" fill="#46e3ee"/><ellipse class="olho" cx="26" cy="28.5" rx="1.6" ry="2" fill="#46e3ee"/>' +
+        '<circle cx="44" cy="35" r="1.4" fill="#ffb547"/>' +
+        '<g class="roda"><circle cx="12" cy="43" r="5" fill="#12283a" stroke="#46e3ee" stroke-width="1.4"/><path d="M12 39v8M8 43h8" stroke="#46e3ee" stroke-width="1"/></g>' +
+        '<g class="roda"><circle cx="35" cy="43" r="5" fill="#12283a" stroke="#46e3ee" stroke-width="1.4"/><path d="M35 39v8M31 43h8" stroke="#46e3ee" stroke-width="1"/></g></g>' +
+      // bola de futebol, notas de música e zzz
+      '<g class="f-bola"><g class="bola"><circle cx="46" cy="48.5" r="5.5" fill="#ffffff" stroke="#06101a" stroke-width=".9"/><path d="M46 45.2l2.6 1.9-1 3.1h-3.2l-1-3.1z" fill="#06101a"/></g></g>' +
+      '<g class="f-notas"><text class="nota" x="38" y="12">♪</text><text class="nota n2" x="0" y="16">♫</text></g>' +
+      '<g class="f-zz"><text class="zz" x="34" y="12">z</text><text class="zz z2" x="38" y="8">z</text><text class="zz z3" x="42" y="4">Z</text></g>' +
+      // fumo da transformação
+      '<g class="fumo"><circle cx="15" cy="30" r="8" fill="#e4f3f7"/><circle cx="31" cy="26" r="9" fill="#e4f3f7"/><circle cx="23" cy="40" r="8" fill="#e4f3f7"/></g>' +
+      '</svg></button>';
     document.body.appendChild(el);
     fala = el.querySelector('.bit-f'); txt = fala.querySelector('.bit-t'); lig = fala.querySelector('.bit-l'); inp = fala.querySelector('input'); sug = fala.querySelector('.bit-s');
     el.querySelector('.bit-c').addEventListener('click', function () {
@@ -224,6 +298,7 @@
   }
 
   function mostrar(t, l) {
+    if (tq) acabarTruque(true);
     txt.textContent = t;
     if (l) { lig.textContent = l[0] + ' →'; lig.href = l[1]; lig.classList.add('on'); } else lig.classList.remove('on');
     el.classList.add('fala'); estado = 'parado'; el.classList.remove('andar'); por();
@@ -251,6 +326,15 @@
   window.bitDiz = function (t) { if (!el) { if (window.chatSite) window.chatSite.abrir(); return; } conversa(t, ['Abrir o chat', '#chat'], false); };
   function perguntar(q) {
     q = String(q || '').trim(); if (!q) { inp.focus(); return; }
+    var nq = q.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    var pedido = /foguet|rocket|voa/.test(nq) ? 'foguete' : /carro|conduz|guia/.test(nq) ? 'carro' : /danca|dancar|musica/.test(nq) ? 'danca' : /bola|futebol|futsal|golo/.test(nq) ? 'bola' : /pino|cambalhota|salto mortal|mortal/.test(nq) ? 'pino' : /dorme|dormir|sono/.test(nq) ? 'dormir' : /portatil|computador|programa|escreve/.test(nq) && /faz|mostra|vira|transforma|poe|pega|usa/.test(nq) ? 'pc' : /truque|transforma|magia/.test(nq) ? '' : null;
+    if (pedido !== null && !parado) {
+      inp.value = '';
+      var frases = { danca: 'Música, maestro! 🎶', bola: 'Bola para a frente, rumo à baliza! ⚽', pino: 'Atenção… hop! 🤸', dormir: 'Uaaah… só cinco minutinhos. 😴', foguete: 'Contagem decrescente… 3, 2, 1… 🚀', carro: 'Vrum vrum! Apertem os cintos! 🚗', pc: 'Vou programar um bocadinho… tac tac tac 💻', '': 'Vê só esta! ✨' };
+      conversa(frases[pedido], null, false);
+      setTimeout(function () { calar(); if (pedido === 'carro' && y < chao() - 4) { y = chao(); por(); } truque(pedido || undefined); }, 1300);
+      return;
+    }
     var r = responder(q);
     inp.value = '';
     if (r) conversa(r.r, r.l || null, false);
@@ -261,15 +345,18 @@
   function passo(t) {
     if (!el) return;
     var dt = ultimo ? Math.min(60, t - ultimo) : 16; ultimo = t;
-    if (estado === 'andar' && !document.hidden) {
+    if (estado === 'truque' && !document.hidden) { truquePasso(t, dt); por(); }
+    else if (estado === 'andar' && !document.hidden) {
       var dx = ax - x, dy = ay - y, d = Math.sqrt(dx * dx + dy * dy), v = dt * (voa ? 0.06 : 0.038);
       if (d <= v + 1) { x = ax; y = ay; alvo(); }
       else { x += (dx / d) * v; y += (dy / d) * v; if (Math.abs(dx) > 2) dir = dx > 0 ? 1 : -1; }
       if (!ate) ate = t + 7000 + Math.random() * 8000;
       if (t > ate) { // pausa para olhar à volta; de vez em quando dá uma dica sozinho
         ate = 0;
-        if (Math.random() < 0.3) { iDica = (iDica + 1) % DICAS.length; dizer(DICAS[iDica], 5500); }
-        else { estado = 'parado'; el.classList.remove('andar'); setTimeout(function () { if (el && !el.classList.contains('fala')) { alvo(); estado = 'andar'; el.classList.add('andar'); } }, 1200 + Math.random() * 1800); }
+        var sorte = Math.random();
+        if (sorte < 0.25) { iDica = (iDica + 1) % DICAS.length; dizer(DICAS[iDica], 5500); }
+        else if (sorte < 0.6) truque();
+        else { estado = 'parado'; el.classList.remove('andar'); setTimeout(function () { if (el && !tq && !el.classList.contains('fala')) { alvo(); estado = 'andar'; el.classList.add('andar'); } }, 1200 + Math.random() * 1800); }
       }
       por();
     }
@@ -289,6 +376,57 @@
     if (el) el.classList.toggle('voar', voa);
   }
 
+  /* ---------- truques: foguetão, carro e portátil ---------- */
+  function fumo() { if (!el) return; el.classList.remove('puff'); void el.offsetWidth; el.classList.add('puff'); }
+  function truque(nome) {
+    if (!el || parado || tq) return;
+    var c = chao(), noChao = y >= c - 4;
+    if (!nome) { var op = ['foguete', 'pc', 'danca', 'pino']; if (noChao) op.push('carro', 'carro', 'bola', 'bola'); nome = op[Math.floor(Math.random() * op.length)]; }
+    if ((nome === 'carro' || nome === 'bola') && !noChao) { y = c; por(); }
+    var semFumo = { danca: 1, pino: 1, dormir: 1, bola: 1, acenar: 1 };
+    estado = 'truque'; el.classList.remove('andar', 'voar');
+    tq = { nome: nome, fase: 0, ini: performance.now() };
+    if (!semFumo[nome]) fumo();
+    setTimeout(function () { if (el && tq && tq.nome === nome) el.classList.add('t-' + nome); }, semFumo[nome] ? 0 : 180);
+  }
+  function acabarTruque(rapido) {
+    if (!el || !tq) return;
+    var nome = tq.nome; tq = null;
+    var transforma = nome === 'foguete' || nome === 'carro' || nome === 'pc';
+    if (!rapido && transforma) fumo();
+    setTimeout(function () { if (el) el.classList.remove('t-' + nome); }, rapido || !transforma ? 0 : 160);
+    if (y < 76) y = 76;
+    if (!rapido) { estado = 'andar'; el.classList.add('andar'); alvo(); ate = performance.now() + 7000 + Math.random() * 8000; }
+  }
+  function truquePasso(t, dt) {
+    var q = tq, W = Math.max(60, window.innerWidth - 54);
+    if (!q) { estado = 'andar'; return; }
+    var dentro = t - q.ini;
+    if (q.nome === 'pc') { if (dentro > 4500) acabarTruque(); return; }
+    if (q.nome === 'danca') { if (dentro > 3500) acabarTruque(); return; }
+    if (q.nome === 'pino') { if (dentro > 1650) acabarTruque(); return; }
+    if (q.nome === 'acenar') { if (dentro > 1800) acabarTruque(); return; }
+    if (q.nome === 'dormir') return;                   // acorda quando alguém mexe na página
+    if (q.nome === 'bola') {
+      if (q.fase === 0) { q.fase = 1; q.alvo = x < W / 2 ? W : 8; dir = q.alvo > x ? 1 : -1; }
+      x += dir * dt * 0.15;
+      if ((dir > 0 && x >= q.alvo) || (dir < 0 && x <= q.alvo)) { x = q.alvo; acabarTruque(); }
+      return;
+    }
+    if (q.nome === 'foguete') {
+      if (dentro < 700) return;                       // aquecer os motores
+      if (q.fase === 0) { y -= dt * 0.38; if (y < -80) { q.fase = 1; x = 8 + Math.random() * (W - 8); y = -80; q.alvo = 90 + Math.random() * Math.max(1, chao() - 90); } }
+      else { y += dt * 0.22; if (y >= q.alvo) { y = q.alvo; acabarTruque(); } }
+      return;
+    }
+    if (q.nome === 'carro') {
+      if (q.fase === 0) { q.fase = 1; q.alvo = x < W / 2 ? W : 8; dir = q.alvo > x ? 1 : -1; }
+      if (dentro < 400) return;
+      x += dir * dt * 0.24;
+      if ((dir > 0 && x >= q.alvo) || (dir < 0 && x <= q.alvo)) { x = q.alvo; acabarTruque(); }
+    }
+  }
+
   function remover() { cancelAnimationFrame(raf); clearTimeout(tFala); if (el) el.remove(); el = null; }
   function botaoVoltar() {
     var b = document.createElement('button'); b.id = 'bit-volta'; b.type = 'button'; b.textContent = '🤖';
@@ -297,6 +435,18 @@
     document.body.appendChild(b);
   }
   window.addEventListener('resize', function () { if (el) { x = Math.min(x, Math.max(8, window.innerWidth - 54)); y = parado ? chao() : Math.min(y, chao()); ax = Math.min(ax, Math.max(8, window.innerWidth - 54)); ay = Math.min(ay, chao()); por(); } });
+
+  // adormece ao fim de 45 s sem ninguém mexer na página; acorda (e acena) com o primeiro movimento
+  var ultimaAtividade = Date.now();
+  function atividade() {
+    ultimaAtividade = Date.now();
+    if (el && tq && tq.nome === 'dormir') { acabarTruque(true); estado = 'parado'; tq = null; truque('acenar'); }
+  }
+  ['pointermove', 'pointerdown', 'keydown', 'scroll', 'touchstart'].forEach(function (ev) { window.addEventListener(ev, atividade, { passive: true }); });
+  setInterval(function () {
+    if (!el || parado || tq || el.classList.contains('fala') || document.hidden) return;
+    if (Date.now() - ultimaAtividade > 45000) { if (y < chao() - 4) { y = chao(); por(); } truque('dormir'); }
+  }, 5000);
 
   function arrancar() { if (guarda.get('bit-escondido') === '1') botaoVoltar(); else criar(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arrancar); else arrancar();
