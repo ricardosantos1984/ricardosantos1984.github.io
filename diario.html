@@ -393,7 +393,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <div class="hero compact">
   <div class="inner">
     <div class="page-hero frame">
-      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>55</b></span><span>DIAS <b>11</b></span></div>
+      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>57</b></span><span>DIAS <b>12</b></span></div>
       <h1>Diário de IA</h1>
       <p class="intro">O que fui aprendendo e construindo com inteligência artificial. O dia mais recente está aberto; carrega num dia para ver as entradas.</p>
       <div class="chips" role="group" aria-label="Filtrar por tema">
@@ -413,7 +413,14 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       <div class="sec-head"><span class="idx">[01]</span><h2 id="entradas-t">Entradas por dia</h2><span class="rule"></span></div>
       <div class="next-card"><span class="label">A seguir</span><b>Mais lojas e histórico de preços</b><p style="color:var(--muted)">Guardar os preços ao longo do tempo para avisar quando um artigo da lista baixa de preço.</p></div>
       <div>
-      <details class="day" open data-day="2026-11-10">
+      <details class="day" open data-day="2026-11-11">
+        <summary><h3>11 de novembro</h3><span class="count">2 entradas</span></summary>
+        <ol class="log simple">
+        <li data-tag="IA"><span class="node"></span><div class="what"><b>Faturas lidas pela IA<span class="tag">IA</span></b><p>As faturas da luz, da internet, da água e do gás que chegam ao email passam a entrar sozinhas nas despesas da app da casa. De hora a hora o n8n procura-as no Hotmail, a IA (Gemini) lê o email e o PDF da fatura e tira o valor, a data de débito e o período. Se a despesa do mês já existe, atualiza o valor; se não, cria-a, e no fim avisa no WhatsApp. Também funciona com faturas reencaminhadas pela família, ignora contas que não são da casa e, se a IA estiver em baixo, tenta outra vez nas horas seguintes antes de avisar.</p></div></li>
+        <li data-tag="Site"><span class="node"></span><div class="what"><b>O Bit aprendeu a dançar<span class="tag">Site</span></b><p>A mascote do site ganhou uma coreografia de 12 segundos: balanço, passinhos para os lados, dança do robô, pião no ar, passo de disco e pose final, com bola de espelhos e luzes coloridas. Basta escrever "dança" ao Bit ou carregar em "Dança, Bit!".</p></div></li>
+        </ol>
+      </details>
+      <details class="day" data-day="2026-11-10">
         <summary><h3>10 de novembro</h3><span class="count">6 entradas</span></summary>
         <ol class="log simple">
         <li data-tag="Automação"><span class="node"></span><div class="what"><b>Chat do site ligado ao WhatsApp<span class="tag">Automação</span></b><p>Quem visita o site pode deixar uma mensagem no chat "Falar comigo": o n8n vê-a a cada minuto e envia-ma para o WhatsApp com um código. Respondo no WhatsApp com esse código e a resposta aparece no chat do site. As mensagens passam por uma base de dados no Supabase com regras que só deixam cada visitante ver a sua conversa, e apagam-se ao fim de 30 dias. Testado de ponta a ponta: mensagem do site → WhatsApp → resposta → site.</p></div></li>
