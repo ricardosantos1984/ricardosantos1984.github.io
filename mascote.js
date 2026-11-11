@@ -101,7 +101,7 @@
     { k: ['idade', 'anos tens', 'quando nasceste'], r: 'Nasci a 10 de novembro de 2026. Ainda sou novinho, mas já sei andar e voar!', w: 0.9 },
     { k: ['consciencia', 'sentimentos', 'sente', 'pensa', 'inteligente', 'viva', 'vivo'], r: 'As IAs de hoje são muito boas a prever texto, e os especialistas ainda discutem o que isso significa. Eu cá sou só um robozinho com respostas escritas à mão.', w: 0.9 }
   ];
-  var SUGESTOES = ['Faz um truque!', 'O que é um token?', 'Como escrever um bom prompt?', 'O que é um agente de IA?', 'A IA pode enganar-se?', 'Por onde começo?', 'O que é o n8n?'];
+  var SUGESTOES = ['Faz um truque!', 'Dança, Bit!', 'O que é um token?', 'Como escrever um bom prompt?', 'O que é um agente de IA?', 'A IA pode enganar-se?', 'Por onde começo?', 'O que é o n8n?'];
   function norm(t) { return String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim(); }
   function responder(q) {
     var n = ' ' + norm(q) + ' ', pal = n.trim().split(' '), melhor = null, pts = 0;
@@ -173,8 +173,30 @@
     '#bit.t-bola .p1{animation:bit-passo .22s linear infinite}#bit.t-bola .p2{animation:bit-passo .22s linear infinite reverse}' +
     '#bit.t-bola .b1{animation:bit-braco .22s linear infinite reverse}#bit.t-bola .b2{animation:bit-braco .22s linear infinite}' +
     '#bit .bola{transform-box:fill-box;transform-origin:50% 50%;animation:bit-roda .3s linear infinite}' +
-    '#bit.t-danca .tudo{transform-box:fill-box;transform-origin:50% 100%;animation:bit-danca .5s ease-in-out infinite alternate}' +
-    '#bit.t-danca .b1{animation:bit-acena .25s ease-in-out infinite alternate}#bit.t-danca .b2{animation:bit-acena2 .25s ease-in-out infinite alternate}' +
+    // dança: coreografia em 6 partes (balanço, passos, robô, pião, disco, pose final) com bola de espelhos e luzes
+    '#bit.t-danca .tudo{transform-box:fill-box;transform-origin:50% 100%}' +
+    '#bit.m-balanco .tudo{animation:bit-danca .5s ease-in-out infinite alternate}' +
+    '#bit.m-balanco .b1{animation:bit-acena .25s ease-in-out infinite alternate}#bit.m-balanco .b2{animation:bit-acena2 .25s ease-in-out infinite alternate}' +
+    '#bit.m-passos .p1{animation:bit-passo .3s linear infinite}#bit.m-passos .p2{animation:bit-passo .3s linear infinite reverse}' +
+    '#bit.m-passos .b1{animation:bit-braco .3s linear infinite}#bit.m-passos .b2{animation:bit-braco .3s linear infinite reverse}#bit.m-passos .tudo{animation:bit-salto .3s ease-out infinite}' +
+    '#bit.m-robo .b1{animation:bit-robo1 .8s steps(1) infinite}#bit.m-robo .b2{animation:bit-robo2 .8s steps(1) infinite}#bit.m-robo .tudo{animation:bit-robo .4s steps(1) infinite}' +
+    '#bit.m-gira .tudo{animation:bit-gira .7s ease-in-out 2}#bit.m-gira .b1{transform:rotate(90deg)}#bit.m-gira .b2{transform:rotate(-90deg)}' +
+    '#bit.m-disco .b2{animation:bit-disco .6s ease-in-out infinite alternate}#bit.m-disco .b1{transform:rotate(30deg)}#bit.m-disco .tudo{animation:bit-anca .3s ease-in-out infinite alternate}' +
+    '#bit.m-pose .b1{transform:rotate(150deg)}#bit.m-pose .b2{transform:rotate(-150deg)}#bit.m-pose .tudo{animation:bit-pose .5s ease-out forwards}' +
+    '#bit .f-disco{display:none}#bit.t-danca .f-disco{display:inline}' +
+    '#bit .f-disco .espelho{transform-box:fill-box;transform-origin:50% 50%;animation:bit-espelho 1.2s linear infinite}' +
+    '#bit .f-disco .raio{opacity:0;animation:bit-raio 1.2s linear infinite}#bit .f-disco .r2{animation-delay:.3s}#bit .f-disco .r3{animation-delay:.6s}#bit .f-disco .r4{animation-delay:.9s}' +
+    '#bit.t-danca .bit-c{animation:bit-luzes 1.2s steps(1) infinite}' +
+    '@keyframes bit-robo1{0%{transform:rotate(0)}25%{transform:rotate(90deg)}50%{transform:rotate(90deg)}75%{transform:rotate(0)}}' +
+    '@keyframes bit-robo2{0%{transform:rotate(0)}25%{transform:rotate(0)}50%{transform:rotate(-90deg)}75%{transform:rotate(-90deg)}}' +
+    '@keyframes bit-robo{0%{transform:translateX(0)}50%{transform:translateX(2px) rotate(4deg)}}' +
+    '@keyframes bit-gira{0%{transform:scaleX(1) translateY(0)}25%{transform:scaleX(.1) translateY(-8px)}50%{transform:scaleX(-1) translateY(-10px)}75%{transform:scaleX(-.1) translateY(-8px)}100%{transform:scaleX(1) translateY(0)}}' +
+    '@keyframes bit-disco{from{transform:rotate(-160deg)}to{transform:rotate(-20deg)}}' +
+    '@keyframes bit-anca{from{transform:rotate(-6deg)}to{transform:rotate(6deg)}}' +
+    '@keyframes bit-pose{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-10px) scale(1.08)}100%{transform:translateY(0) scale(1.05)}}' +
+    '@keyframes bit-espelho{to{transform:rotate(360deg)}}' +
+    '@keyframes bit-raio{0%{opacity:0}10%{opacity:.85}40%{opacity:0}100%{opacity:0}}' +
+    '@keyframes bit-luzes{0%{filter:drop-shadow(0 0 9px rgba(255,92,180,.75))}25%{filter:drop-shadow(0 0 9px rgba(70,227,238,.8))}50%{filter:drop-shadow(0 0 9px rgba(255,181,71,.8))}75%{filter:drop-shadow(0 0 9px rgba(140,255,120,.75))}}' +
     '#bit .nota,#bit .zz{opacity:0;font:700 9px Manrope,system-ui,sans-serif}' +
     '#bit .nota{fill:#ffb547}#bit .zz{fill:#46e3ee}' +
     '#bit.t-danca .nota{animation:bit-cod 1.2s ease-out infinite}#bit.t-danca .nota.n2{animation-delay:.6s}' +
@@ -376,6 +398,10 @@
       // bola de futebol, notas de música e zzz
       '<g class="f-bola"><g class="bola"><circle cx="46" cy="48.5" r="5.5" fill="#ffffff" stroke="#06101a" stroke-width=".9"/><path d="M46 45.2l2.6 1.9-1 3.1h-3.2l-1-3.1z" fill="#06101a"/></g></g>' +
       '<g class="f-notas"><text class="nota" x="38" y="12">♪</text><text class="nota n2" x="0" y="16">♫</text></g>' +
+      // bola de espelhos da dança
+      '<g class="f-disco"><path d="M23 -22v6" stroke="#7fa3b0" stroke-width=".8"/><g class="espelho"><circle cx="23" cy="-11" r="5" fill="#c9d6dc" stroke="#7fa3b0" stroke-width=".6"/><path d="M18 -11h10M23 -16v10M19.5 -14.5l7 7M26.5 -14.5l-7 7" stroke="#ffffff" stroke-width=".5"/></g>' +
+        '<path class="raio" d="M20 -8 6 8" stroke="#ff5cb4" stroke-width="1.4" stroke-linecap="round"/><path class="raio r2" d="M26 -8 40 8" stroke="#46e3ee" stroke-width="1.4" stroke-linecap="round"/>' +
+        '<path class="raio r3" d="M19 -11 1 -4" stroke="#ffb547" stroke-width="1.4" stroke-linecap="round"/><path class="raio r4" d="M27 -11 45 -4" stroke="#8cff78" stroke-width="1.4" stroke-linecap="round"/></g>' +
       '<g class="f-zz"><g class="vira"><text class="zz" x="34" y="12">z</text><text class="zz z2" x="38" y="8">z</text><text class="zz z3" x="42" y="4">Z</text></g></g>' +
       // fumo da transformação
       '<g class="fumo"><circle cx="15" cy="30" r="8" fill="#e4f3f7"/><circle cx="31" cy="26" r="9" fill="#e4f3f7"/><circle cx="23" cy="40" r="8" fill="#e4f3f7"/></g>' +
@@ -455,7 +481,7 @@
     var pedido = /satelit|orbita/.test(nq) ? 'satelite' : /drone|fotograf|tira uma foto/.test(nq) ? 'drone' : /segue|vem ca|anda ca|persegue/.test(nq) ? 'seguir' : /espreita|esconde-te/.test(nq) ? 'espreitar' : /titulo|sobe|trepa/.test(nq) ? 'titulo' : /golo|marca/.test(nq) ? 'golo' : /pipoca|filme|cinema/.test(nq) ? 'pipocas' : /foguet|rocket|voa/.test(nq) ? 'foguete' : /carro|conduz|guia/.test(nq) ? 'carro' : /danca|dancar|musica/.test(nq) ? 'danca' : /bola|futebol|futsal|golo/.test(nq) ? 'bola' : /pino|cambalhota|salto mortal|mortal/.test(nq) ? 'pino' : /dorme|dormir|sono/.test(nq) ? 'dormir' : /portatil|computador|programa|escreve/.test(nq) && /faz|mostra|vira|transforma|poe|pega|usa/.test(nq) ? 'pc' : /truque|transforma|magia/.test(nq) ? '' : null;
     if (pedido !== null && !parado) {
       inp.value = '';
-      var frases = { satelite: 'A entrar em órbita… 🛰️', drone: 'Sorriam para a fotografia! 📸', seguir: 'Vou atrás de ti! Mexe o rato (ou toca no ecrã) 🐾', espreitar: 'Onde é que eu estou? 👀', titulo: 'Vou ver a página lá de cima! 🧗', golo: 'Vai… vai… ⚽', pipocas: 'Cinema! 🍿', danca: 'Música, maestro! 🎶', bola: 'Bola para a frente, rumo à baliza! ⚽', pino: 'Atenção… hop! 🤸', dormir: 'Uaaah… só cinco minutinhos. 😴', foguete: 'Contagem decrescente… 3, 2, 1… 🚀', carro: 'Vrum vrum! Apertem os cintos! 🚗', pc: 'Vou programar um bocadinho… tac tac tac 💻', '': 'Vê só esta! ✨' };
+      var frases = { satelite: 'A entrar em órbita… 🛰️', drone: 'Sorriam para a fotografia! 📸', seguir: 'Vou atrás de ti! Mexe o rato (ou toca no ecrã) 🐾', espreitar: 'Onde é que eu estou? 👀', titulo: 'Vou ver a página lá de cima! 🧗', golo: 'Vai… vai… ⚽', pipocas: 'Cinema! 🍿', danca: 'Música, maestro! 🎶 Vê só estes passos…', bola: 'Bola para a frente, rumo à baliza! ⚽', pino: 'Atenção… hop! 🤸', dormir: 'Uaaah… só cinco minutinhos. 😴', foguete: 'Contagem decrescente… 3, 2, 1… 🚀', carro: 'Vrum vrum! Apertem os cintos! 🚗', pc: 'Vou programar um bocadinho… tac tac tac 💻', '': 'Vê só esta! ✨' };
       conversa(frases[pedido], null, false);
       setTimeout(function () { calar(); if ((pedido === 'carro' || pedido === 'golo') && y < chao() - 4) { y = chao(); por(); } truque(pedido || undefined); }, 1300);
       return;
@@ -526,7 +552,7 @@
     var nome = tq.nome, cls = tq.cls; tq = null;
     var transforma = { foguete: 1, carro: 1, pc: 1, satelite: 1, drone: 1 }[nome];
     if (!rapido && transforma) fumo();
-    el.classList.remove('t-festa', 'clique', 'voar');
+    el.classList.remove('t-festa', 'clique', 'voar', 'm-balanco', 'm-passos', 'm-robo', 'm-gira', 'm-disco', 'm-pose');
     setTimeout(function () { if (el) el.classList.remove(cls); }, rapido || !transforma ? 0 : 160);
     if (y < 76) y = 76;
     if (x < 8) x = 8;
@@ -586,7 +612,22 @@
       return;
     }
     if (q.nome === 'pc') { if (dentro > 4500) acabarTruque(); return; }
-    if (q.nome === 'danca') { if (dentro > 3500) acabarTruque(); return; }
+    if (q.nome === 'danca') {
+      // coreografia: [início em ms, passo]
+      var PARTES = [[0, 'balanco'], [2400, 'passos'], [4800, 'robo'], [7200, 'gira'], [8600, 'disco'], [11000, 'pose'], [12600, '']];
+      var m = ''; for (var i = 0; i < PARTES.length; i++) if (dentro >= PARTES[i][0]) m = PARTES[i][1];
+      if (q.x0 == null) q.x0 = Math.max(40, Math.min(W - 32, x));
+      if (m !== q.m) {
+        if (q.m) el.classList.remove('m-' + q.m);
+        q.m = m;
+        if (!m) { x = q.x0; acabarTruque(); return; }
+        el.classList.add('m-' + m);
+        if (m === 'pose' && !el.classList.contains('conversa')) dizer('Tcharan! ✨🕺', 2200, true);
+      }
+      if (m === 'passos') { var px2 = q.x0 + Math.sin((dentro - 2400) / 2400 * Math.PI * 4) * 30; dir = px2 > x ? 1 : -1; x = px2; }
+      else if (m === 'robo' || m === 'disco') { x += (q.x0 - x) * Math.min(1, dt * 0.01); }
+      return;
+    }
     if (q.nome === 'pino') { if (dentro > 1650) acabarTruque(); return; }
     if (q.nome === 'acenar') { if (dentro > 1800) acabarTruque(); return; }
     if (q.nome === 'dormir') return;                   // acorda quando alguém mexe na página
