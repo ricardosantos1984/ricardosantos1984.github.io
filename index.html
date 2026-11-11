@@ -141,6 +141,9 @@ h1 {
 }
 .idcard dt { color: var(--dim); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.66rem; padding-top: 0.2rem; }
 .idcard dd { margin: 0; color: var(--ink); }
+.loc-vivo { display: flex; flex-wrap: wrap; gap: 0.15rem 0.6rem; margin-top: 0.2rem; font-size: 0.72rem; color: var(--muted); }
+.loc-hora { color: var(--cyan); font-variant-numeric: tabular-nums; letter-spacing: 0.04em; }
+.loc-tempo:empty { display: none; }
 .status { color: var(--amber); }
 .status::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 8px var(--amber); margin-right: 0.45rem; vertical-align: 0.1em; }
 .meter { grid-column: 1 / -1; margin-top: 0.6rem; display: flex; flex-direction: column; gap: 0.35rem; }
@@ -406,7 +409,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
         <div class="scan" aria-hidden="true"></div>
         <div class="head"><span>ID // Inventário</span><span>2026-RS</span></div>
         <dt>Nome</dt><dd>Ricardo Santos</dd>
-        <dt>Local</dt><dd>Tomar</dd>
+        <dt>Local</dt><dd>Tomar<span class="loc-vivo"><time class="loc-hora" title="Hora local em Tomar">--:--:--</time><span class="loc-tempo" title="Tempo agora em Tomar (Open-Meteo)"></span></span></dd>
         <dt>Função</dt><dd>Técnico de Informática</dd>
         <dt>Foco</dt><dd>IA · automação · web</dd>
         <dt>Estado</dt><dd class="status">IA: módulo completo</dd>
@@ -713,6 +716,37 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       a.replaceWith(box);
     });
   });
+})();
+
+// Hora local e tempo em Tomar no cartão de identificação
+(function () {
+  var h = document.querySelector('.loc-hora'), t = document.querySelector('.loc-tempo');
+  if (!h) return;
+  var fmt; try { fmt = new Intl.DateTimeFormat('pt-PT', { timeZone: 'Europe/Lisbon', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false }); } catch (e) {}
+  function relogio() { var d = new Date(); h.textContent = fmt ? fmt.format(d) : d.toTimeString().slice(0, 8); h.setAttribute('datetime', d.toISOString()); }
+  relogio(); setInterval(relogio, 1000);
+  if (!t) return;
+  function desc(w, dia) {
+    if (w === 0) return [dia ? '☀️' : '🌙', 'céu limpo'];
+    if (w <= 2) return [dia ? '🌤️' : '☁️', 'pouco nublado'];
+    if (w === 3) return ['☁️', 'nublado'];
+    if (w === 45 || w === 48) return ['🌫️', 'nevoeiro'];
+    if (w >= 51 && w <= 57) return ['🌦️', 'chuvisco'];
+    if ((w >= 61 && w <= 67) || (w >= 80 && w <= 82)) return ['🌧️', 'chuva'];
+    if ((w >= 71 && w <= 77) || w === 85 || w === 86) return ['🌨️', 'neve'];
+    if (w >= 95) return ['⛈️', 'trovoada'];
+    return ['🌡️', ''];
+  }
+  function mostrar(v) { var x = desc(v.w, v.dia); t.textContent = x[0] + ' ' + v.temp + ' °C' + (x[1] ? ' · ' + x[1] : ''); }
+  try { var c = JSON.parse(sessionStorage.getItem('site-tempo-tomar') || 'null'); if (c && Date.now() - c.ts < 1800e3) { mostrar(c.v); return; } } catch (e) {}
+  fetch('https://api.open-meteo.com/v1/forecast?latitude=39.6054&longitude=-8.4043&current=temperature_2m,weather_code,is_day&timezone=Europe%2FLisbon')
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      var c = j && j.current; if (!c) return;
+      var v = { temp: Math.round(c.temperature_2m), w: +c.weather_code, dia: c.is_day === 1 };
+      mostrar(v);
+      try { sessionStorage.setItem('site-tempo-tomar', JSON.stringify({ ts: Date.now(), v: v })); } catch (e) {}
+    }).catch(function () {});
 })();
 </script>
 <script src="chat.js" defer></script>
