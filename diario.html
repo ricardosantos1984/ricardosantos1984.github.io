@@ -393,7 +393,7 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
 <div class="hero compact">
   <div class="inner">
     <div class="page-hero frame">
-      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>64</b></span><span>DIAS <b>12</b></span></div>
+      <div class="sys"><span>MOD <b>diário</b></span><span>ENTRADAS <b>68</b></span><span>DIAS <b>13</b></span></div>
       <h1>Diário de IA</h1>
       <p class="intro">O que fui aprendendo e construindo com inteligência artificial. O dia mais recente está aberto; carrega num dia para ver as entradas.</p>
       <div class="chips" role="group" aria-label="Filtrar por tema">
@@ -413,9 +413,18 @@ footer a { font-family: var(--mono); font-size: 0.8rem; }
       <div class="sec-head"><span class="idx">[01]</span><h2 id="entradas-t">Entradas por dia</h2><span class="rule"></span></div>
       <div class="next-card"><span class="label">A seguir</span><b>Mais lojas e histórico de preços</b><p style="color:var(--muted)">Guardar os preços ao longo do tempo para avisar quando um artigo da lista baixa de preço.</p></div>
       <div>
-      <details class="day" open data-day="2026-11-11">
-        <summary><h3>11 de novembro</h3><span class="count">9 entradas</span></summary>
+      <details class="day" open data-day="2026-11-12">
+        <summary><h3>12 de novembro</h3><span class="count">3 entradas</span></summary>
         <ol class="log simple">
+        <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Roda das cores nos desenhos<span class="tag">Dia a dia</span></b><p>O bloco de desenho ganhou uma roda das cores: o tom muda à volta, a intensidade do centro para fora e um deslizador escurece ou clareia a cor. As últimas oito cores escolhidas ficam guardadas para voltar a usar. Pelo caminho apanhei um erro curioso: a app confundia a roda (que também é desenhada num canvas) com a folha de desenho.</p></div></li>
+        <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Livros com capa na estante<span class="tag">Dia a dia</span></b><p>A estante da app passou a mostrar as capas verdadeiras dos livros, tiradas de dentro de cada EPUB, e a ordená-los pela ordem da coleção (1, 2, 3… e não 1, 10, 11, 2). Para os carregar, o n8n leu os ficheiros do PC, numa pasta própria de onde tem autorização para ler, e enviou-os para a app.</p></div></li>
+        <li data-tag="Automação"><span class="node"></span><div class="what"><b>Testar o chat do site de ponta a ponta<span class="tag">Automação</span></b><p>Testei o chat do site como se fosse um visitante: a mensagem foi parar ao n8n, que a mandou para o WhatsApp, e a minha resposta voltou ao site. Aprendi uma lição importante: o serviço de avisos respondeu «mensagem em fila», mas durante uma hora não entregou nada. «Aceite» não quer dizer «entregue», por isso os testes têm de confirmar a chegada.</p></div></li>
+        </ol>
+      </details>
+      <details class="day" data-day="2026-11-11">
+        <summary><h3>11 de novembro</h3><span class="count">10 entradas</span></summary>
+        <ol class="log simple">
+        <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Campo de jogos na app da casa<span class="tag">Dia a dia</span></b><p>A Ema ganhou uma secção de jogos: sopa de letras com seis temas e três níveis (as palavras escondem-se na horizontal, na vertical, na diagonal e até de trás para a frente), jogo do galo a dois ou contra o computador, com um nível «Impossível» em que ele nunca perde, e o jogo da forca, em que um jogador escreve a palavra secreta e o outro adivinha letra a letra enquanto o boneco vai aparecendo.</p></div></li>
         <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Desenhos na app da casa<span class="tag">Dia a dia</span></b><p>A Ema tem agora um bloco de desenho na app: desenha com o dedo em 12 cores, com pincel e borracha de vários tamanhos, balde para o fundo e desfazer. Há formas geométricas (linha, retângulo, círculo, triângulo, estrela e coração, cheias ou só contorno), texto com cinco tipos de letra e a possibilidade de abrir uma foto da galeria para desenhar por cima. No fim, o desenho vai para a galeria do telemóvel.</p></div></li>
         <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Uma estante de livros na app<span class="tag">Dia a dia</span></b><p>Nova secção Livros: uma estante com capas coloridas e um leitor de ebooks em ecrã inteiro (EPUB e PDF), com mudança de página a deslizar o dedo, tamanho de letra ajustável e memória da página onde se ficou. Comecei com cinco clássicos em português de domínio público, do Projeto Gutenberg, que o n8n foi buscar e carregou sozinho.</p></div></li>
         <li data-tag="Dia a dia"><span class="node"></span><div class="what"><b>Instalar a app no Android<span class="tag">Dia a dia</span></b><p>A app da casa passou a mostrar um botão «Instalar» nos telemóveis Android, com os passos certos para o Chrome, o Samsung Internet e o Firefox. Foi assim que ficou no telemóvel da Ema, mesmo com o Family Link.</p></div></li>
