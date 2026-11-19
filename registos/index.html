@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registos de Trabalho</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#111827">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%232563eb'/%3E%3Cpath d='M18 18h28v6H18zM18 30h28v6H18zM18 42h18v6H18z' fill='white'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#f4f6fa;--card:#fff;--line:#e3e7ef;--txt:#1d2433;--mut:#6b7385;--pri:#2563eb;--pri2:#1d4ed8;--side:#111827;--ok:#16a34a;--warn:#d97706;--bad:#dc2626}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;font-size:14px;color:var(--txt);background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+[hidden]{display:none!important}
+/* Bloqueio */
+#lock{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#111827,#1e3a8a)}
+.lockbox{background:#fff;border-radius:14px;padding:32px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.lockbox h1{margin:0 0 4px;font-size:22px}
+.lockbox p{color:var(--mut);margin:0 0 18px}
+.lockbox input{width:100%;margin-bottom:10px}
+.lockbox .links{display:flex;justify-content:space-between;margin-top:14px;font-size:12px}
+.lockbox .links a{color:var(--mut);cursor:pointer}
+.err{color:var(--bad);min-height:18px;font-size:13px}
+/* Layout */
+#app{display:flex;height:100vh}
+aside{width:220px;background:var(--side);color:#cbd5e1;display:flex;flex-direction:column;flex-shrink:0}
+.brand{padding:18px 18px 14px;font-weight:700;color:#fff;font-size:16px;display:flex;gap:10px;align-items:center}
+.brand i{width:28px;height:28px;border-radius:7px;background:var(--pri);display:inline-flex;align-items:center;justify-content:center;font-style:normal}
+nav{flex:1;padding:6px 10px;overflow:auto}
+nav button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;color:inherit;padding:9px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px}
+nav button:hover{background:#1f2937;color:#fff}
+nav button.on{background:var(--pri);color:#fff}
+nav .cnt{margin-left:auto;font-size:11px;background:#374151;border-radius:10px;padding:1px 7px}
+nav button.on .cnt{background:rgba(255,255,255,.25)}
+.sidefoot{padding:12px}
+.sync{font-size:12px;margin-bottom:8px;color:#9ca3af;text-align:center}
+.sync.warn{color:#fbbf24}
+.lockbox .links{gap:14px}.lockbox .links a{max-width:60%}
+.sidefoot button{width:100%;background:#1f2937;border-color:#374151;color:#e5e7eb}.sidefoot button:hover{background:#374151}
+main{flex:1;overflow:auto;padding:24px 28px}
+h2{margin:0;font-size:21px}
+.top{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.top .sp{flex:1}
+/* Controlos */
+input,select,textarea{border:1px solid var(--line);border-radius:8px;padding:8px 10px;background:#fff;outline:none}
+input:focus,select:focus,textarea:focus{border-color:var(--pri);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+textarea{min-height:80px;resize:vertical;width:100%}
+.btn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;cursor:pointer;white-space:nowrap}
+.btn:hover{background:#f1f4f9}
+.btn.p{background:var(--pri);border-color:var(--pri);color:#fff}
+.btn.p:hover{background:var(--pri2)}
+.btn.d{color:var(--bad)}
+.btn.sm{padding:4px 9px;font-size:12px}
+.ib{border:0;background:none;cursor:pointer;padding:2px 4px;border-radius:5px;text-decoration:none;font-size:13px}
+.ib:hover{background:#e8edf5}
+/* Tabelas */
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--mut);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafbfd}
+th:first-child{border-top-left-radius:12px}th:last-child{border-top-right-radius:12px}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#f8faff}
+td.act{white-space:nowrap;text-align:right;width:1%}
+td a{color:var(--pri)}
+code{background:#f1f4f9;padding:2px 6px;border-radius:5px;font-family:Consolas,monospace;font-size:12.5px}
+.muted{color:var(--mut)}
+.empty{padding:40px;text-align:center;color:var(--mut)}
+.badge{display:inline-block;padding:2px 9px;border-radius:10px;font-size:12px;font-weight:600}
+.b-aberta{background:#fee2e2;color:#b91c1c}.b-em-curso{background:#dbeafe;color:#1d4ed8}.b-pendente{background:#fef3c7;color:#b45309}.b-resolvida{background:#dcfce7;color:#15803d}
+/* Painel */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stat{padding:16px 18px}
+.stat b{display:block;font-size:28px;margin-top:4px}
+.stat span{color:var(--mut);font-size:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card h3{margin:0;padding:14px 16px;border-bottom:1px solid var(--line);font-size:15px;display:flex;align-items:center;justify-content:space-between}
+.li{padding:10px 16px;border-bottom:1px solid var(--line);cursor:pointer;display:flex;gap:10px;align-items:center}
+.li:last-child{border-bottom:0}
+.li:hover{background:#f8faff}
+.li .when{font-size:12px;color:var(--mut);min-width:92px}
+/* Calendário */
+.cal{display:grid;grid-template-columns:repeat(7,1fr);background:var(--line);gap:1px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.cal .h{background:#fafbfd;padding:8px;font-size:12px;font-weight:600;color:var(--mut);text-align:center}
+.cal .d{background:#fff;min-height:104px;padding:6px;cursor:pointer;overflow:hidden}
+.cal .d:hover{background:#f8faff}
+.cal .d.o{background:#fafbfd;color:#b0b6c3}
+.cal .d.t .n{background:var(--pri);color:#fff;border-radius:50%}
+.cal .n{display:inline-flex;width:24px;height:24px;align-items:center;justify-content:center;font-size:13px;font-weight:600}
+.ev{display:block;font-size:12px;background:#dbeafe;color:#1e3a8a;border-radius:5px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.past{background:#eef0f4;color:#6b7385}
+.oc{font-size:11px;color:var(--mut);margin-top:3px}
+/* Modal */
+#modal{position:fixed;inset:0;background:rgba(15,23,42,.45);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px;overflow:auto;z-index:10}
+.box{background:#fff;border-radius:14px;width:640px;max-width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.box h3{margin:0;padding:16px 20px;border-bottom:1px solid var(--line);font-size:17px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;padding:18px 20px}
+.fgrid label{display:flex;flex-direction:column;gap:5px;font-size:12.5px;color:var(--mut);font-weight:600}
+.fgrid label.full{grid-column:1/-1}
+.fgrid input,.fgrid select{width:100%}
+.pwrow{display:flex;gap:6px}
+.foot{display:flex;gap:8px;justify-content:flex-end;padding:14px 20px;border-top:1px solid var(--line);background:#fafbfd;border-radius:0 0 14px 14px}
+.foot .sp{flex:1}
+/* Definições */
+.set{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;gap:16px;align-items:center}
+.set:last-child{border-bottom:0}
+.set div{flex:1}
+.set b{display:block}
+.set small{color:var(--mut)}
+/* Toasts */
+#toasts{position:fixed;right:18px;bottom:18px;display:flex;flex-direction:column;gap:8px;z-index:20}
+.toast{background:#111827;color:#fff;padding:11px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:380px;cursor:pointer}
+.toast.alarm{background:var(--warn);font-weight:600}
+@media(max-width:900px){.stats{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}aside{width:64px}.brand span,nav .lbl,nav .cnt{display:none}}
+</style>
+</head>
+<body>
+
+<div id="lock">
+  <div class="lockbox">
+    <h1>🗂️ Registos de Trabalho</h1>
+    <form id="loginForm" hidden>
+      <p>Entre com a sua conta (a mesma da app “A Nossa Casa”).</p>
+      <input type="email" id="lgEmail" placeholder="Email" autocomplete="username">
+      <input type="password" id="lgPw" placeholder="Senha da conta" autocomplete="current-password">
+      <div class="err" id="lgErr"></div>
+      <button class="btn p" style="width:100%" id="lgBtn">Entrar</button>
+    </form>
+    <div id="vaultStep">
+      <p id="lockMsg">Introduza a senha mestra para desbloquear.</p>
+      <form id="lockForm" autocomplete="off">
+        <input type="password" id="pw1" placeholder="Senha mestra">
+        <input type="password" id="pw2" placeholder="Confirmar senha mestra" hidden>
+        <div class="err" id="lockErr"></div>
+        <button class="btn p" style="width:100%" id="lockBtn">Desbloquear</button>
+      </form>
+      <div class="links">
+        <a id="lnkLogout">Sair da conta <span id="lgWho"></span></a>
+        <a id="lnkReset">Esqueci a senha mestra</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="app" hidden>
+  <aside>
+    <div class="brand"><i>🗂️</i><span>Registos de Trabalho</span></div>
+    <nav id="nav"></nav>
+    <div class="sidefoot"><div id="syncSt" class="sync"></div><button class="btn sm" id="btnLock">🔒 Bloquear</button></div>
+  </aside>
+  <main id="main"></main>
+</div>
+
+<div id="modal" hidden><div class="box"><h3 id="mTitle"></h3><form id="mForm" autocomplete="off"></form></div></div>
+<div id="toasts"></div>
+<input type="file" id="fileImport" accept=".json,application/json" hidden>
+
+<script>
+"use strict";
+/* ---------- utilitários ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const pad = n => String(n).padStart(2, '0');
+const ymd = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const fmtDate = s => { if (!s) return ''; const [y, m, d] = s.split('-'); return `${d}/${m}/${y}`; };
+const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const DIAS = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const enc = new TextEncoder(), dec = new TextDecoder();
+function b64(buf) { const b = new Uint8Array(buf); let s = ''; for (let i = 0; i < b.length; i += 0x8000) s += String.fromCharCode.apply(null, b.subarray(i, i + 0x8000)); return btoa(s); }
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const slug = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '-');
+
+function toast(msg, alarm) {
+  const t = document.createElement('div');
+  t.className = 'toast' + (alarm ? ' alarm' : '');
+  t.textContent = msg;
+  t.onclick = () => t.remove();
+  $('#toasts').appendChild(t);
+  if (!alarm) setTimeout(() => t.remove(), 3000);
+}
+async function copyText(v) {
+  try { await navigator.clipboard.writeText(v); }
+  catch { const ta = document.createElement('textarea'); ta.value = v; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); }
+  toast('Copiado para a área de transferência');
+}
+function safeUrl(v) {
+  v = String(v).trim();
+  if (/^(https?|ftp|file|rdp|ssh|mailto|tel):/i.test(v)) return v;
+  if (/^[a-z][a-z0-9+.-]*:\/\//i.test(v)) return '#';
+  return (/^\d/.test(v) ? 'http://' : 'https://') + v;
+}
+function pathUrl(p) {
+  p = String(p).trim();
+  if (p.startsWith('\\\\')) return encodeURI('file:' + p.replace(/\\/g, '/'));
+  if (/^[a-zA-Z]:/.test(p)) return encodeURI('file:///' + p.replace(/\\/g, '/'));
+  return encodeURI(p);
+}
+function genPassword(n = 16) {
+  const cs = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%&*?-_+=';
+  const r = crypto.getRandomValues(new Uint32Array(n));
+  return Array.from(r, x => cs[x % cs.length]).join('');
+}
+function download(name, text, type) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* ---------- cloud (Supabase — mesmo projeto da app "A Nossa Casa") ---------- */
+const SUPABASE_URL = 'https://uthotfdcfwrdyivhwkpw.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_1NO-glUWpi7oEzQUS2xX0A_7TS9qNpu';   // chave pública (publishable)
+const TABELA = 'registos_cofre';
+const COLS = ['clientes','ocorrencias','eventos','senhas','links','pastas'];
+let sb = null, me = '';
+
+/* ---------- cofre encriptado ---------- */
+let db = null, cKey = null, cSalt = null, saving = Promise.resolve();
+let versao = 0, pendente = false;
+const emptyDb = () => ({ clientes: [], ocorrencias: [], eventos: [], senhas: [], links: [], pastas: [], apagados: {}, config: { autoLock: 15 } });
+async function derive(pw, salt) {
+  const base = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 310000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptDb() {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cKey, enc.encode(JSON.stringify(db)));
+  return { app: 'registos-trabalho', v: 1, salt: b64(cSalt), iv: b64(iv), data: b64(ct) };
+}
+async function decryptVault(v, key) {
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(v.iv) }, key, unb64(v.data));
+  return JSON.parse(dec.decode(pt));
+}
+function normalize(d) { const base = emptyDb(); for (const k in base) if (d[k] == null) d[k] = base[k]; return d; }
+const cacheKey = () => 'registosTrabalho.cache.' + me;
+const readCache = () => { try { return JSON.parse(localStorage.getItem(cacheKey())); } catch { return null; } };
+function writeCache(vault) { try { localStorage.setItem(cacheKey(), JSON.stringify({ vault, versao, pendente })); } catch {} }
+function setSync(txt, warn) { const e = $('#syncSt'); if (e) { e.textContent = txt; e.className = 'sync' + (warn ? ' warn' : ''); } }
+async function fetchRemote() {
+  const { data, error } = await sb.from(TABELA).select('dados,versao').eq('dono', me).maybeSingle();
+  if (error) throw error;
+  return data;
+}
+// junta duas versões registo a registo (fica a alteração mais recente; apagados são respeitados)
+function merge(a, b) {
+  const out = { ...b, config: a.config || b.config };
+  const ap = { ...(b.apagados || {}) };
+  for (const [k, v] of Object.entries(a.apagados || {})) ap[k] = Math.max(ap[k] || 0, v);
+  const lim = Date.now() - 180 * 864e5;
+  for (const k in ap) if (ap[k] < lim) delete ap[k];
+  out.apagados = ap;
+  const ts = r => r.alterado || r.criado || 0;
+  for (const col of COLS) {
+    const m = new Map();
+    for (const r of (b[col] || [])) m.set(r.id, r);
+    for (const r of (a[col] || [])) { const o = m.get(r.id); if (!o || ts(r) > ts(o)) m.set(r.id, r); }
+    out[col] = [...m.values()].filter(r => !(ap[r.id] && ap[r.id] >= ts(r)));
+  }
+  return normalize(out);
+}
+const tableMissing = e => e && (e.code === 'PGRST205' || e.code === '42P01' || /registos_cofre/.test(e.message || ''));
+// envia o estado atual para a cloud; se outro PC gravou entretanto, junta as duas versões e tenta de novo
+async function push() {
+  let merged = false;
+  for (let t = 0; t < 4; t++) {
+    const vault = await encryptDb();
+    pendente = true; writeCache(vault);
+    if (!navigator.onLine) throw new Error('offline');
+    const res = versao === 0
+      ? await sb.from(TABELA).insert({ dados: vault, versao: 1 }).select('versao')
+      : await sb.from(TABELA).update({ dados: vault, versao: versao + 1 }).eq('dono', me).eq('versao', versao).select('versao');
+    if (res.error && res.error.code !== '23505') throw res.error;
+    if (!res.error && res.data && res.data.length) { versao = res.data[0].versao; pendente = false; writeCache(vault); return merged; }
+    const r = await fetchRemote();
+    if (!r) { versao = 0; continue; }
+    let remoto; try { remoto = await decryptVault(r.dados, cKey); } catch { throw new Error('chave'); }
+    db = merge(db, remoto); versao = r.versao; merged = true;
+  }
+  throw new Error('Não foi possível sincronizar (conflitos repetidos).');
+}
+function syncError(e) {
+  if (e && e.message === 'chave') { toast('A senha mestra foi alterada noutro computador. Desbloqueie com a nova senha.', true); setTimeout(() => lock(), 0); return; }
+  if (tableMissing(e)) { setSync('⚠️ Falta criar a tabela no Supabase', true); return; }
+  setSync('⚠️ Sem ligação — guardado neste PC', true);
+}
+function save() {
+  saving = saving.then(async () => {
+    if (!cKey || !db) return;
+    setSync('⏳ A guardar…');
+    try { const merged = await push(); setSync('☁️ Sincronizado'); if (merged && $('#modal').hidden) render(); }
+    catch (e) { syncError(e); }
+  });
+  return saving;
+}
+// verifica se o outro computador fez alterações
+async function poll() {
+  if (!db || !cKey) return;
+  if (pendente) { try { const merged = await push(); setSync('☁️ Sincronizado'); if (merged && $('#modal').hidden) render(); } catch (e) { syncError(e); } return; }
+  try {
+    const { data, error } = await sb.from(TABELA).select('versao').eq('dono', me).maybeSingle();
+    if (error) throw error;
+    if (data && data.versao > versao) {
+      const r = await fetchRemote();
+      let remoto; try { remoto = await decryptVault(r.dados, cKey); } catch { throw new Error('chave'); }
+      if (!db) return;
+      db = merge(db, remoto); versao = r.versao; writeCache(r.dados);
+      if ($('#modal').hidden) render(); else renderNav();
+    }
+    setSync('☁️ Sincronizado');
+  } catch (e) { syncError(e); }
+}
+const syncNow = () => { saving = saving.then(poll); return saving; };
+
+/* ---------- ecrã de entrada ---------- */
+let lockMode = 'open';
+async function showLock(msg) {
+  $('#app').hidden = true; $('#modal').hidden = true; $('#lock').hidden = false;
+  if (!sb) { $('#loginForm').hidden = false; $('#vaultStep').hidden = true; $('#lgBtn').disabled = true; $('#lgErr').textContent = 'Sem ligação à internet. Ligue-se e recarregue a página (F5).'; return; }
+  const { data } = await sb.auth.getSession();
+  if (!data.session) {
+    $('#loginForm').hidden = false; $('#vaultStep').hidden = true;
+    $('#lgErr').textContent = msg || '';
+    setTimeout(() => $('#lgEmail').focus(), 50);
+    return;
+  }
+  me = data.session.user.email.toLowerCase();
+  $('#loginForm').hidden = true; $('#vaultStep').hidden = false;
+  $('#lgWho').textContent = '(' + me + ')';
+  $('#pw1').value = ''; $('#pw2').value = ''; $('#lockErr').textContent = msg || '';
+  $('#lockMsg').textContent = 'A verificar…'; $('#lockBtn').disabled = true; $('#pw2').hidden = true;
+  let exists;
+  try { exists = !!(await fetchRemote()); }
+  catch (e) {
+    if (tableMissing(e)) { $('#lockMsg').textContent = 'Falta criar a tabela "registos_cofre" no Supabase (ver instruções, ficheiro registos.sql).'; return; }
+    exists = !!readCache();
+    if (!exists) { $('#lockMsg').textContent = 'Sem ligação à internet. Ligue-se para entrar pela primeira vez neste computador.'; return; }
+  }
+  lockMode = exists ? 'open' : 'create';
+  $('#pw2').hidden = exists; $('#lnkReset').hidden = !exists;
+  $('#lockMsg').textContent = exists ? 'Introduza a senha mestra para desbloquear.'
+    : 'Primeira utilização: crie uma senha mestra. Os dados são encriptados com ela antes de irem para a cloud — se a esquecer, não há forma de os recuperar.';
+  $('#lockBtn').textContent = exists ? 'Desbloquear' : 'Criar e entrar';
+  $('#lockBtn').disabled = false;
+  setTimeout(() => $('#pw1').focus(), 50);
+}
+$('#loginForm').onsubmit = async e => {
+  e.preventDefault();
+  $('#lgBtn').disabled = true; $('#lgErr').textContent = '';
+  const { error } = await sb.auth.signInWithPassword({ email: $('#lgEmail').value.trim(), password: $('#lgPw').value });
+  $('#lgBtn').disabled = false;
+  if (error) { $('#lgErr').textContent = error.message === 'Invalid login credentials' ? 'Email ou senha incorretos.' : error.message; return; }
+  $('#lgPw').value = '';
+  showLock();
+};
+$('#lnkLogout').onclick = async () => { await saving; db = null; cKey = null; await sb.auth.signOut(); showLock(); };
+$('#lockForm').onsubmit = async e => {
+  e.preventDefault();
+  const pw = $('#pw1').value, err = $('#lockErr');
+  if (!window.crypto || !crypto.subtle) { err.textContent = 'Este navegador não suporta encriptação. Use o Microsoft Edge ou o Chrome.'; return; }
+  $('#lockBtn').disabled = true; err.textContent = '';
+  try {
+    if (lockMode === 'create') {
+      if (pw.length < 8) throw new Error('A senha mestra deve ter pelo menos 8 caracteres.');
+      if (pw !== $('#pw2').value) throw new Error('As senhas não coincidem.');
+      cSalt = crypto.getRandomValues(new Uint8Array(16));
+      cKey = await derive(pw, cSalt);
+      db = emptyDb(); versao = 0; pendente = false;
+      try { await push(); } catch (ex) { cKey = null; db = null; throw new Error(tableMissing(ex) ? 'Falta criar a tabela no Supabase.' : 'Não foi possível gravar na cloud: ' + (ex.message || ex)); }
+    } else {
+      let src = null, offline = false;
+      try { const r = await fetchRemote(); if (r) src = { vault: r.dados, versao: r.versao }; } catch { offline = true; }
+      const cache = readCache();
+      if (!src && cache) src = { vault: cache.vault, versao: cache.versao };
+      if (!src) throw new Error('Não foi possível obter os dados.');
+      cSalt = unb64(src.vault.salt);
+      const k = await derive(pw, cSalt);
+      try { db = normalize(await decryptVault(src.vault, k)); } catch { throw new Error('Senha incorreta.'); }
+      cKey = k; versao = src.versao; pendente = false;
+      // alterações feitas neste PC sem internet que ainda não foram enviadas
+      if (cache && cache.pendente) {
+        try { db = merge(normalize(await decryptVault(cache.vault, k)), db); pendente = true; } catch {}
+      }
+      if (offline) setSync('⚠️ Sem ligação — guardado neste PC', true);
+    }
+    start();
+    if (pendente) save(); else if (lockMode !== 'create') setSync(navigator.onLine ? '☁️ Sincronizado' : '⚠️ Sem ligação — guardado neste PC', !navigator.onLine);
+    else setSync('☁️ Sincronizado');
+  } catch (ex) { err.textContent = ex.message; }
+  finally { $('#lockBtn').disabled = false; }
+};
+async function lock(msg) {
+  await saving;
+  db = null; cKey = null; cSalt = null; versao = 0; pendente = false;
+  showLock(msg);
+}
+$('#btnLock').onclick = () => lock();
+$('#lnkReset').onclick = async () => {
+  if (!confirm('Os dados estão encriptados com a senha mestra: sem ela, ninguém os consegue ler (nem eu, nem o Supabase).\n\nA única opção é APAGAR todos os registos e começar de novo. Quer apagar?')) return;
+  if (!confirm('Última confirmação: apagar TODOS os registos na cloud? (Se tiver uma cópia de segurança e souber a senha dela, pode importá-la depois.)')) return;
+  const { error } = await sb.from(TABELA).delete().eq('dono', me);
+  if (error) { toast('Erro ao apagar: ' + error.message, true); return; }
+  localStorage.removeItem(cacheKey());
+  showLock();
+};
+function askPassword(title) {
+  return new Promise(res => {
+    formCtx = null;
+    $('#mTitle').textContent = title;
+    $('#mForm').innerHTML = `<div class="fgrid"><label class="full">Senha<input type="password" name="p" required></label></div>
+      <div class="foot"><span class="sp"></span><button type="button" class="btn" id="mCancel">Cancelar</button><button class="btn p" id="mOk">OK</button></div>`;
+    $('#mCancel').onclick = () => { closeForm(); res(null); };
+    $('#mOk').onclick = e => { e.preventDefault(); const v = $('#mForm').elements.p.value; closeForm(); res(v); };
+    $('#modal').hidden = false; setTimeout(() => $('#mForm').elements.p.focus(), 30);
+  });
+}
+$('#fileImport').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (!f || !db) return;
+  let v;
+  try { v = JSON.parse(await f.text()); if (v.app !== 'registos-trabalho' || !v.salt || !v.iv || !v.data) throw 0; }
+  catch { toast('Ficheiro inválido — não é uma cópia de segurança desta aplicação.', true); return; }
+  const pw = await askPassword('Senha mestra da cópia de segurança');
+  if (pw == null) return;
+  let dados;
+  try { dados = normalize(await decryptVault(v, await derive(pw, unb64(v.salt)))); }
+  catch { toast('Senha incorreta para esta cópia de segurança.', true); return; }
+  db = merge(db, dados); save(); render();
+  toast('Cópia importada — os registos foram juntos aos atuais.');
+};
+
+/* ---------- módulos ---------- */
+const TIPOS = ['Assistência remota','Deslocação ao cliente','Manutenção','Instalação','Reparação','Formação','Outro'];
+const ESTADOS = ['Aberta','Em curso','Pendente','Resolvida'];
+const AVISOS = [{v:'',l:'Sem aviso'},{v:'0',l:'Na hora'},{v:'5',l:'5 min antes'},{v:'15',l:'15 min antes'},{v:'30',l:'30 min antes'},{v:'60',l:'1 hora antes'},{v:'120',l:'2 horas antes'},{v:'1440',l:'1 dia antes'}];
+const MODS = {
+  ocorrencias: { t: 'Ocorrências', s: 'ocorrência', g: 'a', icon: '📋', cols: ['data','titulo','cliente','tipo','estado','tempo'],
+    fields: [
+      { k:'data', l:'Data', type:'date', req:1, def:() => ymd(new Date()) },
+      { k:'cliente', l:'Cliente', type:'cliente' },
+      { k:'tipo', l:'Tipo de trabalho', type:'select', opts:TIPOS },
+      { k:'estado', l:'Estado', type:'select', opts:ESTADOS, def:() => 'Aberta' },
+      { k:'titulo', l:'Assunto', req:1, full:1 },
+      { k:'descricao', l:'Descrição do problema / pedido', type:'textarea', full:1 },
+      { k:'solucao', l:'Trabalho realizado / solução', type:'textarea', full:1 },
+      { k:'tempo', l:'Tempo gasto (horas)', type:'number', step:'0.25' },
+      { k:'tecnico', l:'Técnico' } ],
+    sort: (a, b) => (b.data || '').localeCompare(a.data || '') || b.criado - a.criado },
+  eventos: { t: 'Agendamentos', s: 'agendamento', g: 'o', icon: '📅', cols: ['data','hora','titulo','cliente','aviso'],
+    fields: [
+      { k:'titulo', l:'Título', req:1, full:1 },
+      { k:'data', l:'Data', type:'date', req:1, def:() => ymd(new Date()) },
+      { k:'hora', l:'Hora', type:'time' },
+      { k:'cliente', l:'Cliente', type:'cliente' },
+      { k:'aviso', l:'Aviso', type:'select', opts:AVISOS, def:() => '15' },
+      { k:'local', l:'Local', full:1 },
+      { k:'notas', l:'Notas', type:'textarea', full:1 } ],
+    sort: (a, b) => (a.data + (a.hora || '')).localeCompare(b.data + (b.hora || '')) },
+  clientes: { t: 'Clientes e Contactos', s: 'contacto', g: 'o', icon: '👥', cols: ['nome','empresa','telefone','email'],
+    fields: [
+      { k:'nome', l:'Nome', req:1 },
+      { k:'empresa', l:'Empresa' },
+      { k:'telefone', l:'Telefone', type:'tel' },
+      { k:'email', l:'Email', type:'email' },
+      { k:'nif', l:'NIF' },
+      { k:'morada', l:'Morada' },
+      { k:'notas', l:'Notas', type:'textarea', full:1 } ],
+    sort: (a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt') },
+  senhas: { t: 'Senhas de Clientes', s: 'senha', g: 'a', icon: '🔑', cols: ['servico','cliente','utilizador','senha','url'],
+    fields: [
+      { k:'servico', l:'Serviço / equipamento', req:1, ph:'Ex.: Router, Email, Servidor' },
+      { k:'cliente', l:'Cliente', type:'cliente' },
+      { k:'utilizador', l:'Utilizador' },
+      { k:'senha', l:'Senha', type:'password' },
+      { k:'url', l:'Endereço / IP', type:'url', full:1 },
+      { k:'notas', l:'Notas', type:'textarea', full:1 } ],
+    sort: (a, b) => (a.servico || '').localeCompare(b.servico || '', 'pt') },
+  links: { t: 'Links de Acesso', s: 'link', g: 'o', icon: '🔗', cols: ['titulo','url','categoria','cliente'],
+    fields: [
+      { k:'titulo', l:'Título', req:1 },
+      { k:'categoria', l:'Categoria', ph:'Ex.: Painel, Suporte, Fornecedor' },
+      { k:'url', l:'Endereço', type:'url', req:1, full:1 },
+      { k:'cliente', l:'Cliente', type:'cliente' },
+      { k:'notas', l:'Notas', type:'textarea', full:1 } ],
+    sort: (a, b) => (a.categoria || '').localeCompare(b.categoria || '', 'pt') || (a.titulo || '').localeCompare(b.titulo || '', 'pt') },
+  pastas: { t: 'Pastas de Trabalho', s: 'pasta', g: 'a', icon: '📁', cols: ['nome','caminho','cliente'],
+    fields: [
+      { k:'nome', l:'Nome', req:1 },
+      { k:'cliente', l:'Cliente', type:'cliente' },
+      { k:'caminho', l:'Caminho', type:'path', req:1, full:1, ph:'Ex.: C:\\Clientes\\Empresa  ou  \\\\servidor\\partilha' },
+      { k:'notas', l:'Notas', type:'textarea', full:1 } ],
+    sort: (a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt') },
+};
+const NAV = [['painel','🏠','Painel'],['calendario','📅','Calendário'],['ocorrencias'],['clientes'],['senhas'],['links'],['pastas'],['definicoes','⚙️','Definições']];
+const novo = M => (M.g === 'o' ? 'Novo ' : 'Nova ') + M.s;
+const opts = f => (f.opts || []).map(o => typeof o === 'string' ? { v: o, l: o } : o);
+const cliName = id => { const c = db.clientes.find(x => x.id === id); return c ? (c.empresa ? `${c.nome} (${c.empresa})` : c.nome) : ''; };
+const fieldOf = (m, k) => MODS[m].fields.find(f => f.k === k);
+function show(f, v) {
+  if (v == null || v === '') return '';
+  switch (f.type) {
+    case 'cliente': return cliName(v);
+    case 'date': return fmtDate(v);
+    case 'select': { const o = opts(f).find(o => o.v === String(v)); return o ? o.l : v; }
+    case 'number': return String(v).replace('.', ',') + (f.k === 'tempo' ? ' h' : '');
+    case 'password': return '';
+    default: return v;
+  }
+}
+function cell(m, f, r) {
+  const v = r[f.k];
+  if (v == null || v === '') return '<span class="muted">—</span>';
+  const cp = `<button class="ib" data-act="copy" data-m="${m}" data-id="${r.id}" data-k="${f.k}" title="Copiar">📋</button>`;
+  switch (f.type) {
+    case 'password': return `<code class="pw" id="pw-${r.id}">••••••••</code> <button class="ib" data-act="reveal" data-m="${m}" data-id="${r.id}" title="Mostrar/ocultar">👁</button>${cp}`;
+    case 'url': return `<a href="${esc(safeUrl(v))}" target="_blank" rel="noopener">${esc(v)}</a> ${cp}`;
+    case 'path': return `<code>${esc(v)}</code> ${cp}<a class="ib" href="${esc(pathUrl(v))}" target="_blank" title="Abrir pasta">📂</a>`;
+    case 'email': return `<a href="mailto:${esc(v)}">${esc(v)}</a>`;
+    case 'tel': return `<a href="tel:${esc(v)}">${esc(v)}</a>`;
+  }
+  if (f.k === 'estado') return `<span class="badge b-${slug(v)}">${esc(v)}</span>`;
+  return esc(show(f, v));
+}
+
+/* ---------- estado e navegação ---------- */
+const now0 = new Date();
+const st = { view: 'painel', q: '', estado: '', cliente: '', calY: now0.getFullYear(), calM: now0.getMonth() };
+function go(v) { st.view = v; st.q = ''; st.estado = ''; st.cliente = ''; render(); $('#main').scrollTop = 0; }
+function renderNav() {
+  $('#nav').innerHTML = NAV.map(([k, ic, l]) => {
+    const M = MODS[k]; ic = ic || M.icon; l = l || M.t;
+    let cnt = '';
+    if (k === 'ocorrencias') { const n = db.ocorrencias.filter(o => o.estado !== 'Resolvida').length; if (n) cnt = `<span class="cnt">${n}</span>`; }
+    else if (M) cnt = `<span class="cnt">${db[k].length}</span>`;
+    return `<button class="${st.view === k ? 'on' : ''}" data-go="${k}"><span>${ic}</span><span class="lbl">${esc(l)}</span>${cnt}</button>`;
+  }).join('');
+}
+$('#nav').onclick = e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); };
+function render() {
+  renderNav();
+  const v = st.view;
+  if (v === 'painel') renderPainel();
+  else if (v === 'calendario') renderCal();
+  else if (v === 'definicoes') renderSet();
+  else renderList(v);
+}
+
+/* ---------- listas genéricas ---------- */
+function renderList(m) {
+  const M = MODS[m], hasCli = M.fields.some(f => f.type === 'cliente');
+  const cliOpts = db.clientes.slice().sort(MODS.clientes.sort).map(c => `<option value="${c.id}">${esc(cliName(c.id))}</option>`).join('');
+  $('#main').innerHTML = `
+    <div class="top"><h2>${M.icon} ${esc(M.t)}</h2><span class="sp"></span>
+      <input id="q" placeholder="🔍 Pesquisar…" style="width:220px" value="${esc(st.q)}">
+      ${m === 'ocorrencias' ? `<select id="fEstado"><option value="">Todos os estados</option>${ESTADOS.map(s => `<option>${s}</option>`).join('')}</select>` : ''}
+      ${hasCli ? `<select id="fCli"><option value="">Todos os clientes</option>${cliOpts}</select>` : ''}
+      ${m === 'ocorrencias' ? `<button class="btn" id="btnCsv">⬇ Exportar CSV</button>` : ''}
+      <button class="btn p" data-act="new" data-m="${m}">+ ${esc(novo(M))}</button>
+    </div>
+    <div class="card" id="tbl"></div>`;
+  $('#q').oninput = e => { st.q = e.target.value; drawTable(m); };
+  if ($('#fEstado')) { $('#fEstado').value = st.estado; $('#fEstado').onchange = e => { st.estado = e.target.value; drawTable(m); }; }
+  if ($('#fCli')) { $('#fCli').value = st.cliente; $('#fCli').onchange = e => { st.cliente = e.target.value; drawTable(m); }; }
+  if ($('#btnCsv')) $('#btnCsv').onclick = exportCsv;
+  drawTable(m);
+}
+function filtered(m) {
+  const M = MODS[m], q = st.q.trim().toLowerCase();
+  let rows = db[m].slice();
+  if (q) rows = rows.filter(r => M.fields.some(f => f.type !== 'password' && String(show(f, r[f.k])).toLowerCase().includes(q)));
+  if (m === 'ocorrencias' && st.estado) rows = rows.filter(r => r.estado === st.estado);
+  if (st.cliente) rows = rows.filter(r => r.cliente === st.cliente);
+  if (M.sort) rows.sort(M.sort);
+  return rows;
+}
+function drawTable(m) {
+  const M = MODS[m], rows = filtered(m), cols = M.cols.map(k => fieldOf(m, k));
+  if (!rows.length) {
+    $('#tbl').innerHTML = `<div class="empty">${db[m].length ? 'Nenhum resultado para este filtro.' : `Ainda não há registos. Clique em <b>+ ${esc(novo(M))}</b> para começar.`}</div>`;
+    return;
+  }
+  $('#tbl').innerHTML = `<table><thead><tr>${cols.map(f => `<th>${esc(f.l)}</th>`).join('')}<th></th></tr></thead><tbody>${
+    rows.map(r => `<tr>${cols.map(f => `<td>${cell(m, f, r)}</td>`).join('')}
+      <td class="act"><button class="ib" data-act="edit" data-m="${m}" data-id="${r.id}" title="Editar">✏️</button><button class="ib" data-act="del" data-m="${m}" data-id="${r.id}" title="Apagar">🗑️</button></td></tr>`).join('')
+  }</tbody></table>`;
+}
+
+/* ---------- formulário ---------- */
+let formCtx = null;
+function openForm(m, id, preset) {
+  const M = MODS[m];
+  const r = id ? db[m].find(x => x.id === id) : null;
+  const data = r ? { ...r } : {};
+  if (!r) M.fields.forEach(f => { if (f.def) data[f.k] = f.def(); });
+  Object.assign(data, preset || {});
+  formCtx = { m, id };
+  $('#mTitle').textContent = r ? 'Editar ' + M.s : novo(M);
+  const cliOpts = db.clientes.slice().sort(MODS.clientes.sort);
+  const inp = f => {
+    const v = data[f.k] ?? '', a = `name="${f.k}" ${f.req ? 'required' : ''} placeholder="${esc(f.ph || '')}"`;
+    switch (f.type) {
+      case 'textarea': return `<textarea ${a}>${esc(v)}</textarea>`;
+      case 'select': return `<select ${a}>${f.req ? '' : '<option value="">—</option>'}${opts(f).filter(o => o.v !== '' || true).map(o => `<option value="${esc(o.v)}" ${String(v) === o.v ? 'selected' : ''}>${esc(o.l)}</option>`).join('')}</select>`;
+      case 'cliente': return `<select ${a}><option value="">— sem cliente —</option>${cliOpts.map(c => `<option value="${c.id}" ${v === c.id ? 'selected' : ''}>${esc(cliName(c.id))}</option>`).join('')}</select>`;
+      case 'password': return `<div class="pwrow"><input type="password" ${a} value="${esc(v)}"><button type="button" class="btn sm" data-pw="toggle" title="Mostrar">👁</button><button type="button" class="btn sm" data-pw="gen" title="Gerar senha segura">🎲</button></div>`;
+      case 'number': return `<input type="number" min="0" step="${f.step || 'any'}" ${a} value="${esc(v)}">`;
+      case 'date': case 'time': case 'email': case 'tel': return `<input type="${f.type}" ${a} value="${esc(v)}">`;
+      default: return `<input type="text" ${a} value="${esc(v)}">`;
+    }
+  };
+  $('#mForm').innerHTML = `<div class="fgrid">${M.fields.map(f => `<label class="${f.full ? 'full' : ''}">${esc(f.l)}${f.req ? ' *' : ''}${inp(f)}</label>`).join('')}</div>
+    <div class="foot">${r ? `<button type="button" class="btn d" id="mDel">Apagar</button>` : ''}${m === 'eventos' && r ? `<button type="button" class="btn" id="mOc">→ Criar ocorrência</button>` : ''}<span class="sp"></span>
+    <button type="button" class="btn" id="mCancel">Cancelar</button><button class="btn p">Guardar</button></div>`;
+  // opções "Sem aviso" já incluídas em AVISOS: remover duplicado "—"
+  if (m === 'eventos') { const s = $('#mForm').elements.aviso; if (s.options[0].value === '' && s.options[1].value === '') s.remove(0); s.value = data.aviso ?? ''; }
+  $('#mCancel').onclick = closeForm;
+  if ($('#mDel')) $('#mDel').onclick = () => { if (delRec(m, id)) closeForm(); };
+  if ($('#mOc')) $('#mOc').onclick = () => { closeForm(); openForm('ocorrencias', null, { data: r.data, cliente: r.cliente, titulo: r.titulo, descricao: r.notas || '' }); };
+  $('#modal').hidden = false;
+  const first = $('#mForm').querySelector('input,select,textarea'); if (first && !id) first.focus();
+}
+function closeForm() { $('#modal').hidden = true; formCtx = null; }
+$('#mForm').onclick = e => {
+  const b = e.target.closest('[data-pw]'); if (!b) return;
+  const i = b.parentElement.querySelector('input');
+  if (b.dataset.pw === 'gen') { i.value = genPassword(); i.type = 'text'; }
+  else i.type = i.type === 'password' ? 'text' : 'password';
+};
+$('#mForm').onsubmit = e => {
+  e.preventDefault();
+  const { m, id } = formCtx, M = MODS[m], el = e.target.elements, vals = {};
+  for (const f of M.fields) {
+    let v = el[f.k].value; if (f.type !== 'password' && f.type !== 'textarea') v = v.trim();
+    if (f.req && !v) { toast(`Preencha o campo "${f.l}".`); el[f.k].focus(); return; }
+    vals[f.k] = v;
+  }
+  if (m === 'eventos') vals.notificado = false;
+  if (id) Object.assign(db[m].find(x => x.id === id), vals, { alterado: Date.now() });
+  else { const t = Date.now(); db[m].push({ id: uid(), criado: t, alterado: t, ...vals }); }
+  save(); closeForm(); render(); toast('Guardado ✔');
+};
+function delRec(m, id) {
+  const M = MODS[m], r = db[m].find(x => x.id === id); if (!r) return false;
+  let extra = '';
+  if (m === 'clientes') {
+    const n = ['ocorrencias','eventos','senhas','links','pastas'].reduce((s, k) => s + db[k].filter(x => x.cliente === id).length, 0);
+    if (n) extra = `\n\nAtenção: há ${n} registo(s) associado(s) a este cliente. Esses registos mantêm-se, mas ficam sem cliente.`;
+  }
+  if (!confirm(`Apagar ${M.g === 'o' ? 'este' : 'esta'} ${M.s}?${extra}`)) return false;
+  db[m] = db[m].filter(x => x.id !== id);
+  db.apagados[id] = Date.now();
+  if (m === 'clientes') ['ocorrencias','eventos','senhas','links','pastas'].forEach(k => db[k].forEach(x => { if (x.cliente === id) { x.cliente = ''; x.alterado = Date.now(); } }));
+  save(); render(); toast('Apagado');
+  return true;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#modal').hidden) closeForm(); });
+
+/* ---------- ações (delegação) ---------- */
+$('#main').addEventListener('click', e => {
+  const b = e.target.closest('[data-act]'); if (!b) return;
+  const { act, m, id, k } = b.dataset;
+  if (act === 'new') openForm(m);
+  else if (act === 'edit') openForm(m, id);
+  else if (act === 'del') delRec(m, id);
+  else if (act === 'newday') openForm('eventos', null, { data: b.dataset.d });
+  else if (act === 'go') go(b.dataset.v);
+  else if (act === 'copy') { const r = db[m].find(x => x.id === id); if (r) copyText(r[k]); }
+  else if (act === 'reveal') {
+    const s = document.getElementById('pw-' + id), r = db[m].find(x => x.id === id);
+    if (s.dataset.on) { s.textContent = '••••••••'; delete s.dataset.on; }
+    else { s.textContent = r.senha; s.dataset.on = 1; setTimeout(() => { if (s.isConnected) { s.textContent = '••••••••'; delete s.dataset.on; } }, 15000); }
+  }
+});
+
+/* ---------- painel ---------- */
+function renderPainel() {
+  const hoje = ymd(new Date()), mes = hoje.slice(0, 7), agora = Date.now();
+  const abertas = db.ocorrencias.filter(o => o.estado !== 'Resolvida').sort(MODS.ocorrencias.sort);
+  const evHoje = db.eventos.filter(e => e.data === hoje);
+  const horas = db.ocorrencias.filter(o => (o.data || '').startsWith(mes)).reduce((s, o) => s + (parseFloat(o.tempo) || 0), 0);
+  const lim = ymd(new Date(agora + 7 * 864e5));
+  const prox = db.eventos.filter(e => e.data >= hoje && e.data <= lim && new Date(e.data + 'T' + (e.hora || '23:59')).getTime() >= agora).sort(MODS.eventos.sort).slice(0, 8);
+  const recentes = db.ocorrencias.slice().sort(MODS.ocorrencias.sort).slice(0, 6);
+  const h = new Date().getHours(), saud = h < 12 ? 'Bom dia' : h < 20 ? 'Boa tarde' : 'Boa noite';
+  const evLi = e => `<div class="li" data-act="edit" data-m="eventos" data-id="${e.id}"><span class="when">${e.data === hoje ? 'Hoje' : fmtDate(e.data).slice(0, 5)} ${esc(e.hora || '')}</span><span>${esc(e.titulo)}${e.cliente ? ` <span class="muted">· ${esc(cliName(e.cliente))}</span>` : ''}</span></div>`;
+  const ocLi = o => `<div class="li" data-act="edit" data-m="ocorrencias" data-id="${o.id}"><span class="when">${fmtDate(o.data)}</span><span style="flex:1">${esc(o.titulo)}${o.cliente ? ` <span class="muted">· ${esc(cliName(o.cliente))}</span>` : ''}</span><span class="badge b-${slug(o.estado || '')}">${esc(o.estado || '')}</span></div>`;
+  $('#main').innerHTML = `
+    <div class="top"><h2>${saud} 👋</h2><span class="muted">${new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span class="sp"></span>
+      <button class="btn" data-act="new" data-m="eventos">+ Agendamento</button><button class="btn p" data-act="new" data-m="ocorrencias">+ Ocorrência</button></div>
+    <div class="stats">
+      <div class="card stat"><span>Ocorrências em aberto</span><b style="color:${abertas.length ? 'var(--bad)' : 'var(--ok)'}">${abertas.length}</b></div>
+      <div class="card stat"><span>Agendamentos hoje</span><b>${evHoje.length}</b></div>
+      <div class="card stat"><span>Horas registadas este mês</span><b>${String(horas).replace('.', ',')}</b></div>
+      <div class="card stat"><span>Clientes</span><b>${db.clientes.length}</b></div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>📅 Próximos 7 dias <button class="btn sm" data-act="go" data-v="calendario">Calendário</button></h3>${prox.length ? prox.map(evLi).join('') : '<div class="empty">Sem agendamentos.</div>'}</div>
+      <div class="card"><h3>⚠️ Ocorrências em aberto <button class="btn sm" data-act="go" data-v="ocorrencias">Ver todas</button></h3>${abertas.length ? abertas.slice(0, 8).map(ocLi).join('') : '<div class="empty">Tudo resolvido 🎉</div>'}</div>
+      <div class="card" style="grid-column:1/-1"><h3>🕘 Últimos registos</h3>${recentes.length ? recentes.map(ocLi).join('') : '<div class="empty">Ainda sem ocorrências registadas.</div>'}</div>
+    </div>`;
+}
+
+/* ---------- calendário ---------- */
+function renderCal() {
+  const y = st.calY, m = st.calM, hoje = ymd(new Date()), agora = Date.now();
+  const first = new Date(y, m, 1), off = (first.getDay() + 6) % 7, start = new Date(y, m, 1 - off);
+  const byDay = {}; db.eventos.forEach(e => (byDay[e.data] = byDay[e.data] || []).push(e));
+  const ocDay = {}; db.ocorrencias.forEach(o => ocDay[o.data] = (ocDay[o.data] || 0) + 1);
+  let cells = DIAS.map(d => `<div class="h">${d}</div>`).join('');
+  const nCells = Math.ceil((off + new Date(y, m + 1, 0).getDate()) / 7) * 7;
+  for (let i = 0; i < nCells; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i), k = ymd(d);
+    const evs = (byDay[k] || []).sort(MODS.eventos.sort);
+    cells += `<div class="d ${d.getMonth() !== m ? 'o' : ''} ${k === hoje ? 't' : ''}" data-act="newday" data-d="${k}"><span class="n">${d.getDate()}</span>
+      ${evs.slice(0, 4).map(e => `<span class="ev ${new Date(e.data + 'T' + (e.hora || '23:59')).getTime() < agora ? 'past' : ''}" data-act="edit" data-m="eventos" data-id="${e.id}" title="${esc(e.titulo)}">${e.hora ? esc(e.hora) + ' ' : ''}${esc(e.titulo)}</span>`).join('')}
+      ${evs.length > 4 ? `<div class="oc">+${evs.length - 4} mais</div>` : ''}
+      ${ocDay[k] ? `<div class="oc">📋 ${ocDay[k]} registo${ocDay[k] > 1 ? 's' : ''}</div>` : ''}</div>`;
+  }
+  const mk = y + '-' + pad(m + 1), doMes = db.eventos.filter(e => e.data.startsWith(mk)).sort(MODS.eventos.sort);
+  $('#main').innerHTML = `
+    <div class="top"><h2>📅 ${MESES[m]} ${y}</h2>
+      <button class="btn sm" id="cPrev">‹</button><button class="btn sm" id="cHoje">Hoje</button><button class="btn sm" id="cNext">›</button>
+      <span class="sp"></span><span class="muted">Clique num dia para agendar</span><button class="btn p" data-act="new" data-m="eventos">+ Agendamento</button></div>
+    <div class="cal">${cells}</div>
+    <div class="card" style="margin-top:18px"><h3>Agendamentos de ${MESES[m]}</h3>${doMes.length ? `<table><tbody>${doMes.map(e => `<tr><td style="width:110px">${fmtDate(e.data)}</td><td style="width:60px">${esc(e.hora || '')}</td><td>${esc(e.titulo)}</td><td class="muted">${esc(cliName(e.cliente))}</td><td class="muted">${esc(show(fieldOf('eventos', 'aviso'), e.aviso))}</td><td class="act"><button class="ib" data-act="edit" data-m="eventos" data-id="${e.id}">✏️</button><button class="ib" data-act="del" data-m="eventos" data-id="${e.id}">🗑️</button></td></tr>`).join('')}</tbody></table>` : '<div class="empty">Sem agendamentos neste mês.</div>'}</div>`;
+  $('#cPrev').onclick = () => { st.calM--; if (st.calM < 0) { st.calM = 11; st.calY--; } renderCal(); };
+  $('#cNext').onclick = () => { st.calM++; if (st.calM > 11) { st.calM = 0; st.calY++; } renderCal(); };
+  $('#cHoje').onclick = () => { const d = new Date(); st.calY = d.getFullYear(); st.calM = d.getMonth(); renderCal(); };
+}
+
+/* ---------- definições ---------- */
+function renderSet() {
+  const perm = 'Notification' in window ? Notification.permission : 'indisponivel';
+  const permTxt = { granted: '✅ Ativas', denied: '⛔ Bloqueadas nas definições do navegador', default: 'Ainda não autorizadas', indisponivel: 'Não suportadas' }[perm];
+  const total = ['ocorrencias','eventos','clientes','senhas','links','pastas'].reduce((s, k) => s + db[k].length, 0);
+  $('#main').innerHTML = `
+    <div class="top"><h2>⚙️ Definições</h2></div>
+    <div class="card">
+      <div class="set"><div><b>Bloqueio automático</b><small>Bloqueia a aplicação após um período sem atividade.</small></div>
+        <select id="sLock">${[[0,'Nunca'],[5,'5 minutos'],[15,'15 minutos'],[30,'30 minutos'],[60,'1 hora']].map(([v, l]) => `<option value="${v}">${l}</option>`).join('')}</select></div>
+      <div class="set"><div><b>Notificações do Windows</b><small>Avisos dos agendamentos (funcionam enquanto a aplicação está aberta). Estado: ${permTxt}</small></div>
+        <button class="btn" id="sNotif" ${perm !== 'default' ? 'disabled' : ''}>Ativar</button> <button class="btn" id="sTest">Testar</button></div>
+      <div class="set"><div><b>Cópia de segurança</b><small>Ficheiro encriptado com a sua senha mestra (${total} registos). Os dados já estão na cloud, mas uma cópia extra numa pen nunca faz mal.</small></div>
+        <button class="btn p" id="sExp">⬇ Exportar</button> <button class="btn" id="sImp">⬆ Importar</button></div>
+      <div class="set"><div><b>Exportar ocorrências (CSV)</b><small>Para abrir no Excel. Atenção: este ficheiro <u>não</u> é encriptado (não inclui senhas).</small></div>
+        <button class="btn" id="sCsv">⬇ CSV</button></div>
+      <div class="set"><div><b>Alterar senha mestra</b><small>Os dados são encriptados novamente com a nova senha. No outro computador terá de usar a nova senha.</small></div>
+        <button class="btn" id="sPw">Alterar</button></div>
+      <div class="set"><div><b>Onde ficam os dados?</b><small>Na sua conta Supabase (${esc(me)}), encriptados (AES-256) com a senha mestra <u>antes</u> de saírem deste computador — na cloud só fica texto ilegível. Cada computador guarda também uma cópia encriptada para funcionar sem internet; as alterações são enviadas quando a ligação voltar.</small></div><button class="btn" id="sSync">🔄 Sincronizar agora</button><div style="display:none"></div></div>
+    </div>`;
+  $('#sLock').value = db.config.autoLock;
+  $('#sLock').onchange = e => { db.config.autoLock = +e.target.value; save(); toast('Guardado ✔'); };
+  $('#sNotif').onclick = async () => { await Notification.requestPermission(); renderSet(); };
+  $('#sTest').onclick = () => notify({ titulo: 'Teste de aviso', hora: new Date().toTimeString().slice(0, 5) });
+  $('#sExp').onclick = async () => { await saving; download(`registos-backup-${ymd(new Date())}.json`, JSON.stringify(await encryptDb()), 'application/json'); toast('Cópia de segurança exportada'); };
+  $('#sImp').onclick = () => $('#fileImport').click();
+  $('#sCsv').onclick = exportCsv;
+  $('#sPw').onclick = changePw;
+  $('#sSync').onclick = async () => { await syncNow(); toast('Sincronização feita'); };
+}
+function exportCsv() {
+  const F = MODS.ocorrencias.fields;
+  const q = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+  const rows = [F.map(f => q(f.l)).join(';')].concat(db.ocorrencias.slice().sort(MODS.ocorrencias.sort).map(r => F.map(f => q(f.type === 'number' ? String(r[f.k] ?? '').replace('.', ',') : show(f, r[f.k]))).join(';')));
+  download(`ocorrencias-${ymd(new Date())}.csv`, '\ufeff' + rows.join('\r\n'), 'text/csv;charset=utf-8');
+}
+function changePw() {
+  formCtx = null;
+  $('#mTitle').textContent = 'Alterar senha mestra';
+  $('#mForm').innerHTML = `<div class="fgrid"><label class="full">Senha atual<input type="password" name="a" required></label>
+    <label>Nova senha<input type="password" name="n" required minlength="8"></label><label>Confirmar nova senha<input type="password" name="c" required></label></div>
+    <div class="foot"><span class="sp"></span><button type="button" class="btn" id="mCancel">Cancelar</button><button class="btn p" id="mPwOk">Alterar</button></div>`;
+  $('#mCancel').onclick = closeForm;
+  $('#mPwOk').onclick = async e => {
+    e.preventDefault();
+    const el = $('#mForm').elements;
+    if (el.n.value.length < 8) return toast('A nova senha deve ter pelo menos 8 caracteres.');
+    if (el.n.value !== el.c.value) return toast('As novas senhas não coincidem.');
+    await syncNow();
+    try { await decryptVault(await encryptDb(), await derive(el.a.value, cSalt)); } catch { return toast('Senha atual incorreta.'); }
+    cSalt = crypto.getRandomValues(new Uint8Array(16));
+    cKey = await derive(el.n.value, cSalt);
+    await save(); closeForm(); toast('Senha mestra alterada ✔');
+  };
+  $('#modal').hidden = false;
+}
+
+/* ---------- avisos e bloqueio automático ---------- */
+function notify(e) {
+  const msg = `${e.hora ? e.hora + ' — ' : ''}${e.titulo}${e.cliente ? ' (' + cliName(e.cliente) + ')' : ''}`;
+  toast('🔔 ' + msg, true);
+  try { if ('Notification' in window && Notification.permission === 'granted') new Notification('Aviso de agendamento', { body: msg, requireInteraction: true }); } catch {}
+}
+function checkReminders() {
+  if (!db) return;
+  const now = Date.now(); let ch = false;
+  for (const e of db.eventos) {
+    if (e.aviso === '' || e.aviso == null || e.notificado) continue;
+    const t = new Date(e.data + 'T' + (e.hora || '09:00')).getTime();
+    if (now >= t - Number(e.aviso) * 60000) {
+      e.notificado = true; ch = true;
+      if (now < t + 3600000) notify(e);
+    }
+  }
+  if (ch) { save(); if (st.view === 'painel' || st.view === 'calendario') render(); }
+}
+let lastAct = Date.now();
+['mousemove','keydown','click','wheel'].forEach(ev => document.addEventListener(ev, () => lastAct = Date.now(), { passive: true }));
+setInterval(() => { if (db) syncNow(); }, 30000);
+window.addEventListener('online', () => { if (db) syncNow(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden && db) syncNow(); });
+setInterval(() => {
+  checkReminders();
+  if (db && db.config.autoLock > 0 && Date.now() - lastAct > db.config.autoLock * 60000) { lock(); toast('Bloqueado por inatividade'); }
+}, 20000);
+
+function start() {
+  $('#lock').hidden = true; $('#app').hidden = false;
+  lastAct = Date.now(); go('painel');
+  if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
+  checkReminders();
+}
+if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+if (window.supabase) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+showLock();
+</script>
+</body>
+</html>
