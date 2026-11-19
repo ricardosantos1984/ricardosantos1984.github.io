@@ -19,7 +19,7 @@ create table if not exists public.registos_membros (
 
 insert into public.registos_membros (email, nome) values
   ('ricardo@intranet.pt', 'Ricardo'),
-  ('nuno@intranet.pt',    'Nuno')
+  ('info@intranet.pt',    'Nuno')
 on conflict (email) do update set nome = excluded.nome;
 
 create or replace function public.registos_e_membro() returns boolean
@@ -55,7 +55,7 @@ create policy "cofre da equipa" on public.registos_cofre
   using      (dono = lower(auth.jwt() ->> 'email') or (dono = 'equipa' and public.registos_e_membro()))
   with check (dono = lower(auth.jwt() ->> 'email') or (dono = 'equipa' and public.registos_e_membro()));
 
--- se já tinha criado dados com a conta info@intranet.pt, passam a ser da equipa
+-- dados criados antes da equipa existir (conta info@intranet.pt) passam a ser da equipa
 update public.registos_cofre set dono = 'equipa'
 where dono = 'info@intranet.pt'
   and not exists (select 1 from public.registos_cofre where dono = 'equipa');

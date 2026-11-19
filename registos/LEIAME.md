@@ -11,7 +11,7 @@ senhas de clientes, links de acesso e pastas de trabalho. Sincroniza entre compu
 ## Configurar (uma vez)
 1. Supabase → SQL Editor → correr `registos.sql` e depois `registos-equipa.sql`.
 2. Supabase → Authentication → Users → criar as contas da equipa (Auto Confirm):
-   `ricardo@intranet.pt` (Ricardo) e `nuno@intranet.pt` (Nuno).
+   `ricardo@intranet.pt` (Ricardo) e `info@intranet.pt` (Nuno).
 3. O primeiro a entrar cria a senha mestra; o outro usa a mesma senha mestra.
 
 ## Equipa e chat
