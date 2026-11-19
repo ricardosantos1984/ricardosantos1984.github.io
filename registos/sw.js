@@ -1,5 +1,5 @@
 // Registos de Trabalho — service worker: a app abre mesmo sem internet (os dados ficam no cofre encriptado local).
-const CACHE = "registos-v1";
+const CACHE = "registos-v2";
 const BASE = ["./", "index.html", "manifest.json", "icon-192.png"];
 const LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js";
 self.addEventListener("install", (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(BASE)).then(() => self.skipWaiting())); });

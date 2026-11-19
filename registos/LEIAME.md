@@ -9,8 +9,16 @@ senhas de clientes, links de acesso e pastas de trabalho. Sincroniza entre compu
   com PBKDF2) antes de ir para a cloud. Sem a senha mestra, os dados não se recuperam.
 
 ## Configurar (uma vez)
-1. Supabase → SQL Editor → colar `registos.sql` → Run.
-2. Abrir o endereço no Microsoft Edge, entrar com a conta da casa e criar a senha mestra.
+1. Supabase → SQL Editor → correr `registos.sql` e depois `registos-equipa.sql`.
+2. Supabase → Authentication → Users → criar as contas da equipa (Auto Confirm):
+   `ricardo@intranet.pt` (Ricardo) e `nuno@intranet.pt` (Nuno).
+3. O primeiro a entrar cria a senha mestra; o outro usa a mesma senha mestra.
+
+## Equipa e chat
+- Cada pessoa entra com a sua conta; os registos são partilhados pela equipa.
+- Chat da equipa com mensagens encriptadas, em tempo real, com notificação do Windows.
+- Novas ocorrências ficam com o técnico preenchido automaticamente.
+- Acrescentar alguém: criar a conta no Supabase e juntar (email, nome) ao insert de `registos-equipa.sql`.
 
 ## Instalar em cada computador
 Edge → abrir o endereço → menu `…` → **Aplicações** → **Instalar este site como uma aplicação**.

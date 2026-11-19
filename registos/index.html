@@ -36,6 +36,13 @@ nav button.on{background:var(--pri);color:#fff}
 nav .cnt{margin-left:auto;font-size:11px;background:#374151;border-radius:10px;padding:1px 7px}
 nav button.on .cnt{background:rgba(255,255,255,.25)}
 .sidefoot{padding:12px}
+.chat{display:flex;flex-direction:column;height:calc(100vh - 110px)}
+.msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:#f8fafc;border-radius:12px 12px 0 0}
+.msg{max-width:70%;background:#fff;border:1px solid var(--line);border-radius:12px;padding:7px 12px;align-self:flex-start;word-wrap:break-word}
+.msg.me{align-self:flex-end;background:#dbeafe;border-color:#bfdbfe}
+.msg b{font-size:12px;color:var(--pri)}.msg small{display:block;text-align:right;font-size:11px;color:var(--mut);margin-top:2px}
+.day{align-self:center;font-size:12px;color:var(--mut);background:#eef0f4;border-radius:10px;padding:2px 10px;margin:6px 0}
+.chatin{display:flex;gap:8px;padding:12px;border-top:1px solid var(--line)}.chatin textarea{min-height:46px;height:46px}
 .sync{font-size:12px;margin-bottom:8px;color:#9ca3af;text-align:center}
 .sync.warn{color:#fbbf24}
 .lockbox .links{gap:14px}.lockbox .links a{max-width:60%}
@@ -123,7 +130,7 @@ code{background:#f1f4f9;padding:2px 6px;border-radius:5px;font-family:Consolas,m
   <div class="lockbox">
     <h1>🗂️ Registos de Trabalho</h1>
     <form id="loginForm" hidden>
-      <p>Entre com a conta da aplicação (ex.: info@intranet.pt).</p>
+      <p>Entre com a sua conta (ex.: ricardo@intranet.pt).</p>
       <input type="email" id="lgEmail" placeholder="Email" autocomplete="username">
       <input type="password" id="lgPw" placeholder="Senha da conta" autocomplete="current-password">
       <div class="err" id="lgErr"></div>
@@ -214,7 +221,9 @@ function download(name, text, type) {
 /* ---------- cloud (Supabase — mesmo projeto da app "A Nossa Casa") ---------- */
 const SUPABASE_URL = 'https://uthotfdcfwrdyivhwkpw.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_1NO-glUWpi7oEzQUS2xX0A_7TS9qNpu';   // chave pública (publishable)
-const TABELA = 'registos_cofre';
+const TABELA = 'registos_cofre', TAB_MEMB = 'registos_membros', TAB_MSG = 'registos_mensagens';
+const DONO = 'equipa';   // cofre partilhado pela equipa
+let membros = {}, meuNome = '';
 const COLS = ['clientes','ocorrencias','eventos','senhas','links','pastas'];
 let sb = null, me = '';
 
@@ -241,7 +250,7 @@ const readCache = () => { try { return JSON.parse(localStorage.getItem(cacheKey(
 function writeCache(vault) { try { localStorage.setItem(cacheKey(), JSON.stringify({ vault, versao, pendente })); } catch {} }
 function setSync(txt, warn) { const e = $('#syncSt'); if (e) { e.textContent = txt; e.className = 'sync' + (warn ? ' warn' : ''); } }
 async function fetchRemote() {
-  const { data, error } = await sb.from(TABELA).select('dados,versao').eq('dono', me).maybeSingle();
+  const { data, error } = await sb.from(TABELA).select('dados,versao').eq('dono', DONO).maybeSingle();
   if (error) throw error;
   return data;
 }
@@ -262,7 +271,7 @@ function merge(a, b) {
   }
   return normalize(out);
 }
-const tableMissing = e => e && (e.code === 'PGRST205' || e.code === '42P01' || /registos_cofre/.test(e.message || ''));
+const tableMissing = e => e && (e.code === 'PGRST205' || e.code === '42P01' || /registos_/.test(e.message || ''));
 // envia o estado atual para a cloud; se outro PC gravou entretanto, junta as duas versões e tenta de novo
 async function push() {
   let merged = false;
@@ -271,8 +280,8 @@ async function push() {
     pendente = true; writeCache(vault);
     if (!navigator.onLine) throw new Error('offline');
     const res = versao === 0
-      ? await sb.from(TABELA).insert({ dados: vault, versao: 1 }).select('versao')
-      : await sb.from(TABELA).update({ dados: vault, versao: versao + 1 }).eq('dono', me).eq('versao', versao).select('versao');
+      ? await sb.from(TABELA).insert({ dono: DONO, dados: vault, versao: 1 }).select('versao')
+      : await sb.from(TABELA).update({ dados: vault, versao: versao + 1 }).eq('dono', DONO).eq('versao', versao).select('versao');
     if (res.error && res.error.code !== '23505') throw res.error;
     if (!res.error && res.data && res.data.length) { versao = res.data[0].versao; pendente = false; writeCache(vault); return merged; }
     const r = await fetchRemote();
@@ -301,7 +310,7 @@ async function poll() {
   if (!db || !cKey) return;
   if (pendente) { try { const merged = await push(); setSync('☁️ Sincronizado'); if (merged && $('#modal').hidden) render(); } catch (e) { syncError(e); } return; }
   try {
-    const { data, error } = await sb.from(TABELA).select('versao').eq('dono', me).maybeSingle();
+    const { data, error } = await sb.from(TABELA).select('versao').eq('dono', DONO).maybeSingle();
     if (error) throw error;
     if (data && data.versao > versao) {
       const r = await fetchRemote();
@@ -330,6 +339,19 @@ async function showLock(msg) {
   me = data.session.user.email.toLowerCase();
   $('#loginForm').hidden = true; $('#vaultStep').hidden = false;
   $('#lgWho').textContent = '(' + me + ')';
+  $('#lockMsg').textContent = 'A verificar…'; $('#lockBtn').disabled = true; $('#pw1').hidden = false;
+  try {
+    const { data: mm, error } = await sb.from(TAB_MEMB).select('email,nome');
+    if (error) throw error;
+    membros = {}; (mm || []).forEach(x => membros[x.email.toLowerCase()] = x.nome);
+  } catch (e) {
+    if (tableMissing(e)) { $('#lockMsg').textContent = 'Falta correr o ficheiro registos-equipa.sql no Supabase.'; $('#pw1').hidden = true; return; }
+    try { membros = JSON.parse(localStorage.getItem('registosTrabalho.membros')) || {}; } catch {}
+  }
+  if (!membros[me]) { $('#lockMsg').textContent = `A conta ${me} não pertence à equipa. Peça ao administrador para a adicionar.`; $('#pw1').hidden = true; $('#pw2').hidden = true; return; }
+  try { localStorage.setItem('registosTrabalho.membros', JSON.stringify(membros)); } catch {}
+  meuNome = membros[me];
+  $('#lgWho').textContent = '(' + meuNome + ')';
   $('#pw1').value = ''; $('#pw2').value = ''; $('#lockErr').textContent = msg || '';
   $('#lockMsg').textContent = 'A verificar…'; $('#lockBtn').disabled = true; $('#pw2').hidden = true;
   let exists;
@@ -356,7 +378,7 @@ $('#loginForm').onsubmit = async e => {
   $('#lgPw').value = '';
   showLock();
 };
-$('#lnkLogout').onclick = async () => { await saving; db = null; cKey = null; await sb.auth.signOut(); showLock(); };
+$('#lnkLogout').onclick = async () => { await saving; stopChat(); db = null; cKey = null; await sb.auth.signOut(); showLock(); };
 $('#lockForm').onsubmit = async e => {
   e.preventDefault();
   const pw = $('#pw1').value, err = $('#lockErr');
@@ -394,14 +416,15 @@ $('#lockForm').onsubmit = async e => {
 };
 async function lock(msg) {
   await saving;
+  stopChat();
   db = null; cKey = null; cSalt = null; versao = 0; pendente = false;
   showLock(msg);
 }
 $('#btnLock').onclick = () => lock();
 $('#lnkReset').onclick = async () => {
   if (!confirm('Os dados estão encriptados com a senha mestra: sem ela, ninguém os consegue ler (nem eu, nem o Supabase).\n\nA única opção é APAGAR todos os registos e começar de novo. Quer apagar?')) return;
-  if (!confirm('Última confirmação: apagar TODOS os registos na cloud? (Se tiver uma cópia de segurança e souber a senha dela, pode importá-la depois.)')) return;
-  const { error } = await sb.from(TABELA).delete().eq('dono', me);
+  if (!confirm('Última confirmação: apagar TODOS os registos da equipa na cloud, para TODOS os utilizadores? (Se tiver uma cópia de segurança e souber a senha dela, pode importá-la depois.)')) return;
+  const { error } = await sb.from(TABELA).delete().eq('dono', DONO);
   if (error) { toast('Erro ao apagar: ' + error.message, true); return; }
   localStorage.removeItem(cacheKey());
   showLock();
@@ -447,7 +470,7 @@ const MODS = {
       { k:'descricao', l:'Descrição do problema / pedido', type:'textarea', full:1 },
       { k:'solucao', l:'Trabalho realizado / solução', type:'textarea', full:1 },
       { k:'tempo', l:'Tempo gasto (horas)', type:'number', step:'0.25' },
-      { k:'tecnico', l:'Técnico' } ],
+      { k:'tecnico', l:'Técnico', def:() => meuNome } ],
     sort: (a, b) => (b.data || '').localeCompare(a.data || '') || b.criado - a.criado },
   eventos: { t: 'Agendamentos', s: 'agendamento', g: 'o', icon: '📅', cols: ['data','hora','titulo','cliente','aviso'],
     fields: [
@@ -494,7 +517,7 @@ const MODS = {
       { k:'notas', l:'Notas', type:'textarea', full:1 } ],
     sort: (a, b) => (a.nome || '').localeCompare(b.nome || '', 'pt') },
 };
-const NAV = [['painel','🏠','Painel'],['calendario','📅','Calendário'],['ocorrencias'],['clientes'],['senhas'],['links'],['pastas'],['definicoes','⚙️','Definições']];
+const NAV = [['painel','🏠','Painel'],['chat','💬','Chat'],['calendario','📅','Calendário'],['ocorrencias'],['clientes'],['senhas'],['links'],['pastas'],['definicoes','⚙️','Definições']];
 const novo = M => (M.g === 'o' ? 'Novo ' : 'Nova ') + M.s;
 const opts = f => (f.opts || []).map(o => typeof o === 'string' ? { v: o, l: o } : o);
 const cliName = id => { const c = db.clientes.find(x => x.id === id); return c ? (c.empresa ? `${c.nome} (${c.empresa})` : c.nome) : ''; };
@@ -534,6 +557,7 @@ function renderNav() {
     const M = MODS[k]; ic = ic || M.icon; l = l || M.t;
     let cnt = '';
     if (k === 'ocorrencias') { const n = db.ocorrencias.filter(o => o.estado !== 'Resolvida').length; if (n) cnt = `<span class="cnt">${n}</span>`; }
+    else if (k === 'chat') { const n = unread(); if (n) cnt = `<span class="cnt" style="background:var(--bad);color:#fff">${n}</span>`; }
     else if (M) cnt = `<span class="cnt">${db[k].length}</span>`;
     return `<button class="${st.view === k ? 'on' : ''}" data-go="${k}"><span>${ic}</span><span class="lbl">${esc(l)}</span>${cnt}</button>`;
   }).join('');
@@ -545,6 +569,7 @@ function render() {
   if (v === 'painel') renderPainel();
   else if (v === 'calendario') renderCal();
   else if (v === 'definicoes') renderSet();
+  else if (v === 'chat') renderChat();
   else renderList(v);
 }
 
@@ -638,8 +663,8 @@ $('#mForm').onsubmit = e => {
     vals[f.k] = v;
   }
   if (m === 'eventos') vals.notificado = false;
-  if (id) Object.assign(db[m].find(x => x.id === id), vals, { alterado: Date.now() });
-  else { const t = Date.now(); db[m].push({ id: uid(), criado: t, alterado: t, ...vals }); }
+  if (id) Object.assign(db[m].find(x => x.id === id), vals, { alterado: Date.now(), alteradoPor: meuNome });
+  else { const t = Date.now(); db[m].push({ id: uid(), criado: t, alterado: t, criadoPor: meuNome, ...vals }); }
   save(); closeForm(); render(); toast('Guardado ✔');
 };
 function delRec(m, id) {
@@ -686,7 +711,7 @@ function renderPainel() {
   const recentes = db.ocorrencias.slice().sort(MODS.ocorrencias.sort).slice(0, 6);
   const h = new Date().getHours(), saud = h < 12 ? 'Bom dia' : h < 20 ? 'Boa tarde' : 'Boa noite';
   const evLi = e => `<div class="li" data-act="edit" data-m="eventos" data-id="${e.id}"><span class="when">${e.data === hoje ? 'Hoje' : fmtDate(e.data).slice(0, 5)} ${esc(e.hora || '')}</span><span>${esc(e.titulo)}${e.cliente ? ` <span class="muted">· ${esc(cliName(e.cliente))}</span>` : ''}</span></div>`;
-  const ocLi = o => `<div class="li" data-act="edit" data-m="ocorrencias" data-id="${o.id}"><span class="when">${fmtDate(o.data)}</span><span style="flex:1">${esc(o.titulo)}${o.cliente ? ` <span class="muted">· ${esc(cliName(o.cliente))}</span>` : ''}</span><span class="badge b-${slug(o.estado || '')}">${esc(o.estado || '')}</span></div>`;
+  const ocLi = o => `<div class="li" data-act="edit" data-m="ocorrencias" data-id="${o.id}"><span class="when">${fmtDate(o.data)}</span><span style="flex:1">${esc(o.titulo)}${o.cliente ? ` <span class="muted">· ${esc(cliName(o.cliente))}</span>` : ''}${o.tecnico ? ` <span class="muted">· 👤 ${esc(o.tecnico)}</span>` : ''}</span><span class="badge b-${slug(o.estado || '')}">${esc(o.estado || '')}</span></div>`;
   $('#main').innerHTML = `
     <div class="top"><h2>${saud} 👋</h2><span class="muted">${new Date().toLocaleDateString('pt-PT', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span><span class="sp"></span>
       <button class="btn" data-act="new" data-m="eventos">+ Agendamento</button><button class="btn p" data-act="new" data-m="ocorrencias">+ Ocorrência</button></div>
@@ -788,6 +813,87 @@ function changePw() {
   $('#modal').hidden = false;
 }
 
+/* ---------- chat da equipa (mensagens encriptadas com a senha mestra) ---------- */
+let msgs = [], chatCh = null, chatTimer = null;
+const seenKey = () => 'registosTrabalho.chatVisto.' + me;
+const unread = () => { const t = +localStorage.getItem(seenKey()) || 0; return msgs.filter(m => m.autor !== me && Date.parse(m.criado_em) > t).length; };
+async function encObj(o) {
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, cKey, enc.encode(JSON.stringify(o)));
+  return { iv: b64(iv), data: b64(ct) };
+}
+async function addMsgs(rows, avisar) {
+  const novos = [];
+  for (const r of rows || []) {
+    if (msgs.some(m => m.id === r.id)) continue;
+    let texto = null; try { texto = (await decryptVault(r.dados, cKey)).t; } catch {}
+    const m = { id: r.id, autor: r.autor, criado_em: r.criado_em, texto };
+    msgs.push(m); novos.push(m);
+  }
+  if (!novos.length || !db) return;
+  msgs.sort((a, b) => a.criado_em.localeCompare(b.criado_em));
+  if (msgs.length > 500) msgs = msgs.slice(-500);
+  if (avisar) for (const m of novos) if (m.autor !== me && (st.view !== 'chat' || document.hidden)) {
+    const quem = membros[m.autor] || m.autor;
+    toast(`💬 ${quem}: ${m.texto ?? '(mensagem)'}`);
+    try { if (Notification.permission === 'granted') new Notification('Mensagem de ' + quem, { body: m.texto || '', tag: 'chat-' + m.id }); } catch {}
+  }
+  if (st.view === 'chat') { drawMsgs(); if (!document.hidden) markSeen(); }
+  renderNav();
+}
+const SEL = 'id,autor,dados,criado_em';
+async function pollChat() {
+  if (!cKey) return;
+  try {
+    const last = msgs.length ? msgs[msgs.length - 1].criado_em : '1970-01-01T00:00:00Z';
+    const { data, error } = await sb.from(TAB_MSG).select(SEL).gt('criado_em', last).order('criado_em', { ascending: true }).limit(100);
+    if (!error) await addMsgs(data, true);
+  } catch {}
+}
+async function startChat() {
+  stopChat();
+  try {
+    const { data, error } = await sb.from(TAB_MSG).select(SEL).order('criado_em', { ascending: false }).limit(200);
+    if (!error) await addMsgs((data || []).reverse(), false);
+  } catch {}
+  try { chatCh = sb.channel('registos-chat').on('postgres_changes', { event: 'INSERT', schema: 'public', table: TAB_MSG }, p => addMsgs([p.new], true)).subscribe(); } catch {}
+  chatTimer = setInterval(pollChat, 15000);
+}
+function stopChat() { try { if (chatCh) sb.removeChannel(chatCh); } catch {} chatCh = null; clearInterval(chatTimer); msgs = []; }
+function markSeen() { if (msgs.length) { localStorage.setItem(seenKey(), Date.parse(msgs[msgs.length - 1].criado_em)); renderNav(); } }
+const linkify = t => esc(t).replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" rel="noopener">$1</a>').replace(/\n/g, '<br>');
+function drawMsgs() {
+  const box = $('#msgs'); if (!box) return;
+  if (!msgs.length) { box.innerHTML = '<div class="empty">Ainda não há mensagens. Diga olá 👋</div>'; return; }
+  let html = '', lastDay = '';
+  for (const m of msgs) {
+    const d = new Date(m.criado_em), day = ymd(d), mine = m.autor === me;
+    if (day !== lastDay) { html += `<div class="day">${day === ymd(new Date()) ? 'Hoje' : fmtDate(day)}</div>`; lastDay = day; }
+    html += `<div class="msg ${mine ? 'me' : ''}">${mine ? '' : `<b>${esc(membros[m.autor] || m.autor)}</b>`}<div>${m.texto == null ? '<i class="muted">(não foi possível ler — senha mestra diferente)</i>' : linkify(m.texto)}</div><small>${pad(d.getHours())}:${pad(d.getMinutes())}</small></div>`;
+  }
+  box.innerHTML = html; box.scrollTop = box.scrollHeight;
+}
+function renderChat() {
+  $('#main').innerHTML = `<div class="top"><h2>💬 Chat da equipa</h2><span class="muted">${Object.values(membros).map(esc).join(' · ')}</span></div>
+    <div class="card chat"><div id="msgs" class="msgs"></div>
+    <form id="chatForm" class="chatin"><textarea id="chatTxt" placeholder="Escreva uma mensagem… (Enter envia · Shift+Enter muda de linha)"></textarea><button class="btn p">Enviar</button></form></div>`;
+  drawMsgs(); markSeen();
+  const ta = $('#chatTxt'); ta.focus();
+  ta.onkeydown = e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#chatForm').requestSubmit(); } };
+  $('#chatForm').onsubmit = async e => {
+    e.preventDefault();
+    const t = ta.value.trim(); if (!t) return;
+    ta.value = ''; ta.disabled = true;
+    try {
+      const { data, error } = await sb.from(TAB_MSG).insert({ dados: await encObj({ t }) }).select(SEL);
+      if (error) throw error;
+      await addMsgs(data, false);
+    } catch (ex) { ta.value = t; toast('Não foi possível enviar: ' + (tableMissing(ex) ? 'falta correr registos-equipa.sql' : ex.message || 'sem ligação'), true); }
+    finally { ta.disabled = false; ta.focus(); }
+  };
+}
+document.addEventListener('visibilitychange', () => { if (!document.hidden && st.view === 'chat' && db) markSeen(); });
+
 /* ---------- avisos e bloqueio automático ---------- */
 function notify(e) {
   const msg = `${e.hora ? e.hora + ' — ' : ''}${e.titulo}${e.cliente ? ' (' + cliName(e.cliente) + ')' : ''}`;
@@ -819,7 +925,7 @@ setInterval(() => {
 
 function start() {
   $('#lock').hidden = true; $('#app').hidden = false;
-  lastAct = Date.now(); go('painel');
+  lastAct = Date.now(); go('painel'); startChat();
   if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
   checkReminders();
 }
