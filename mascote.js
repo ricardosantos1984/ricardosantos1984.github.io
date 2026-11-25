@@ -282,7 +282,7 @@
   }
   function ocasiao(L) {
     var hoje = Date.UTC(L.ano, L.mes - 1, L.dia), DIA = 86400000;
-    if ((L.mes === 12) || (L.mes === 1 && L.dia <= 6)) return 'natal';
+    if ((L.mes === 11 && L.dia >= 20) || L.mes === 12 || (L.mes === 1 && L.dia <= 6)) return 'natal';
     var carnaval = pascoa(L.ano) - 47 * DIA;
     if (hoje >= carnaval - 6 * DIA && hoje <= carnaval + DIA) return 'carnaval';
     if ((L.mes === 10 && L.dia >= 25) || (L.mes === 11 && L.dia <= 1)) return 'halloween';
