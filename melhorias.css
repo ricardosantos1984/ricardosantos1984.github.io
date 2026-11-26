@@ -18,7 +18,7 @@ html body .vmeta .who,
 html body .label,
 html body .steps .st,
 html body .pill,
-html body .bit-x { font-size: 0.75rem; }
+html body .maker { font-size: 0.75rem; }
 html body .tag { font-size: 0.7rem; }
 
 /* 2. Alvos de toque mais confortáveis no telemóvel */
@@ -26,7 +26,7 @@ html body .brand { padding-block: 0.6rem; }
 html body .chips a { min-height: 44px; display: inline-flex; align-items: center; }
 html body .vmeta a { display: inline-flex; align-items: center; min-height: 40px; }
 html body .label a { display: inline-block; padding-block: 0.6rem; margin-block: -0.6rem; }
-html body .bit-x { min-height: 36px; padding: 0.4rem 0; }
+html body .bit-x { font-size: 0.75rem !important; min-height: 36px !important; padding: 0.4rem 0 !important; }
 html body button.nf-neve { min-height: 40px; }
 
 /* 3. Menu no telemóvel: esbatido na margem quando há mais opções escondidas */
