@@ -1,0 +1,37 @@
+/* Melhorias de leitura e toque, partilhadas por todas as páginas (nov 2026).
+   O prefixo "html body" garante que ganham aos estilos de cada página e aos que o mascote.js e o natal.js injetam. */
+
+/* 1. Texto pequeno: nada abaixo de 12px */
+html body .nav a,
+html body .chips a,
+html body .idcard dt,
+html body .idcard .head span,
+html body .meter .row,
+html body .serial,
+html body .loc-vivo,
+html body .loc-vivo *,
+html body .shortcut .k,
+html body .stat span,
+html body .auto th,
+html body .lang,
+html body .vmeta .who,
+html body .label,
+html body .steps .st,
+html body .pill,
+html body .bit-x { font-size: 0.75rem; }
+html body .tag { font-size: 0.7rem; }
+
+/* 2. Alvos de toque mais confortáveis no telemóvel */
+html body .brand { padding-block: 0.6rem; }
+html body .chips a { min-height: 44px; display: inline-flex; align-items: center; }
+html body .vmeta a { display: inline-flex; align-items: center; min-height: 40px; }
+html body .label a { display: inline-block; padding-block: 0.6rem; margin-block: -0.6rem; }
+html body .bit-x { min-height: 36px; padding: 0.4rem 0; }
+html body button.nf-neve { min-height: 40px; }
+
+/* 3. Menu no telemóvel: esbatido na margem quando há mais opções escondidas */
+html body .nav { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+html body .nav.mais-dir { -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent); }
+html body .nav.mais-esq { -webkit-mask-image: linear-gradient(90deg, transparent, #000 22%); mask-image: linear-gradient(90deg, transparent, #000 22%); }
+html body .nav.mais-esq.mais-dir { -webkit-mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent); }
+@media (prefers-reduced-motion: reduce) { html body .nav { scroll-behavior: auto; } }
