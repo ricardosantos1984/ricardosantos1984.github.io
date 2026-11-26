@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A casa do Ricardo como uma estação: as automações em tempo real e o horário do dia.">
+<link rel="icon" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Estação Ricardo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a casa como estação — quadro de partidas no topo, horário do dia em grelha, depois diário e sobre mim numa coluna editorial */
+:root{
+  --bg:#f2f4f8; --surface:#ffffff; --ink:#14213d; --muted:#56627c; --line:#d6dce8;
+  --azul:#1d4cc0; --azul-soft:#e3eafb;
+  --board:#0f1626; --board-cell:#1a2338; --board-ink:#f5d88f; --board-dim:#7d8aa6; --live:#3ddc97;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0b1120; --surface:#121a2c; --ink:#e7ecf6; --muted:#97a3bc; --line:#25314b;
+  --azul:#7ea4ff; --azul-soft:#18264a;
+  --board:#060a14; --board-cell:#111a2e; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0b1120; --surface:#121a2c; --ink:#e7ecf6; --muted:#97a3bc; --line:#25314b;
+  --azul:#7ea4ff; --azul-soft:#18264a;
+  --board:#060a14; --board-cell:#111a2e; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+a{color:var(--azul)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--azul);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.05}
+.label{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* Topo */
+.top{padding-block:18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:700;font-size:1.05rem;text-decoration:none;color:var(--ink)}
+.brand i{width:30px;height:30px;border-radius:7px;background:var(--azul);display:grid;place-items:center;color:var(--bg);font-style:normal;font-size:.8rem;letter-spacing:.02em}
+.top nav{display:flex;gap:18px;flex-wrap:wrap}
+.top nav a{color:var(--muted);text-decoration:none;font-weight:500;font-size:.95rem}
+.top nav a:hover{color:var(--ink)}
+
+/* Hero */
+.hero{position:relative;padding-block:40px 56px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;opacity:.07;pointer-events:none;
+  background:
+   radial-gradient(circle at 50% 50%, transparent 38%, var(--azul) 39%, var(--azul) 41%, transparent 42%) 0 0/72px 72px,
+   conic-gradient(from 45deg at 50% 50%, var(--azul) 0 25%, transparent 0 50%, var(--azul) 0 75%, transparent 0) 0 0/72px 72px;
+  -webkit-mask-image:linear-gradient(90deg, transparent, #000 60%);mask-image:linear-gradient(90deg, transparent, #000 60%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:48px;align-items:center}
+.hero h1{font-size:clamp(2.8rem,7vw,5.2rem);font-weight:800;letter-spacing:-.03em}
+.hero h1 span{color:var(--azul)}
+.hero p.lede{font-size:1.18rem;color:var(--muted);max-width:34ch;margin:20px 0 0}
+.hero p.lede b{color:var(--ink);font-weight:600}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:999px;font-weight:600;text-decoration:none;font-size:.95rem;border:1.5px solid var(--azul)}
+.btn.solid{background:var(--azul);color:var(--bg)}
+.btn.ghost{color:var(--azul)}
+.meta{display:flex;gap:22px;flex-wrap:wrap;margin-top:34px}
+.meta div{display:flex;flex-direction:column}
+.meta b{font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+
+/* Quadro de partidas */
+.board{background:var(--board);border-radius:14px;padding:18px 18px 14px;color:var(--board-ink);box-shadow:0 30px 60px -30px rgba(10,20,50,.55);min-width:0}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.board-head h2{font-family:var(--f-mono);font-size:.95rem;letter-spacing:.18em;font-weight:600;color:var(--board-ink)}
+.board-head h2 small{color:var(--board-dim);letter-spacing:.1em;font-weight:500;margin-left:8px}
+.clock{font-family:var(--f-mono);font-size:1.5rem;font-weight:600;font-variant-numeric:tabular-nums;color:#fff}
+.rows{display:flex;flex-direction:column;gap:6px}
+.row{display:grid;grid-template-columns:64px minmax(0,1fr) 92px;gap:10px;align-items:center}
+.row.head{font-family:var(--f-mono);font-size:.66rem;letter-spacing:.14em;color:var(--board-dim);padding:0 2px}
+.flap{font-family:var(--f-mono);font-weight:600;font-size:.92rem;background:var(--board-cell);border-radius:4px;padding:7px 8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;font-variant-numeric:tabular-nums}
+.flap::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.45)}
+.flap.what{color:#fff;font-weight:500;font-family:var(--f-body);font-size:.95rem}
+.flap.st{font-size:.72rem;letter-spacing:.06em;text-align:center}
+.flap.st.live{color:var(--live)}
+.flap.st.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--live);margin-right:6px;vertical-align:1px;animation:pulse 1.6s infinite}
+@keyframes pulse{50%{opacity:.25}}
+.board-foot{display:flex;justify-content:space-between;gap:10px;margin-top:12px;font-family:var(--f-mono);font-size:.68rem;color:var(--board-dim);letter-spacing:.06em;flex-wrap:wrap}
+
+/* Secções */
+section.block{padding-block:64px;border-top:1px solid var(--line)}
+.sec-head{display:flex;justify-content:space-between;align-items:end;gap:20px;flex-wrap:wrap;margin-bottom:28px}
+.sec-head h2{font-size:clamp(1.9rem,4vw,2.7rem);font-weight:700;letter-spacing:-.02em}
+.sec-head p{color:var(--muted);max-width:46ch;margin:8px 0 0}
+
+/* Horário do dia */
+.timetable{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 18px 10px;overflow-x:auto}
+.tt{min-width:720px;position:relative}
+.tt-row{display:grid;grid-template-columns:230px 1fr;gap:16px;align-items:center;min-height:34px;border-bottom:1px dashed var(--line)}
+.tt-row:last-child{border-bottom:0}
+.tt-name{font-size:.9rem;line-height:1.25;padding-block:6px}
+.tt-name small{display:block;font-family:var(--f-mono);font-size:.68rem;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+.track{position:relative;height:22px}
+.band{position:absolute;top:8px;height:6px;border-radius:3px;background:var(--azul-soft);
+  background-image:repeating-linear-gradient(90deg, var(--azul) 0 1.5px, transparent 1.5px var(--step, 8px))}
+.dot{position:absolute;top:3px;width:16px;height:16px;margin-left:-8px;border-radius:50%;background:var(--azul);border:3px solid var(--surface);box-shadow:0 0 0 1.5px var(--azul)}
+.dot.week{background:var(--surface)}
+.dot b{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:.62rem;color:var(--muted);white-space:nowrap;font-weight:500}
+.axis{display:grid;grid-template-columns:230px 1fr;gap:16px;margin-bottom:6px}
+.axis .ticks{position:relative;height:16px;font-family:var(--f-mono);font-size:.66rem;color:var(--muted)}
+.axis .ticks span{position:absolute;transform:translateX(-50%)}
+.now-line{position:absolute;top:0;bottom:0;width:2px;background:#e0504a;pointer-events:none;z-index:2}
+.now-line::before{content:attr(data-t);position:absolute;top:-2px;left:6px;font-family:var(--f-mono);font-size:.64rem;color:#e0504a;font-weight:600;white-space:nowrap}
+.always{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.chip{display:inline-flex;gap:8px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-size:.88rem}
+.chip i{font-style:normal;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;font-size:.82rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.lg-dot{width:10px;height:10px;border-radius:50%;background:var(--azul)}
+.lg-ring{width:10px;height:10px;border-radius:50%;border:2px solid var(--azul)}
+.lg-band{width:22px;height:6px;border-radius:3px;background:var(--azul-soft);background-image:repeating-linear-gradient(90deg, var(--azul) 0 1.5px, transparent 1.5px 4px)}
+
+/* Diário */
+.diary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.entry{display:flex;flex-direction:column;gap:10px;padding:20px 0;border-top:2px solid var(--ink)}
+.entry .when{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.entry .tag{font-family:var(--f-mono);font-size:.64rem;letter-spacing:.1em;padding:3px 8px;border-radius:4px;background:var(--azul-soft);color:var(--azul);font-weight:600}
+.entry h3{font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
+.entry p{margin:0;color:var(--muted);font-size:.95rem}
+.more{margin-top:28px;display:inline-block;font-weight:600}
+
+/* Explorar */
+.explore{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.door{display:flex;flex-direction:column;gap:10px;padding:22px;border-radius:12px;border:1px solid var(--line);background:var(--surface);text-decoration:none;color:var(--ink);transition:transform .2s, border-color .2s}
+.door:hover{transform:translateY(-3px);border-color:var(--azul)}
+.door .n{font-family:var(--f-display);font-size:2.2rem;font-weight:800;color:var(--azul);line-height:1;font-variant-numeric:tabular-nums}
+.door h3{font-size:1.15rem}
+.door p{margin:0;color:var(--muted);font-size:.9rem;flex:1}
+.door em{font-style:normal;font-weight:600;font-size:.88rem;color:var(--azul)}
+
+/* Sobre */
+.about{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:56px}
+.about p{margin:0 0 16px;max-width:62ch;font-size:1.05rem}
+.facts{display:grid;grid-template-columns:auto 1fr;gap:10px 20px;margin:24px 0 0;font-size:.95rem}
+.facts dt{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.facts dd{margin:0}
+.interests{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden;align-self:start}
+.interests div{background:var(--surface);padding:16px}
+.interests b{display:block;font-family:var(--f-display);font-size:1.02rem}
+.interests span{font-size:.86rem;color:var(--muted)}
+
+footer{padding-block:40px;border-top:1px solid var(--line);color:var(--muted);font-size:.88rem}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+@media (max-width:900px){
+  .hero-grid,.about{grid-template-columns:minmax(0,1fr);gap:36px}
+  .diary{grid-template-columns:minmax(0,1fr)}
+  .explore{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:480px){
+  .row{grid-template-columns:52px minmax(0,1fr) 78px;gap:6px}
+  .flap{font-size:.8rem;padding:6px}
+  .flap.what{font-size:.84rem}
+  .explore{grid-template-columns:minmax(0,1fr)}
+  .interests{grid-template-columns:minmax(0,1fr)}
+  .top nav{gap:14px}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="wrap top">
+  <a class="brand" href="#inicio"><i>RS</i>Ricardo Santos</a>
+  <nav aria-label="Secções">
+    <a href="#horario">Horário</a>
+    <a href="#diario">Diário</a>
+    <a href="#explorar">Explorar</a>
+    <a href="#sobre">Sobre mim</a>
+    <a href="./">Site principal</a>
+  </nav>
+</header>
+
+<section class="hero" id="inicio">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="label">Técnico de informática · Tomar</div>
+      <h1 style="margin-top:14px">A minha casa <span>trabalha sozinha.</span></h1>
+      <p class="lede">Sou o Ricardo. Ligo a IA ao email, à agenda e às compras, e monto automações que me avisam pelo WhatsApp. <b>Neste momento há 19 a correr.</b></p>
+      <div class="cta">
+        <a class="btn solid" href="#horario">Ver o horário da casa</a>
+        <a class="btn ghost" href="#diario">Ler o diário</a>
+      </div>
+      <div class="meta">
+        <div><b>84</b><span class="label">conquistas</span></div>
+        <div><b>19</b><span class="label">automações</span></div>
+        <div><b>81</b><span class="label">vídeos</span></div>
+      </div>
+    </div>
+
+    <div class="board" role="region" aria-label="Próximas automações">
+      <div class="board-head">
+        <h2>PARTIDAS<small>CASA · TOMAR</small></h2>
+        <div class="clock" id="clock">--:--</div>
+      </div>
+      <div class="rows" id="rows">
+        <div class="row head"><span>HORA</span><span>AUTOMAÇÃO</span><span style="text-align:center">ESTADO</span></div>
+      </div>
+      <div class="board-foot"><span>HORA DE LISBOA</span><span id="via">LINHA n8n · GEMINI · SUPABASE</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="horario">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="label">O horário da casa</div>
+        <h2>Um dia, das 0h às 24h</h2>
+        <p>Cada linha é uma automação. A linha vermelha é a hora atual em Tomar.</p>
+      </div>
+    </div>
+    <div class="timetable">
+      <div class="tt" id="tt"></div>
+    </div>
+    <div class="legend">
+      <span><i class="lg-dot"></i>Hora fixa, todos os dias</span>
+      <span><i class="lg-ring"></i>Só num dia da semana</span>
+      <span><i class="lg-band"></i>Repete-se dentro de uma janela</span>
+    </div>
+    <div class="always" id="always"></div>
+  </div>
+</section>
+
+<section class="block" id="diario">
+  <div class="wrap">
+    <div class="sec-head">
+      <div>
+        <div class="label">Diário · 78 entradas</div>
+        <h2>O que mudou esta semana</h2>
+      </div>
+    </div>
+    <div class="diary">
+      <article class="entry">
+        <div class="when"><span class="label">25 nov 2026</span><span class="tag">SITE</span></div>
+        <h3>Brilho de Natal e mais vídeos</h3>
+        <p>Neve a cair até ao Dia de Reis, um fio de luzes, contagem para o Natal e o Bit de gorro. Três temas novos na página de vídeos.</p>
+      </article>
+      <article class="entry">
+        <div class="when"><span class="label">22 nov 2026</span><span class="tag">IA</span></div>
+        <h3>Contador da luz: várias fotos, uma leitura</h3>
+        <p>A automação percebe o vazio, a ponta, as cheias e o total, compara com a leitura anterior e junta as fotos do mesmo dia.</p>
+      </article>
+      <article class="entry">
+        <div class="when"><span class="label">21 nov 2026</span><span class="tag">DIA A DIA</span></div>
+        <h3>Treino para os testes da Ema</h3>
+        <p>Fichas de Matemática e Ciências com a explicação de cada resposta, e uma notificação que abre logo a página do Estudo.</p>
+      </article>
+      <article class="entry">
+        <div class="when"><span class="label">16 nov 2026</span><span class="tag">AUTOMAÇÃO</span></div>
+        <h3>Faturas também do Gmail</h3>
+        <p>Procura em mais do que um email e abre os PDFs protegidos com senha para a IA ler a despesa.</p>
+      </article>
+      <article class="entry">
+        <div class="when"><span class="label">16 nov 2026</span><span class="tag">IA</span></div>
+        <h3>Faturas do Continente lançadas sozinhas</h3>
+        <p>A fatura chega por email, a despesa entra na app e o preço de cada artigo fica no histórico.</p>
+      </article>
+      <article class="entry">
+        <div class="when"><span class="label">16 nov 2026</span><span class="tag">IA</span></div>
+        <h3>A lista de compras risca-se com o talão</h3>
+        <p>Quando a IA lê um talão, os artigos comprados saem sozinhos da lista de compras.</p>
+      </article>
+    </div>
+    <a class="more" href="diario.html">Ver o diário completo →</a>
+  </div>
+</section>
+
+<section class="block" id="explorar">
+  <div class="wrap">
+    <div class="sec-head"><div><div class="label">Explorar</div><h2>Por onde começar</h2></div></div>
+    <div class="explore">
+      <a class="door" href="diario.html"><span class="n">78</span><h3>Diário</h3><p>O que aprendi e construí com IA, dia a dia.</p><em>Abrir →</em></a>
+      <a class="door" href="aprender.html"><span class="n">1</span><h3>Aprender IA</h3><p>O meu percurso, um glossário simples e dicas para bons prompts.</p><em>Abrir →</em></a>
+      <a class="door" href="videos.html"><span class="n">81</span><h3>Vídeos</h3><p>Fundamentos, agentes, RAG, IA local, apps PWA e tutoriais por ferramenta.</p><em>Abrir →</em></a>
+      <a class="door" href="ferramentas.html"><span class="n">10</span><h3>Ferramentas</h3><p>As que uso, as que estou a aprender e as que quero explorar.</p><em>Abrir →</em></a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="sobre">
+  <div class="wrap about">
+    <div>
+      <div class="label">Sobre mim</div>
+      <h2 style="font-size:clamp(1.9rem,4vw,2.7rem);margin:10px 0 22px">Arranjo computadores. Agora também ensino a casa a arranjar-se.</h2>
+      <p>Trabalho como técnico de informática: apoio a utilizadores, manutenção de equipamentos e resolução de problemas técnicos.</p>
+      <p>Nos últimos tempos passei a usar a inteligência artificial no dia a dia. Ligo a IA ao email, à agenda e à Drive, e monto automações no n8n que me avisam por email e WhatsApp.</p>
+      <p>Também comecei a criar aplicações web em HTML, CSS e JavaScript, publicadas no GitHub Pages, com login e base de dados no Supabase. Este site é um dos resultados.</p>
+      <dl class="facts">
+        <dt>Base</dt><dd>Tomar</dd>
+        <dt>A aprender</dt><dd>IA, automação e web</dd>
+        <dt>Ferramentas</dt><dd>n8n · Supabase · GitHub · Claude · Gemini</dd>
+      </dl>
+    </div>
+    <div class="interests" aria-label="Interesses">
+      <div><b>Tecnologia</b><span>Novidades e ferramentas novas.</span></div>
+      <div><b>Curiosidades</b><span>Perceber como as coisas funcionam por dentro.</span></div>
+      <div><b>Trabalhos manuais</b><span>Fazer e arranjar com as próprias mãos.</span></div>
+      <div><b>Viagens</b><span>Sítios novos, cá dentro e lá fora.</span></div>
+      <div><b>Futsal</b><span>Jogar às quartas e acompanhar o futebol.</span></div>
+      <div><b>Corrida</b><span>Às 7h, com a previsão na véspera.</span></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Ricardo Santos · Tomar · 2026</span><span>Feito à mão, com ajuda de IA.</span></div></footer>
+
+<script>
+(function(){
+  // h:m em minutos; janelas [início, fim] em horas
+  const A = [
+    {n:"Arrumar o Gmail e o Hotmail", w:"n8n", k:"int", every:60, from:0, to:24},
+    {n:"Faturas do email lançadas", w:"n8n + Gemini + Supabase", k:"int", every:60, from:7, to:23},
+    {n:"Talões do supermercado lidos", w:"n8n + Gemini + Supabase", k:"int", every:5, from:7, to:23},
+    {n:"Comparar preços em 4 lojas", w:"n8n + Gemini + Supabase", k:"int", every:20, from:7, to:22},
+    {n:"Tempo em Tomar por email", w:"IFTTT", k:"day", t:7*60},
+    {n:"Agenda do dia", w:"n8n + Calendar + WhatsApp", k:"day", t:8*60},
+    {n:"Notificações da app da casa", w:"GitHub Actions + Supabase", k:"day", t:8*60},
+    {n:"Avisos da casa", w:"n8n + Supabase + WhatsApp", k:"day", t:8*60+12},
+    {n:"Previsão para o futsal", w:"n8n + Calendar + WhatsApp", k:"week", dow:3, t:12*60},
+    {n:"Backup dos fluxos para o GitHub", w:"n8n", k:"day", t:17*60},
+    {n:"Menu semanal e lista de compras", w:"n8n + Gemini + WhatsApp", k:"week", dow:4, t:17*60},
+    {n:"Resumo de emails e agenda", w:"n8n + Gemini + WhatsApp", k:"day", t:21*60},
+    {n:"Previsão para a corrida das 7h", w:"n8n + WhatsApp", k:"day", t:21*60+30}
+  ];
+  const ALWAYS = [
+    ["Sempre que chega email","Regras do Outlook arrumam o Hotmail"],
+    ["Quando lhe escrevo","Assistente no WhatsApp, por escrito ou por voz"],
+    ["Se algo falhar","Alerta por email e WhatsApp com o erro"]
+  ];
+  const DOW = ["DOM","SEG","TER","QUA","QUI","SEX","SÁB"];
+  const pad = n => String(n).padStart(2,"0");
+  const hm = m => pad(Math.floor(m/60)%24)+":"+pad(m%60);
+
+  function lisbon(){
+    const p = {};
+    new Intl.DateTimeFormat("en-GB",{timeZone:"Europe/Lisbon",hour:"2-digit",minute:"2-digit",second:"2-digit",weekday:"short",hourCycle:"h23"})
+      .formatToParts(new Date()).forEach(x=>p[x.type]=x.value);
+    const wd = {Sun:0,Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6}[p.weekday];
+    return {dow:wd, min:(+p.hour)*60+(+p.minute), sec:+p.second};
+  }
+
+  // próxima ocorrência: devolve {delta (min), t (min do dia), dow, live}
+  function next(a, now){
+    if(a.k==="int"){
+      const s=a.from*60, e=a.to*60;
+      if(now.min>=s && now.min<e){
+        let t = s + Math.ceil((now.min - s + 1)/a.every)*a.every;
+        if(t<e) return {delta:t-now.min, t, dow:now.dow, live:true};
+      }
+      const delta = now.min<s ? s-now.min : 1440-now.min+s;
+      return {delta, t:s, dow:(now.dow+(now.min<s?0:1))%7, live:false};
+    }
+    for(let d=0; d<8; d++){
+      const dow=(now.dow+d)%7;
+      if(a.k==="week" && dow!==a.dow) continue;
+      const delta = d*1440 + a.t - now.min;
+      if(delta>0) return {delta, t:a.t, dow, live:false};
+    }
+  }
+
+  const rows = document.getElementById("rows");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const CH = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789:";
+  function flap(el, text){
+    if(el.dataset.v===text) return;
+    el.dataset.v=text;
+    if(reduce){ el.textContent=text; return; }
+    let i=0; const steps=10;
+    const id=setInterval(()=>{
+      i++;
+      el.textContent = text.split("").map((c,j)=> (c===" "||j < text.length*i/steps) ? c : CH[Math.random()*CH.length|0]).join("");
+      if(i>=steps){ clearInterval(id); el.textContent=text; }
+    }, 45);
+  }
+  const lines=[];
+  for(let i=0;i<6;i++){
+    const r=document.createElement("div"); r.className="row";
+    r.innerHTML='<span class="flap"></span><span class="flap what"></span><span class="flap st"></span>';
+    rows.appendChild(r); lines.push(r.children);
+  }
+
+  function render(){
+    const now=lisbon();
+    document.getElementById("clock").textContent = hm(now.min)+":"+pad(now.sec);
+    const list = A.map(a=>({a, x:next(a,now)})).sort((p,q)=>p.x.delta-q.x.delta).slice(0,6);
+    list.forEach((it,i)=>{
+      const [t,w,s]=lines[i];
+      flap(t, hm(it.x.t));
+      w.textContent = it.a.n; w.title = it.a.n+" · "+it.a.w;
+      let st, live=false;
+      if(it.x.live && it.a.k==="int"){ st = it.a.every<60 ? "CADA "+it.a.every+"M" : "HORÁRIA"; live=true; }
+      else if(it.x.delta<=60) st = "EM "+it.x.delta+" MIN";
+      else if(it.x.dow===now.dow) st = "HOJE";
+      else if(it.x.dow===(now.dow+1)%7) st = "AMANHÃ";
+      else st = DOW[it.x.dow];
+      flap(s, st); s.classList.toggle("live", live);
+    });
+    const nl=document.getElementById("now"); if(nl){ nl.style.left=(now.min/1440*100)+"%"; nl.dataset.t=hm(now.min); }
+  }
+
+  // Horário
+  const tt=document.getElementById("tt");
+  let html='<div class="axis"><span></span><div class="ticks">';
+  for(let h=0;h<=24;h+=3) html+='<span style="left:'+(h/24*100)+'%">'+pad(h)+'h</span>';
+  html+='</div></div>';
+  const ordered=[...A].sort((p,q)=>(p.k==="int"?p.from*60-1:p.t)-(q.k==="int"?q.from*60-1:q.t));
+  ordered.forEach(a=>{
+    let when, mark;
+    if(a.k==="int"){
+      when = (a.every<60?"De "+a.every+" em "+a.every+" min":"De hora a hora")+(a.from===0&&a.to===24?"":" · "+a.from+"h–"+a.to+"h");
+      const step = Math.max(3, a.every/1440*100*7.2);
+      mark='<span class="band" style="left:'+(a.from/24*100)+'%;width:'+((a.to-a.from)/24*100)+'%;--step:'+step+'px"></span>';
+    } else {
+      when = (a.k==="week"?["Domingos","Segundas","Terças","Quartas","Quintas","Sextas","Sábados"][a.dow]:"Todos os dias")+" · "+hm(a.t).replace(":00","h").replace(":","h");
+      mark='<span class="dot'+(a.k==="week"?" week":"")+'" style="left:'+(a.t/1440*100)+'%" title="'+hm(a.t)+'"></span>';
+    }
+    html+='<div class="tt-row"><div class="tt-name">'+a.n+'<small>'+when+' · '+a.w+'</small></div><div class="track">'+mark+'</div></div>';
+  });
+  tt.innerHTML=html;
+  // linha da hora atual, alinhada com a coluna das pistas
+  const holder=document.createElement("div");
+  holder.style.cssText="position:absolute;top:0;bottom:0;left:246px;right:0;pointer-events:none";
+  holder.innerHTML='<div class="now-line" id="now"></div>';
+  tt.appendChild(holder);
+
+  document.getElementById("always").innerHTML = ALWAYS.map(([w,n])=>'<span class="chip"><i>'+w+'</i>'+n+'</span>').join("");
+
+  render(); setInterval(render, 1000);
+})();
+</script>
+</body>
+</html>
